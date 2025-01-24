@@ -1,9 +1,9 @@
-import Canvas from "./canvas";
+import Jigsaw from "./features/jigsaw/components/jigsaw";
 
 function App() {
   return (
     <>
-      <Canvas />
+      <Jigsaw />
     </>
   );
 }
