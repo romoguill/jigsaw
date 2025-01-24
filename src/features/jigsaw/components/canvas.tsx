@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { act, useMemo } from "react";
 import useMouseCoordinate from "../../../hooks/use-mouse-coordinate";
 import { useRenderLoop } from "../../../hooks/use-render-loop";
 import useWindowSize from "../../../hooks/use-window-size";
@@ -42,14 +42,16 @@ function Canvas({ shapes }: CanvasProps) {
         y: mouseCoordinates.y - activeShape.offset.y,
       });
 
-      const stitch = shapes.find((shape) => {
+      // Get all shapes that the active shape could be stitched to.
+      // Could be more thant one since for now, shapes can be overlapping.
+      const shapesAvilableForStitching = shapes.filter((shape) => {
         // Don't stich to itself
         if (shape.id === activeShape.id) return null;
 
-        return activeShape.canStitch(shape);
+        return activeShape.canStitch(shape) !== null;
       });
 
-      console.log(stitch);
+      console.log(shapesAvilableForStitching);
     }
   };
 

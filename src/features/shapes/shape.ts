@@ -85,29 +85,65 @@ export class Shape {
   }
 
   // Distance from the side of the shape to onother shape's opposite side
+  // I guess for now, calculating using pythagoras is enought
   distanceToShape(side: ShapeSide, shape: Shape): number {
     switch (side) {
       case "top":
-        return (
-          this.getCoordinates().topLeft.y - shape.getCoordinates().bottomLeft.y
+        return Math.sqrt(
+          Math.pow(
+            this.getCoordinates().topLeft.y -
+              shape.getCoordinates().bottomLeft.y,
+            2
+          ) +
+            Math.pow(
+              this.getCoordinates().topLeft.x -
+                shape.getCoordinates().bottomLeft.x,
+              2
+            )
         );
       case "bottom":
-        return (
-          this.getCoordinates().bottomLeft.y - shape.getCoordinates().topLeft.y
+        return Math.sqrt(
+          Math.pow(
+            this.getCoordinates().bottomLeft.y -
+              shape.getCoordinates().topLeft.y,
+            2
+          ) +
+            Math.pow(
+              this.getCoordinates().bottomLeft.x -
+                shape.getCoordinates().topLeft.x,
+              2
+            )
         );
       case "right":
-        return (
-          this.getCoordinates().topRight.x - shape.getCoordinates().topLeft.x
+        return Math.sqrt(
+          Math.pow(
+            this.getCoordinates().topRight.y - shape.getCoordinates().topLeft.y,
+            2
+          ) +
+            Math.pow(
+              this.getCoordinates().topRight.x -
+                shape.getCoordinates().topLeft.x,
+              2
+            )
         );
       case "left":
-        return (
-          this.getCoordinates().topLeft.y - shape.getCoordinates().topRight.y
+        return Math.sqrt(
+          Math.pow(
+            this.getCoordinates().topLeft.y - shape.getCoordinates().topRight.y,
+            2
+          ) +
+            Math.pow(
+              this.getCoordinates().topLeft.x -
+                shape.getCoordinates().topRight.x,
+              2
+            )
         );
     }
   }
 
-  // When shapes are draged near their corresponding neighbour they should stick together
-  canStitch(shape: Shape, threshold = 10): ShapeSide | null {
+  // When shapes are draged near their corresponding neighbour they should stick together.
+  // This will only return to what size could be stiched based on proximity
+  canStitch(shape: Shape, threshold = 5): ShapeSide | null {
     return (
       shapeSides.find(
         (side) => this.distanceToShape(side, shape) <= threshold
