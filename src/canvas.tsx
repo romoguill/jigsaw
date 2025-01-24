@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef } from "react";
 import { Shape } from "./features/shapes/shape";
+import { useRenderLoop } from "./hooks/use-render-loop";
 import useWindowSize from "./hooks/use-window-size";
 import { getMouseCoordinates } from "./lib/utils";
 import { Coordinate } from "./types";
@@ -28,46 +28,13 @@ const getHoveredShape = (mouseCoordinates: Coordinate, shapes: Shape[]) => {
 
 const SHAPES = createShapes(3);
 
+const draw = (ctx: CanvasRenderingContext2D) => {
+  drawShapes(SHAPES, ctx);
+};
+
 function Canvas() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const canvasCtxRef = useRef<CanvasRenderingContext2D | null>(null);
-
+  const { canvasRef } = useRenderLoop({ draw });
   const windowSize = useWindowSize();
-
-  const draw = useCallback(() => {
-    if (canvasCtxRef.current) {
-      drawShapes(SHAPES, canvasCtxRef.current);
-    }
-  }, []);
-
-  // Render loop
-  useEffect(() => {
-    let animationFrameId = 0;
-
-    if (canvasRef.current) {
-      canvasCtxRef.current = canvasRef.current.getContext("2d");
-
-      // Recursive render
-      const render = () => {
-        if (!canvasCtxRef.current) return;
-
-        const ctx = canvasCtxRef.current;
-
-        // Clear previous render
-        ctx.clearRect(0, 0, windowSize.width, windowSize.height);
-
-        // Draw updated shapes
-        draw();
-
-        // Get new frame for unmounting effect
-        animationFrameId = window.requestAnimationFrame(render);
-      };
-
-      render();
-    }
-
-    return () => window.cancelAnimationFrame(animationFrameId);
-  }, [draw, windowSize]);
 
   const handleMouseDown: React.MouseEventHandler<HTMLCanvasElement> = (e) => {
     const mouseCoordinates = getMouseCoordinates(e);
