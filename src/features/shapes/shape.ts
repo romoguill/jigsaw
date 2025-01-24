@@ -150,4 +150,18 @@ export class Shape {
       ) ?? null
     );
   }
+
+  // Verify if the shapes are placed according to the valid image.
+  shouldStitch(side: ShapeSide, shape: Shape): boolean {
+    switch (side) {
+      case "top":
+        return this.neighbourTop ? this.neighbourTop === shape : false;
+      case "right":
+        return this.neighbourRight ? this.neighbourRight === shape : false;
+      case "bottom":
+        return this.neighbourBottom ? this.neighbourBottom === shape : false;
+      case "left":
+        return this.neighbourLeft ? this.neighbourLeft === shape : false;
+    }
+  }
 }

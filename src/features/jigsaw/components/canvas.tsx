@@ -33,30 +33,42 @@ function Canvas({ shapes }: CanvasProps) {
   };
 
   const handleMouseMove: React.MouseEventHandler<HTMLCanvasElement> = (e) => {
-    const mouseCoordinates = getMouseCoordinates(e);
     const activeShape = shapes.find((shape) => shape.active);
 
-    if (activeShape?.active) {
+    if (activeShape) {
       activeShape.move({
-        x: mouseCoordinates.x - activeShape.offset.x,
-        y: mouseCoordinates.y - activeShape.offset.y,
+        x: mouseCoordinate.x - activeShape.offset.x,
+        y: mouseCoordinate.y - activeShape.offset.y,
       });
-
-      // Get all shapes that the active shape could be stitched to.
-      // Could be more thant one since for now, shapes can be overlapping.
-      const shapesAvilableForStitching = shapes.filter((shape) => {
-        // Don't stich to itself
-        if (shape.id === activeShape.id) return null;
-
-        return activeShape.canStitch(shape) !== null;
-      });
-
-      console.log(shapesAvilableForStitching);
     }
   };
 
   const handleMouseUp: React.MouseEventHandler<HTMLCanvasElement> = () => {
-    shapes.forEach((shape) => shape.onMouseUp());
+    // BEFORE DEACTIVATING SHAPE, CHECK IF CAN BE STITCHED
+    const activeShape = shapes.find((shape) => shape.active);
+
+    if (activeShape) {
+      // Get all shapes that the active shape could be stitched to.
+      // Could be more thant one since for now, shapes can be overlapping.
+      const shapesAvilableForStitching = shapes
+        .map((shape) => ({
+          // Don't stich to itself
+          shape,
+          side: activeShape.canStitch(shape),
+        }))
+        .filter((item) => Boolean(item.side)) as {
+        shape: Shape;
+        side: ShapeSide;
+      }[]; // TS can't infer the boolean filter. Side will never be null
+
+      const shapeToStitch = shapesAvilableForStitching.find((item) =>
+        activeShape.shouldStitch(item.side, item.shape)
+      );
+
+      console.log(shapeToStitch);
+
+      activeShape?.setActive(false);
+    }
   };
 
   return (
