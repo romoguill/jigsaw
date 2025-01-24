@@ -19,7 +19,8 @@ export function generateRandomShapes(n: number) {
     shapes.push(
       new Shape(
         Math.floor(Math.random() * 500),
-        Math.floor(Math.random() * 500)
+        Math.floor(Math.random() * 500),
+        i.toString()
       )
     );
   }

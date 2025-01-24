@@ -12,12 +12,25 @@ export class Shape {
 
   constructor(
     public x: number,
-    public y: number
+    public y: number,
+    public img: string,
+    public neighbourTop?: Shape | null,
+    public neighbourRight?: Shape | null,
+    public neighbourBottom?: Shape | null,
+    public neighbourLeft?: Shape | null
   ) {}
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = "red";
     ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.font = "50px Arial";
+    ctx.fillStyle = "black";
+    // For testing
+    ctx.fillText(
+      this.img,
+      this.x + this.width / 2 - 10,
+      this.y + this.height / 2 + 10
+    );
   }
 
   move(coordinate: Coordinate) {
