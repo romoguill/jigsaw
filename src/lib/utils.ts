@@ -27,6 +27,8 @@ export function generateRandomShapes(n: number) {
 
   shapes[0].neighbourRight = shapes[1];
   shapes[1].neighbourLeft = shapes[0];
+  shapes[1].neighbourTop = shapes[2];
+  shapes[2].neighbourBottom = shapes[1];
 
   return shapes;
 }

@@ -55,9 +55,21 @@ export class Shape {
     );
   }
 
-  move(coordinate: Coordinate) {
+  move(coordinate: Coordinate): void {
+    // Get deltas to apply to update positions of stitched shapes
+    const deltaX = coordinate.x - this.x;
+    const deltaY = coordinate.y - this.y;
+
     this.x = coordinate.x;
     this.y = coordinate.y;
+
+    const neighboursMoved = new Set<Shape>();
+    neighboursMoved.add(this);
+
+    this.stitchedTo.forEach((shape) => {
+      shape.x += deltaX;
+      shape.y += deltaY;
+    });
   }
 
   setActive(state: boolean) {
@@ -168,30 +180,44 @@ export class Shape {
 
   // Stich them both ways
   stitchTo(shape: Shape): void {
+    // Once they are stitched, no need to snap anything
+    if (this.stitchedTo.has(shape)) return;
+
+    // TODO: Look for a better algorithm. Each shape in the same group will have a copy of every shap in group
     this.stitchedTo.add(shape);
+    shape.stitchedTo.forEach((shape) => this.stitchedTo.add(shape));
     shape.stitchedTo.add(this);
+    this.stitchedTo.forEach((shape) => shape.stitchedTo.add(this));
 
     // Snap active shape
     if (this.neighbourTop === shape) {
-      this.move({
-        x: shape.x,
-        y: shape.y + this.height,
-      });
+      this.x = shape.x;
+      this.y = shape.y + this.height;
+      // this.move({
+      //   x: shape.x,
+      //   y: shape.y + this.height,
+      // });
     } else if (this.neighbourRight === shape) {
-      this.move({
-        x: shape.x - this.width,
-        y: shape.y,
-      });
+      this.x = shape.x - this.width;
+      this.y = shape.y;
+      // this.move({
+      //   x: shape.x - this.width,
+      //   y: shape.y,
+      // });
     } else if (this.neighbourBottom === shape) {
-      this.move({
-        x: shape.x,
-        y: shape.y + this.height,
-      });
+      this.x = shape.x;
+      this.y = shape.y - this.height;
+      // this.move({
+      //   x: shape.x,
+      //   y: shape.y - this.height,
+      // });
     } else {
-      this.move({
-        x: shape.x + this.width,
-        y: shape.y,
-      });
+      this.x = shape.x + this.width;
+      this.y = shape.y;
+      // this.move({
+      //   x: shape.x + this.width,
+      //   y: shape.y,
+      // });
     }
   }
 }
