@@ -25,5 +25,8 @@ export function generateRandomShapes(n: number) {
     );
   }
 
+  shapes[0].neighbourRight = shapes[1];
+  shapes[1].neighbourLeft = shapes[0];
+
   return shapes;
 }

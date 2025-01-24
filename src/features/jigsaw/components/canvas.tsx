@@ -4,6 +4,7 @@ import { useRenderLoop } from "../../../hooks/use-render-loop";
 import useWindowSize from "../../../hooks/use-window-size";
 import { getMouseCoordinates } from "../../../lib/utils";
 import { Shape } from "../../shapes/shape";
+import { ShapeSide } from "../../../types";
 
 const drawShapes = (shapes: Shape[], ctx: CanvasRenderingContext2D) => {
   shapes.forEach((shape) => shape.draw(ctx));
@@ -40,6 +41,15 @@ function Canvas({ shapes }: CanvasProps) {
         x: mouseCoordinates.x - activeShape.offset.x,
         y: mouseCoordinates.y - activeShape.offset.y,
       });
+
+      const stitch = shapes.find((shape) => {
+        // Don't stich to itself
+        if (shape.id === activeShape.id) return null;
+
+        return activeShape.canStitch(shape);
+      });
+
+      console.log(stitch);
     }
   };
 

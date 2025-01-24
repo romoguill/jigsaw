@@ -1,4 +1,4 @@
-import { Coordinate } from "../../types";
+import { Coordinate, ShapeCorners, ShapeSide, shapeSides } from "../../types";
 
 export class Shape {
   width = 100;
@@ -19,6 +19,27 @@ export class Shape {
     public neighbourBottom?: Shape | null,
     public neighbourLeft?: Shape | null
   ) {}
+
+  getCoordinates(): { [key in ShapeCorners]: Coordinate } {
+    return {
+      topLeft: {
+        x: this.x,
+        y: this.y,
+      },
+      topRight: {
+        x: this.x + this.width,
+        y: this.y,
+      },
+      bottomLeft: {
+        x: this.x,
+        y: this.y + this.height,
+      },
+      bottomRight: {
+        x: this.x + this.width,
+        y: this.y + this.height,
+      },
+    };
+  }
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = "red";
@@ -60,6 +81,37 @@ export class Shape {
       coordinate.x <= this.x + this.width &&
       coordinate.y >= this.y &&
       coordinate.y <= this.y + this.height
+    );
+  }
+
+  // Distance from the side of the shape to onother shape's opposite side
+  distanceToShape(side: ShapeSide, shape: Shape): number {
+    switch (side) {
+      case "top":
+        return (
+          this.getCoordinates().topLeft.y - shape.getCoordinates().bottomLeft.y
+        );
+      case "bottom":
+        return (
+          this.getCoordinates().bottomLeft.y - shape.getCoordinates().topLeft.y
+        );
+      case "right":
+        return (
+          this.getCoordinates().topRight.x - shape.getCoordinates().topLeft.x
+        );
+      case "left":
+        return (
+          this.getCoordinates().topLeft.y - shape.getCoordinates().topRight.y
+        );
+    }
+  }
+
+  // When shapes are draged near their corresponding neighbour they should stick together
+  canStitch(shape: Shape, threshold = 10): ShapeSide | null {
+    return (
+      shapeSides.find(
+        (side) => this.distanceToShape(side, shape) <= threshold
+      ) ?? null
     );
   }
 }
