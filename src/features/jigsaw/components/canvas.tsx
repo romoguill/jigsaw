@@ -1,10 +1,9 @@
-import { act, useMemo } from "react";
+import { useMemo } from "react";
 import useMouseCoordinate from "../../../hooks/use-mouse-coordinate";
 import { useRenderLoop } from "../../../hooks/use-render-loop";
 import useWindowSize from "../../../hooks/use-window-size";
-import { getMouseCoordinates } from "../../../lib/utils";
-import { Shape } from "../../shapes/shape";
 import { ShapeSide } from "../../../types";
+import { Shape } from "../../shapes/shape";
 
 const drawShapes = (shapes: Shape[], ctx: CanvasRenderingContext2D) => {
   shapes.forEach((shape) => shape.draw(ctx));
@@ -32,7 +31,7 @@ function Canvas({ shapes }: CanvasProps) {
     hoveredShape?.onMouseDown(e);
   };
 
-  const handleMouseMove: React.MouseEventHandler<HTMLCanvasElement> = (e) => {
+  const handleMouseMove: React.MouseEventHandler<HTMLCanvasElement> = () => {
     const activeShape = shapes.find((shape) => shape.active);
 
     if (activeShape) {
@@ -63,10 +62,11 @@ function Canvas({ shapes }: CanvasProps) {
 
       const shapeToStitch = shapesAvilableForStitching.find((item) =>
         activeShape.shouldStitch(item.side, item.shape)
-      );
+      )?.shape;
 
-      console.log(shapeToStitch);
+      if (shapeToStitch) activeShape.stitchTo(shapeToStitch);
 
+      console.log(activeShape);
       activeShape?.setActive(false);
     }
   };

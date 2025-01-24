@@ -9,6 +9,7 @@ export class Shape {
     x: 0,
     y: 0,
   };
+  stitchedTo = new Set<Shape>(); // Values should be unique
 
   constructor(
     public x: number,
@@ -143,7 +144,7 @@ export class Shape {
 
   // When shapes are draged near their corresponding neighbour they should stick together.
   // This will only return to what size could be stiched based on proximity
-  canStitch(shape: Shape, threshold = 5): ShapeSide | null {
+  canStitch(shape: Shape, threshold = 8): ShapeSide | null {
     return (
       shapeSides.find(
         (side) => this.distanceToShape(side, shape) <= threshold
@@ -162,6 +163,35 @@ export class Shape {
         return this.neighbourBottom ? this.neighbourBottom === shape : false;
       case "left":
         return this.neighbourLeft ? this.neighbourLeft === shape : false;
+    }
+  }
+
+  // Stich them both ways
+  stitchTo(shape: Shape): void {
+    this.stitchedTo.add(shape);
+    shape.stitchedTo.add(this);
+
+    // Snap active shape
+    if (this.neighbourTop === shape) {
+      this.move({
+        x: shape.x,
+        y: shape.y + this.height,
+      });
+    } else if (this.neighbourRight === shape) {
+      this.move({
+        x: shape.x - this.width,
+        y: shape.y,
+      });
+    } else if (this.neighbourBottom === shape) {
+      this.move({
+        x: shape.x,
+        y: shape.y + this.height,
+      });
+    } else {
+      this.move({
+        x: shape.x + this.width,
+        y: shape.y,
+      });
     }
   }
 }
