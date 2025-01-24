@@ -22,20 +22,8 @@ const drawShapes = (shapes: Shape[], ctx: CanvasRenderingContext2D) => {
   shapes.forEach((shape) => shape.draw(ctx));
 };
 
-const coordinateInsersecting = (coordinate: Coordinate, shape: Shape) => {
-  return (
-    coordinate.x >= shape.x &&
-    coordinate.x <= shape.x + shape.width &&
-    coordinate.y >= shape.y &&
-    coordinate.y <= shape.y + shape.height
-  );
-};
-
 const getHoveredShape = (mouseCoordinates: Coordinate, shapes: Shape[]) => {
-  return (
-    shapes.find((shape) => coordinateInsersecting(mouseCoordinates, shape)) ??
-    null
-  );
+  return shapes.find((shape) => shape.isIntersecting(mouseCoordinates)) ?? null;
 };
 
 function Canvas() {
@@ -47,27 +35,55 @@ function Canvas() {
   const windowSize = useWindowSize();
 
   useEffect(() => {
-    if (canvasRef.current) {
-      canvasCtxRef.current = canvasRef.current.getContext("2d");
-
-      const ctx = canvasCtxRef.current!;
-
-      drawShapes(shapes, ctx);
-    }
-  }, [shapes]);
-
-  useEffect(() => {
     const shapes = createShapes(20);
     setShapes(shapes);
   }, []);
 
-  const handleMouseDown: React.MouseEventHandler<HTMLCanvasElement> = () => {};
-  const handleMouseMove: React.MouseEventHandler<HTMLCanvasElement> = (e) => {
+  // Frames
+  useEffect(() => {
+    let animationFrameId = 0;
+
+    if (canvasRef.current) {
+      canvasCtxRef.current = canvasRef.current.getContext("2d");
+
+      const render = () => {
+        if (!canvasCtxRef.current) return;
+
+        const ctx = canvasCtxRef.current;
+        ctx.clearRect(0, 0, windowSize.width, windowSize.height);
+        drawShapes(shapes, canvasCtxRef.current!);
+        animationFrameId = window.requestAnimationFrame(render);
+      };
+
+      render();
+    }
+
+    return () => window.cancelAnimationFrame(animationFrameId);
+  }, [shapes, windowSize]);
+
+  const handleMouseDown: React.MouseEventHandler<HTMLCanvasElement> = (e) => {
     const mouseCoordinates = getMouseCoordinates(e);
     const hoveredShape = getHoveredShape(mouseCoordinates, shapes);
-    console.log({ hoveredShape });
+
+    hoveredShape?.setActive(true);
   };
-  const handleMouseUp: React.MouseEventHandler<HTMLCanvasElement> = () => {};
+  const handleMouseMove: React.MouseEventHandler<HTMLCanvasElement> = (e) => {
+    // const mouseCoordinates = getMouseCoordinates(e);
+    // const hoveredShape = getHoveredShape(mouseCoordinates, shapes);
+    const mouseCoordinates = getMouseCoordinates(e);
+    const hoveredShape = getHoveredShape(mouseCoordinates, shapes);
+
+    if (hoveredShape?.active) {
+      console.log(hoveredShape);
+      hoveredShape.move(mouseCoordinates);
+    }
+  };
+  const handleMouseUp: React.MouseEventHandler<HTMLCanvasElement> = (e) => {
+    const mouseCoordinates = getMouseCoordinates(e);
+    const hoveredShape = getHoveredShape(mouseCoordinates, shapes);
+
+    hoveredShape?.setActive(false);
+  };
   const handleTouchStart: React.TouchEventHandler<HTMLCanvasElement> = () => {};
   const handleTouchMove: React.TouchEventHandler<HTMLCanvasElement> = () => {};
   const handleTouchEnd: React.TouchEventHandler<HTMLCanvasElement> = () => {};
