@@ -8,3 +8,7 @@ body,
 #root {
   height: 100%;
 }
+
+@theme {
+  --color-bg-canvas: #ddd;
+}
