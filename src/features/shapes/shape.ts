@@ -3,6 +3,7 @@ import { Coordinate, ShapeCorners, ShapeSide, shapeSides } from "../../types";
 export class Shape {
   width = 100;
   height = 100;
+  image: HTMLImageElement | null = null;
   id = crypto.randomUUID();
   active = false;
   offset = {
@@ -14,12 +15,14 @@ export class Shape {
   constructor(
     public x: number,
     public y: number,
-    public img: string,
+    public imgUrl: string,
     public neighbourTop?: Shape | null,
     public neighbourRight?: Shape | null,
     public neighbourBottom?: Shape | null,
     public neighbourLeft?: Shape | null
-  ) {}
+  ) {
+    this.loadImage();
+  }
 
   getCoordinates(): { [key in ShapeCorners]: Coordinate } {
     return {
@@ -42,17 +45,22 @@ export class Shape {
     };
   }
 
+  private loadImage() {
+    const image = new Image();
+    image.src = this.imgUrl;
+
+    this.image = image;
+  }
+
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = "red";
     ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.font = "50px Arial";
     ctx.fillStyle = "black";
-    // For testing
-    ctx.fillText(
-      this.img,
-      this.x + this.width / 2 - 10,
-      this.y + this.height / 2 + 10
-    );
+
+    if (this.image) {
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
   }
 
   move(coordinate: Coordinate): void {
