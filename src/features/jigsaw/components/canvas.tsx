@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useMouseCoordinate from "../../../hooks/use-mouse-coordinate";
 import { useRenderLoop } from "../../../hooks/use-render-loop";
 import useWindowSize from "../../../hooks/use-window-size";
@@ -14,8 +14,14 @@ interface CanvasProps {
 }
 
 function Canvas({ shapes }: CanvasProps) {
+  const [image, setImage] = useState<HTMLImageElement | null>(null);
   const { canvasRef } = useRenderLoop({
-    draw: (ctx) => drawShapes(shapes, ctx),
+    draw: (ctx) => {
+      drawShapes(shapes, ctx);
+      if (image) {
+        ctx.drawImage(image, 10, 10, 100, 100);
+      }
+    },
   });
   const windowSize = useWindowSize();
   const mouseCoordinate = useMouseCoordinate();
@@ -26,6 +32,14 @@ function Canvas({ shapes }: CanvasProps) {
       shapes.find((shape) => shape.isIntersecting(mouseCoordinate)) ?? null
     );
   }, [mouseCoordinate, shapes]);
+
+  useEffect(() => {
+    const image = new Image();
+    image.src = "/test-image.avif";
+    image.onload = () => {
+      setImage(image);
+    };
+  }, []);
 
   const handleMouseDown: React.MouseEventHandler<HTMLCanvasElement> = (e) => {
     hoveredShape?.onMouseDown(e);
