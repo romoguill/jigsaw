@@ -1,7 +1,7 @@
 import clsx, { type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Coordinate } from "../types";
-import { Shape } from "../features/shapes/shape";
+import { PuzzlePiece } from "../features/jigsaw/puzzle-piece";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -14,10 +14,10 @@ export function getMouseCoordinates(
 }
 
 export function generateRandomShapes(n: number) {
-  const shapes: Shape[] = [];
+  const shapes: PuzzlePiece[] = [];
   for (let i = 0; i < n; i++) {
     shapes.push(
-      new Shape(
+      new PuzzlePiece(
         Math.floor(Math.random() * 500),
         Math.floor(Math.random() * 500),
         i.toString()
@@ -34,63 +34,63 @@ export function generateRandomShapes(n: number) {
 }
 
 export function generateTestingShapes() {
-  const shape1 = new Shape(
+  const shape1 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_1.jpg"
   );
-  const shape2 = new Shape(
+  const shape2 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_2.jpg"
   );
-  const shape3 = new Shape(
+  const shape3 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_3.jpg"
   );
-  const shape4 = new Shape(
+  const shape4 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_4.jpg"
   );
 
-  const shape5 = new Shape(
+  const shape5 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_5.jpg"
   );
-  const shape6 = new Shape(
+  const shape6 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_6.jpg"
   );
-  const shape7 = new Shape(
+  const shape7 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_7.jpg"
   );
-  const shape8 = new Shape(
+  const shape8 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_8.jpg"
   );
-  const shape9 = new Shape(
+  const shape9 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_9.jpg"
   );
-  const shape10 = new Shape(
+  const shape10 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_10.jpg"
   );
-  const shape11 = new Shape(
+  const shape11 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_11.jpg"
   );
-  const shape12 = new Shape(
+  const shape12 = new PuzzlePiece(
     Math.floor(Math.random() * 500),
     Math.floor(Math.random() * 500),
     "/puzzle-images/test-image_12.jpg"

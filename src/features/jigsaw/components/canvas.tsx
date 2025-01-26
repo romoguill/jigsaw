@@ -3,14 +3,14 @@ import useMouseCoordinate from "../../../hooks/use-mouse-coordinate";
 import { useRenderLoop } from "../../../hooks/use-render-loop";
 import useWindowSize from "../../../hooks/use-window-size";
 import { ShapeSide } from "../../../types";
-import { Shape } from "../../shapes/shape";
+import { PuzzlePiece } from "../puzzle-piece";
 
-const drawShapes = (shapes: Shape[], ctx: CanvasRenderingContext2D) => {
+const drawShapes = (shapes: PuzzlePiece[], ctx: CanvasRenderingContext2D) => {
   shapes.forEach((shape) => shape.draw(ctx));
 };
 
 interface CanvasProps {
-  shapes: Shape[];
+  shapes: PuzzlePiece[];
 }
 
 function Canvas({ shapes }: CanvasProps) {
@@ -58,7 +58,7 @@ function Canvas({ shapes }: CanvasProps) {
           side: activeShape.canStitch(shape),
         }))
         .filter((item) => Boolean(item.side)) as {
-        shape: Shape;
+        shape: PuzzlePiece;
         side: ShapeSide;
       }[]; // TS can't infer the boolean filter. Side will never be null
 

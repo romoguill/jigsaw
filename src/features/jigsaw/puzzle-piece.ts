@@ -1,25 +1,28 @@
 import { Coordinate, ShapeCorners, ShapeSide, shapeSides } from "../../types";
 
-export class Shape {
+export class PuzzlePiece {
   width = 100;
   height = 100;
   image: HTMLImageElement | null = null;
   id = crypto.randomUUID();
   active = false;
-  offset = {
+  groupId: string | null = null; // Group of puzzle pieces
+  offsetFromGroupOrigin: Coordinate = {
     x: 0,
     y: 0,
   };
-  stitchedTo = new Set<Shape>(); // Values should be unique
 
   constructor(
     public x: number,
     public y: number,
     public imgUrl: string,
-    public neighbourTop?: Shape | null,
-    public neighbourRight?: Shape | null,
-    public neighbourBottom?: Shape | null,
-    public neighbourLeft?: Shape | null
+    // neighbour -> e.g {top: shapeId-123}
+    public neighbours: Record<ShapeSide, string | null> = {
+      top: null,
+      right: null,
+      bottom: null,
+      left: null,
+    }
   ) {
     this.loadImage();
   }
@@ -55,12 +58,14 @@ export class Shape {
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = "red";
     ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.font = "50px Arial";
-    ctx.fillStyle = "black";
 
     if (this.image) {
       ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#333";
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
   }
 
   move(coordinate: Coordinate): void {
@@ -71,12 +76,12 @@ export class Shape {
     this.x = coordinate.x;
     this.y = coordinate.y;
 
-    const neighboursMoved = new Set<Shape>();
+    const neighboursMoved = new Set<PuzzlePiece>();
     neighboursMoved.add(this);
 
-    this.stitchedTo.forEach((shape) => {
-      shape.x += deltaX;
-      shape.y += deltaY;
+    this.stitchedTo.forEach((piece) => {
+      piece.x += deltaX;
+      piece.y += deltaY;
     });
   }
 
@@ -107,7 +112,7 @@ export class Shape {
 
   // Distance from the side of the shape to onother shape's opposite side
   // I guess for now, calculating using pythagoras is enought
-  distanceToShape(side: ShapeSide, shape: Shape): number {
+  distanceToShape(side: ShapeSide, shape: PuzzlePiece): number {
     switch (side) {
       case "top":
         return Math.sqrt(
@@ -164,7 +169,7 @@ export class Shape {
 
   // When shapes are draged near their corresponding neighbour they should stick together.
   // This will only return to what size could be stiched based on proximity
-  canStitch(shape: Shape, threshold = 8): ShapeSide | null {
+  canStitch(shape: PuzzlePiece, threshold = 8): ShapeSide | null {
     return (
       shapeSides.find(
         (side) => this.distanceToShape(side, shape) <= threshold
@@ -173,7 +178,7 @@ export class Shape {
   }
 
   // Verify if the shapes are placed according to the valid image.
-  shouldStitch(side: ShapeSide, shape: Shape): boolean {
+  shouldStitch(side: ShapeSide, shape: PuzzlePiece): boolean {
     switch (side) {
       case "top":
         return this.neighbourTop ? this.neighbourTop === shape : false;
@@ -187,7 +192,7 @@ export class Shape {
   }
 
   // Stich them both ways
-  stitchTo(shape: Shape): void {
+  stitchTo(shape: PuzzlePiece): void {
     // Once they are stitched, no need to snap anything
     if (this.stitchedTo.has(shape)) return;
 
