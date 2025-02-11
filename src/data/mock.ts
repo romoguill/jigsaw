@@ -1,6 +1,6 @@
-type APIData = { id: string; image: string }[][];
+import { GameData } from "../types";
 
-export const mockPuzzleData: APIData = [
+export const mockPuzzleData: GameData = [
   [
     {
       id: "001",

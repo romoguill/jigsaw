@@ -4,7 +4,6 @@ export class PuzzlePiece {
   width = 100;
   height = 100;
   image: HTMLImageElement | null = null;
-  id = crypto.randomUUID();
   active = false;
   groupId: string | null = null; // Group of puzzle pieces
   offsetFromGroupOrigin: Coordinate = {
@@ -13,6 +12,7 @@ export class PuzzlePiece {
   };
 
   constructor(
+    public id: string,
     public x: number,
     public y: number,
     public imgUrl: string,
