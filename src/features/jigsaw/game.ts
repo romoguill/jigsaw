@@ -1,6 +1,9 @@
 import { Coordinate, GameData } from "../../types";
-import { PieceGroup } from "./piece-group";
 import { PuzzlePiece } from "./puzzle-piece";
+
+interface PieceGroup {
+  origin: Coordinate;
+}
 
 export class Jiggsaw {
   pieces: PuzzlePiece[] = [];
@@ -27,14 +30,6 @@ export class Jiggsaw {
       )
     );
 
-    // Initialize groups, one per piece
-    this.pieces.forEach((piece) => {
-      const piecesMap = new Map([[piece.id, piece.position]]);
-      const group = new PieceGroup(piece.position, piecesMap);
-
-      this.groups.set(group.id, group);
-    });
-
     // Calculate puzzle size
     this.size = {
       rows: data.length,
@@ -42,30 +37,28 @@ export class Jiggsaw {
     };
   }
 
-  mergeGroups(
-    groupIdA: string,
-    groupIdB: string,
-    snapOffset: Coordinate
-  ): PieceGroup {
+  // Utility for merging groups. A into B and delete B from the Map
+  private mergeGroups(groupIdA: string, groupIdB: string): PieceGroup {
     const groupA = this.groups.get(groupIdA)!;
     const groupB = this.groups.get(groupIdB)!;
 
-    // Update groupB's pieces to be relative to groupA's origin
-    groupB.pieces.forEach((offset, pieceId) => {
-      const adjustedOffset = {
-        x: offset.x + snapOffset.x,
-        y: offset.y + snapOffset.y,
-      };
-      groupA.pieces.set(pieceId, adjustedOffset);
-    });
-
-    // Update all pieces in groupB to point to groupA
-    this.pieces.forEach((piece) => {
-      if (piece.groupId === groupIdB) {
+    this.pieces
+      .filter((piece) => piece.groupId === groupIdB)
+      .forEach((piece) => {
         piece.groupId = groupIdA;
-        piece.offsetFromGroupOrigin = groupA.pieces.get(piece.id)!;
-      }
-    });
+
+        // Need to calculate new offset. The new offset would be the sum of the group origin plus its offset to that group origin
+        const absolutePosition = {
+          x: groupB.origin.x + piece.offsetFromGroupOrigin.x,
+          y: groupB.origin.y + piece.offsetFromGroupOrigin.y,
+        };
+
+        // Offset relative to new origin is the absolute position minus the new group origin
+        piece.offsetFromGroupOrigin = {
+          x: absolutePosition.x - groupA.origin.x,
+          y: absolutePosition.y - groupA.origin.y,
+        };
+      });
 
     // Delete groupB
     this.groups.delete(groupIdB);
