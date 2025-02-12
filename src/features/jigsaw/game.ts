@@ -65,4 +65,21 @@ export class Jiggsaw {
 
     return groupA;
   }
+
+  moveGroup(groupId: string, position: Coordinate): void {
+    const group = this.groups.get(groupId);
+
+    if (!group) return;
+
+    // Move the group origin coordinate
+    group.origin = {
+      x: group.origin.x + position.x,
+      y: group.origin.y + position.y,
+    };
+
+    // Move the pieces en that group
+    this.pieces
+      .filter((piece) => piece.groupId === groupId)
+      .forEach((piece) => piece.move(group.origin));
+  }
 }

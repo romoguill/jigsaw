@@ -75,21 +75,10 @@ export class PuzzlePiece {
     ctx.strokeRect(this.x, this.y, this.width, this.height);
   }
 
-  move(coordinate: Coordinate): void {
-    // Get deltas to apply to update positions of stitched shapes
-    const deltaX = coordinate.x - this.x;
-    const deltaY = coordinate.y - this.y;
-
-    this.x = coordinate.x;
-    this.y = coordinate.y;
-
-    const neighboursMoved = new Set<PuzzlePiece>();
-    neighboursMoved.add(this);
-
-    this.stitchedTo.forEach((piece) => {
-      piece.x += deltaX;
-      piece.y += deltaY;
-    });
+  // Move will be relative to the group origin
+  move(origin: Coordinate): void {
+    this.x = origin.x + this.offsetFromGroupOrigin.x;
+    this.y = origin.y + this.offsetFromGroupOrigin.y;
   }
 
   setActive(state: boolean) {
