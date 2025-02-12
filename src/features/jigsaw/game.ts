@@ -4,7 +4,7 @@ import { PuzzlePiece } from "./puzzle-piece";
 
 export class Jiggsaw {
   pieces: PuzzlePiece[] = [];
-  groups: Map<string, PieceGroup>;
+  groups: Map<string, PieceGroup> = new Map([]);
   size: { rows: number; cols: number } = { rows: 0, cols: 0 };
 
   constructor(public readonly data: GameData) {
@@ -47,7 +47,29 @@ export class Jiggsaw {
     groupIdB: string,
     snapOffset: Coordinate
   ): PieceGroup {
-    const groupA = this.groups.get(groupIdA);
-    const groupB = this.groups.get(groupIdB);
+    const groupA = this.groups.get(groupIdA)!;
+    const groupB = this.groups.get(groupIdB)!;
+
+    // Update groupB's pieces to be relative to groupA's origin
+    groupB.pieces.forEach((offset, pieceId) => {
+      const adjustedOffset = {
+        x: offset.x + snapOffset.x,
+        y: offset.y + snapOffset.y,
+      };
+      groupA.pieces.set(pieceId, adjustedOffset);
+    });
+
+    // Update all pieces in groupB to point to groupA
+    this.pieces.forEach((piece) => {
+      if (piece.groupId === groupIdB) {
+        piece.groupId = groupIdA;
+        piece.offsetFromGroupOrigin = groupA.pieces.get(piece.id)!;
+      }
+    });
+
+    // Delete groupB
+    this.groups.delete(groupIdB);
+
+    return groupA;
   }
 }

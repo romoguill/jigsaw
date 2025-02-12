@@ -5,7 +5,6 @@ export class PuzzlePiece {
   height = 100;
   image: HTMLImageElement | null = null;
   active = false;
-  groupId: string | null = null; // Group of puzzle pieces
   offsetFromGroupOrigin: Coordinate = {
     x: 0,
     y: 0,
@@ -22,7 +21,8 @@ export class PuzzlePiece {
       right: null,
       bottom: null,
       left: null,
-    }
+    },
+    public groupId: string = this.id
   ) {
     this.loadImage();
   }
