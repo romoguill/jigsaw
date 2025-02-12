@@ -27,6 +27,13 @@ export class PuzzlePiece {
     this.loadImage();
   }
 
+  get position(): Coordinate {
+    return {
+      x: this.x,
+      y: this.y,
+    };
+  }
+
   getCoordinates(): { [key in ShapeCorners]: Coordinate } {
     return {
       topLeft: {

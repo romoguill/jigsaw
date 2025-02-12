@@ -1,8 +1,7 @@
 import clsx, { type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Coordinate } from "../types";
-import { PuzzlePiece } from "../features/jigsaw/puzzle-piece";
 import { mockPuzzleData } from "../data/mock";
+import { Coordinate } from "../types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

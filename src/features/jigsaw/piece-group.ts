@@ -6,7 +6,7 @@ export class PieceGroup {
   // Position: some combined position of all shapes
   // Pieces: pieceId, offset from group center
   constructor(
-    public position: Coordinate,
+    public origin: Coordinate,
     public pieces: Map<string, Coordinate>
   ) {}
 }
