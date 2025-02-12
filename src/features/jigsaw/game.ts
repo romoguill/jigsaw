@@ -12,7 +12,7 @@ export class Jiggsaw {
 
   constructor(public readonly data: GameData) {
     // Create pieces
-    this.pieces = data.flatMap((row, rowIdx) =>
+    this.pieces = data.piecesData.flatMap((row, rowIdx) =>
       row.map(
         (piece, colIdx) =>
           new PuzzlePiece(
@@ -21,10 +21,10 @@ export class Jiggsaw {
             Math.floor(Math.random() * 500),
             piece.image,
             {
-              top: data[rowIdx - 1]?.[colIdx].id,
-              right: data[rowIdx][colIdx + 1]?.id,
-              bottom: data[rowIdx + 1]?.[colIdx].id,
-              left: data[rowIdx][colIdx - 1]?.id,
+              top: data.piecesData[rowIdx - 1]?.[colIdx].id,
+              right: data.piecesData[rowIdx][colIdx + 1]?.id,
+              bottom: data.piecesData[rowIdx + 1]?.[colIdx].id,
+              left: data.piecesData[rowIdx][colIdx - 1]?.id,
             }
           )
       )
@@ -32,8 +32,8 @@ export class Jiggsaw {
 
     // Calculate puzzle size
     this.size = {
-      rows: data.length,
-      cols: data[0]?.length,
+      rows: data.piecesData.length,
+      cols: data.piecesData[0]?.length,
     };
   }
 
@@ -81,5 +81,22 @@ export class Jiggsaw {
     this.pieces
       .filter((piece) => piece.groupId === groupId)
       .forEach((piece) => piece.move(group.origin));
+  }
+
+  // SpatialGrid will be used to reduce posible calculations. Game will be divided into a grid of the same size as the pieces. That way I only check for snaping of pieces in the 8 squares arround the moved piece.
+  getNearbyPieces(piece: PuzzlePiece, spatialGrid: Map<string, PuzzlePiece[]>) {
+    const cellX = Math.floor(piece.position.x / this.data.pieceSize);
+    const cellY = Math.floor(piece.position.y / this.data.pieceSize);
+    const nearbyPieces: PuzzlePiece[] = [];
+
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
+        // Create a unique key for each quadrant
+        const key = `${cellX + x},${cellY + y}`;
+        nearbyPieces.push(...(spatialGrid.get(key) || []));
+      }
+    }
+
+    return nearbyPieces;
   }
 }
