@@ -34,6 +34,19 @@ export class PuzzlePiece {
     };
   }
 
+  static oppositeSide(side: ShapeSide): ShapeSide {
+    switch (side) {
+      case "top":
+        return "bottom";
+      case "right":
+        return "left";
+      case "bottom":
+        return "top";
+      case "left":
+        return "right";
+    }
+  }
+
   getCoordinates(): { [key in ShapeCorners]: Coordinate } {
     return {
       topLeft: {

@@ -91,12 +91,62 @@ export class Jiggsaw {
 
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
-        // Create a unique key for each quadrant
+        // Unique key for each quadrant is "cellX,cellY"
         const key = `${cellX + x},${cellY + y}`;
         nearbyPieces.push(...(spatialGrid.get(key) || []));
       }
     }
 
     return nearbyPieces;
+  }
+
+  // Check if two pieces can snap together
+  checkSnap(draggedPiece: PuzzlePiece, otherPiece: PuzzlePiece) {
+    for (const dir of directions) {
+      const oppositeDir = PuzzlePiece.oppositeSide(dir);
+      const draggedConnector = draggedPiece.connectors[dir];
+      const otherConnector = otherPiece.connectors[oppositeDir];
+
+      if (
+        connectorsMatch(draggedConnector, otherConnector) &&
+        draggedPiece.correctNeighbors[dir] === otherPiece.id &&
+        otherPiece.correctNeighbors[oppositeDir] === draggedPiece.id
+      ) {
+        // Calculate snap offset
+        const dx = otherPiece.position.x - draggedPiece.position.x;
+        const dy = otherPiece.position.y - draggedPiece.position.y;
+        return { x: dx, y: dy };
+      }
+    }
+
+    return null;
+  }
+
+  // Find valid snaps for a group
+  findValidSnaps(
+    draggedGroupId: string,
+    spatialGrid: Map<string, PuzzlePiece[]>
+  ) {
+    const validSnaps: { snappedGroupId: string; snapOffset: Coordinate }[] = [];
+
+    this.pieces
+      .filter((piece) => piece.groupId === draggedGroupId)
+      .forEach((draggedPiece) => {
+        const nearbyPieces = this.getNearbyPieces(draggedPiece, spatialGrid);
+
+        nearbyPieces.forEach((otherPiece) => {
+          if (otherPiece.groupId === draggedGroupId) return;
+
+          const snap = this.checkSnap(draggedPiece, otherPiece);
+          if (snap) {
+            validSnaps.push({
+              snappedGroupId: otherPiece.groupId,
+              snapOffset: snap,
+            });
+          }
+        });
+      });
+
+    return validSnaps;
   }
 }
