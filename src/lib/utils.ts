@@ -1,7 +1,7 @@
 import clsx, { type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { mockPuzzleData } from "../data/mock";
-import { Coordinate } from "../types";
+import { Coordinate, GameData } from "../types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -14,6 +14,6 @@ export function getMouseCoordinates(
 }
 
 // TODO: To be replaced when backend api implemented
-export const getPuzzleData = () => {
+export const getPuzzleData = async (): Promise<GameData> => {
   return mockPuzzleData;
 };

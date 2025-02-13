@@ -1,4 +1,4 @@
-import { Coordinate, GameData } from "../../types";
+import { Coordinate, GameData, shapeSides } from "../../types";
 import { PuzzlePiece } from "./puzzle-piece";
 
 interface PieceGroup {
@@ -102,16 +102,10 @@ export class Jiggsaw {
 
   // Check if two pieces can snap together
   checkSnap(draggedPiece: PuzzlePiece, otherPiece: PuzzlePiece) {
-    for (const dir of directions) {
-      const oppositeDir = PuzzlePiece.oppositeSide(dir);
-      const draggedConnector = draggedPiece.connectors[dir];
-      const otherConnector = otherPiece.connectors[oppositeDir];
+    for (const side of shapeSides) {
+      // const oppositeSide = PuzzlePiece.oppositeSide(side);
 
-      if (
-        connectorsMatch(draggedConnector, otherConnector) &&
-        draggedPiece.correctNeighbors[dir] === otherPiece.id &&
-        otherPiece.correctNeighbors[oppositeDir] === draggedPiece.id
-      ) {
+      if (draggedPiece.neighbours[side] === otherPiece.id) {
         // Calculate snap offset
         const dx = otherPiece.position.x - draggedPiece.position.x;
         const dy = otherPiece.position.y - draggedPiece.position.y;
