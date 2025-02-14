@@ -1,4 +1,5 @@
-import { Coordinate, GameData, shapeSides } from "../../types";
+import { absoluteDistance } from "../../lib/utils";
+import { Coordinate, GameData, ShapeSide, shapeSides } from "../../types";
 import { PuzzlePiece } from "./puzzle-piece";
 
 export interface PieceGroup {
@@ -109,24 +110,31 @@ export class Jiggsaw {
     return nearbyPieces;
   }
 
-  snap(draggedGroupId: string, targetGroupId: string) {
+  snap(draggedGroupId: string, targetGroupId: string, delta: Coordinate) {
+    this.moveGroup(draggedGroupId, delta);
+
     this.mergeGroups(draggedGroupId, targetGroupId);
   }
 
   // Check if two pieces can snap together
-  checkSnap(draggedPiece: PuzzlePiece, otherPiece: PuzzlePiece) {
+  private checkSnap(draggedPiece: PuzzlePiece, otherPiece: PuzzlePiece) {
     for (const side of shapeSides) {
-      // const oppositeSide = PuzzlePiece.oppositeSide(side);
       if (draggedPiece.neighbours[side] === otherPiece.id) {
-        // Calculate snap offset
-        // const dx = otherPiece.position.x - draggedPiece.position.x;
-        // const dy = otherPiece.position.y - draggedPiece.position.y;
-        // return { x: dx, y: dy };
-        const distance = draggedPiece.distanceToShape(side, otherPiece);
-
-        return {
+        const relativeCoordinates = draggedPiece.relativeCoordinatesTo(
           side,
-        };
+          otherPiece
+        );
+        const distanceToOtherPiece = absoluteDistance(relativeCoordinates);
+
+        console.log({ distanceToOtherPiece }, this.snapThreshold);
+        if (distanceToOtherPiece < this.snapThreshold) {
+          return {
+            side,
+            relativeCoordinates,
+          };
+        }
+
+        return false;
       }
     }
 
@@ -138,7 +146,11 @@ export class Jiggsaw {
     draggedGroupId: string,
     spatialGrid: Map<string, PuzzlePiece[]>
   ) {
-    const validSnaps: { snappedGroupId: string }[] = [];
+    const validSnaps: {
+      snappedGroupId: string;
+      side: ShapeSide;
+      delta: Coordinate;
+    }[] = [];
 
     this.pieces
       .filter((piece) => piece.groupId === draggedGroupId)
@@ -152,6 +164,8 @@ export class Jiggsaw {
           if (snap) {
             validSnaps.push({
               snappedGroupId: otherPiece.groupId,
+              side: snap.side,
+              delta: snap.relativeCoordinates,
             });
           }
         });

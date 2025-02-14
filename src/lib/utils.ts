@@ -17,3 +17,9 @@ export function getMouseCoordinates(
 export const getPuzzleData = async (): Promise<GameData> => {
   return mockPuzzleData;
 };
+
+// Pythagoras absolute distance
+export function absoluteDistance(coordinate: Coordinate): number {
+  const { x, y } = coordinate;
+  return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+}

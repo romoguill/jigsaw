@@ -98,18 +98,6 @@ export class PuzzlePiece {
     this.active = state;
   }
 
-  // onMouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
-  //   this.setActive(true);
-  //   // this.offset.x = e.clientX - this.x;
-  //   // this.offset.y = e.clientY - this.y;
-  // }
-
-  // onMouseUp() {
-  //   this.setActive(false);
-  //   // this.offset.x = 0;
-  //   // this.offset.y = 0;
-  // }
-
   // Is the coordinate inside the piece?
   isIntersecting(coordinate: Coordinate): boolean {
     return (
@@ -131,24 +119,18 @@ export class PuzzlePiece {
       case "bottom":
         return {
           x: shape.position.x - this.position.x,
-          y: shape.position.y - this.position.y,
+          y: shape.position.y - this.position.y - this.height,
         };
       case "right":
         return {
-          x: shape.position.x + shape.width - this.position.x,
+          x: shape.position.x - this.position.x - this.width,
           y: shape.position.y - this.position.y,
         };
       case "left":
         return {
-          x: shape.position.x - this.position.x,
+          x: shape.position.x + shape.width - this.position.x,
           y: shape.position.y - this.position.y,
         };
     }
-  }
-
-  // Pythagoras absolute distance
-  absoluteDistance(side: ShapeSide, shape: PuzzlePiece): number {
-    const { x, y } = this.relativeCoordinatesTo(side, shape);
-    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
   }
 }

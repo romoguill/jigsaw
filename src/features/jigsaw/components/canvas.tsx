@@ -2,7 +2,7 @@ import { useCallback, useRef } from "react";
 import useMouseCoordinate from "../../../hooks/use-mouse-coordinate";
 import { useRenderLoop } from "../../../hooks/use-render-loop";
 import useWindowSize from "../../../hooks/use-window-size";
-import { Coordinate, ShapeSide } from "../../../types";
+import { Coordinate } from "../../../types";
 import { Jiggsaw, PieceGroup } from "../jigsaw";
 import { PuzzlePiece } from "../puzzle-piece";
 
@@ -90,8 +90,8 @@ function Canvas({ jigsaw }: CanvasProps) {
       );
 
       if (validSnaps.length > 0) {
-        const { snappedGroupId } = validSnaps[0];
-        jigsaw.snap(activeGroupRef.current.id, snappedGroupId);
+        const { snappedGroupId, delta } = validSnaps[0];
+        jigsaw.snap(activeGroupRef.current.id, snappedGroupId, delta);
       }
 
       startDragCoordinateRef.current = null;
