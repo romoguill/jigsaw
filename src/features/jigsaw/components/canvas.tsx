@@ -52,59 +52,42 @@ function Canvas({ jigsaw }: CanvasProps) {
   //   );
   // }, [mouseCoordinate, shapes]);
 
-  const handleMouseDown: React.MouseEventHandler<HTMLCanvasElement> = () => {
-    const activePiece = jigsaw.pieces.find((piece) =>
-      piece.isIntersecting(mouseCoordinate)
-    );
+  // ----- MOUSE HANDLERS -----
+  const handleMouseDown: React.MouseEventHandler<HTMLCanvasElement> =
+    useCallback(() => {
+      const activePiece = jigsaw.pieces.find((piece) =>
+        piece.isIntersecting(mouseCoordinate)
+      );
 
-    // Register the initial mouse position and set active the group being focused.
-    if (activePiece) {
-      startDragCoordinateRef.current = mouseCoordinate;
-      activeGroupRef.current = jigsaw.groups.get(activePiece.groupId) || null;
-    }
-  };
+      // Register the initial mouse position and set active the group being focused.
+      if (activePiece) {
+        startDragCoordinateRef.current = { ...mouseCoordinate };
+        console.log(activePiece);
+        activeGroupRef.current = jigsaw.groups.get(activePiece.groupId) || null;
+      }
+    }, [jigsaw.groups, mouseCoordinate, jigsaw.pieces]);
 
-  const handleMouseMove: React.MouseEventHandler<HTMLCanvasElement> = () => {
-    if (!startDragCoordinateRef.current) return;
-    if (!activeGroupRef.current) return;
+  const handleMouseMove: React.MouseEventHandler<HTMLCanvasElement> =
+    useCallback(() => {
+      if (!startDragCoordinateRef.current) return;
+      if (!activeGroupRef.current) return;
 
-    // Get the difference in coordinates from mouse initial click to dragged position.
-    const delta: Coordinate = {
-      x: mouseCoordinate.x - startDragCoordinateRef.current.x,
-      y: mouseCoordinate.y - startDragCoordinateRef.current.y,
-    };
+      console.log("mouse coordinate", { ...startDragCoordinateRef.current });
+      // Get the difference in coordinates from mouse initial click to dragged position.
+      const delta: Coordinate = {
+        x: mouseCoordinate.x - startDragCoordinateRef.current.x,
+        y: mouseCoordinate.y - startDragCoordinateRef.current.y,
+      };
 
-    jigsaw.moveGroup(activeGroupRef.current.id, delta);
-  };
+      jigsaw.moveGroup(activeGroupRef.current.id, delta);
+      startDragCoordinateRef.current = { ...mouseCoordinate };
+    }, [jigsaw, mouseCoordinate]);
 
-  const handleMouseUp: React.MouseEventHandler<HTMLCanvasElement> = () => {
-    // BEFORE DEACTIVATING SHAPE, CHECK IF CAN BE STITCHED
-    const activeShape = shapes.find((shape) => shape.active);
-
-    if (activeShape) {
-      // Get all shapes that the active shape could be stitched to.
-      // Could be more thant one since for now, shapes can be overlapping.
-      const shapesAvilableForStitching = shapes
-        .map((shape) => ({
-          // Don't stich to itself
-          shape,
-          side: activeShape.canStitch(shape),
-        }))
-        .filter((item) => Boolean(item.side)) as {
-        shape: PuzzlePiece;
-        side: ShapeSide;
-      }[]; // TS can't infer the boolean filter. Side will never be null
-
-      const shapeToStitch = shapesAvilableForStitching.find((item) =>
-        activeShape.shouldStitch(item.side, item.shape)
-      )?.shape;
-
-      if (shapeToStitch) activeShape.stitchTo(shapeToStitch);
-
-      console.log(activeShape);
-      activeShape?.setActive(false);
-    }
-  };
+  const handleMouseUp: React.MouseEventHandler<HTMLCanvasElement> =
+    useCallback(() => {
+      startDragCoordinateRef.current = null;
+      activeGroupRef.current = null;
+    }, []);
 
   return (
     <canvas

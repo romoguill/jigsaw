@@ -31,6 +31,10 @@ export class Jiggsaw {
       )
     );
 
+    this.pieces.forEach((piece) =>
+      this.groups.set(piece.id, { id: piece.id, origin: piece.position })
+    );
+
     // Calculate puzzle size
     this.size = {
       rows: data.piecesData.length,
@@ -67,16 +71,18 @@ export class Jiggsaw {
     return groupA;
   }
 
-  moveGroup(groupId: string, position: Coordinate): void {
+  moveGroup(groupId: string, delta: Coordinate): void {
     const group = this.groups.get(groupId);
 
     if (!group) return;
 
     // Move the group origin coordinate
     group.origin = {
-      x: group.origin.x + position.x,
-      y: group.origin.y + position.y,
+      x: group.origin.x + delta.x,
+      y: group.origin.y + delta.y,
     };
+
+    console.log(group.origin);
 
     // Move the pieces en that group
     this.pieces

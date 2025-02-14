@@ -22,7 +22,7 @@ export class PuzzlePiece {
       bottom: null,
       left: null,
     },
-    public groupId: string = this.id
+    public groupId: string = id
   ) {
     this.loadImage();
   }
