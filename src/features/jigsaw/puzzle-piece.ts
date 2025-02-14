@@ -1,4 +1,4 @@
-import { Coordinate, ShapeCorners, ShapeSide, shapeSides } from "../../types";
+import { Coordinate, ShapeCorners, ShapeSide } from "../../types";
 
 export class PuzzlePiece {
   width = 100;
@@ -100,14 +100,14 @@ export class PuzzlePiece {
 
   onMouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
     this.setActive(true);
-    this.offset.x = e.clientX - this.x;
-    this.offset.y = e.clientY - this.y;
+    // this.offset.x = e.clientX - this.x;
+    // this.offset.y = e.clientY - this.y;
   }
 
   onMouseUp() {
     this.setActive(false);
-    this.offset.x = 0;
-    this.offset.y = 0;
+    // this.offset.x = 0;
+    // this.offset.y = 0;
   }
 
   isIntersecting(coordinate: Coordinate): boolean {
@@ -176,70 +176,70 @@ export class PuzzlePiece {
     }
   }
 
-  // When shapes are draged near their corresponding neighbour they should stick together.
-  // This will only return to what size could be stiched based on proximity
-  canStitch(shape: PuzzlePiece, threshold = 8): ShapeSide | null {
-    return (
-      shapeSides.find(
-        (side) => this.distanceToShape(side, shape) <= threshold
-      ) ?? null
-    );
-  }
+  // // When shapes are draged near their corresponding neighbour they should stick together.
+  // // This will only return to what size could be stiched based on proximity
+  // canStitch(shape: PuzzlePiece, threshold = 8): ShapeSide | null {
+  //   return (
+  //     shapeSides.find(
+  //       (side) => this.distanceToShape(side, shape) <= threshold
+  //     ) ?? null
+  //   );
+  // }
 
-  // Verify if the shapes are placed according to the valid image.
-  shouldStitch(side: ShapeSide, shape: PuzzlePiece): boolean {
-    switch (side) {
-      case "top":
-        return this.neighbourTop ? this.neighbourTop === shape : false;
-      case "right":
-        return this.neighbourRight ? this.neighbourRight === shape : false;
-      case "bottom":
-        return this.neighbourBottom ? this.neighbourBottom === shape : false;
-      case "left":
-        return this.neighbourLeft ? this.neighbourLeft === shape : false;
-    }
-  }
+  // // Verify if the shapes are placed according to the valid image.
+  // shouldStitch(side: ShapeSide, shape: PuzzlePiece): boolean {
+  //   switch (side) {
+  //     case "top":
+  //       return this.neighbourTop ? this.neighbourTop === shape : false;
+  //     case "right":
+  //       return this.neighbourRight ? this.neighbourRight === shape : false;
+  //     case "bottom":
+  //       return this.neighbourBottom ? this.neighbourBottom === shape : false;
+  //     case "left":
+  //       return this.neighbourLeft ? this.neighbourLeft === shape : false;
+  //   }
+  // }
 
-  // Stich them both ways
-  stitchTo(shape: PuzzlePiece): void {
-    // Once they are stitched, no need to snap anything
-    if (this.stitchedTo.has(shape)) return;
+  // // Stich them both ways
+  // stitchTo(shape: PuzzlePiece): void {
+  //   // Once they are stitched, no need to snap anything
+  //   if (this.stitchedTo.has(shape)) return;
 
-    // TODO: Look for a better algorithm. Each shape in the same group will have a copy of every shap in group
-    this.stitchedTo.add(shape);
-    shape.stitchedTo.forEach((shape) => this.stitchedTo.add(shape));
-    shape.stitchedTo.add(this);
-    this.stitchedTo.forEach((shape) => shape.stitchedTo.add(this));
+  //   // TODO: Look for a better algorithm. Each shape in the same group will have a copy of every shap in group
+  //   this.stitchedTo.add(shape);
+  //   shape.stitchedTo.forEach((shape) => this.stitchedTo.add(shape));
+  //   shape.stitchedTo.add(this);
+  //   this.stitchedTo.forEach((shape) => shape.stitchedTo.add(this));
 
-    // Snap active shape
-    if (this.neighbourTop === shape) {
-      this.x = shape.x;
-      this.y = shape.y + this.height;
-      // this.move({
-      //   x: shape.x,
-      //   y: shape.y + this.height,
-      // });
-    } else if (this.neighbourRight === shape) {
-      this.x = shape.x - this.width;
-      this.y = shape.y;
-      // this.move({
-      //   x: shape.x - this.width,
-      //   y: shape.y,
-      // });
-    } else if (this.neighbourBottom === shape) {
-      this.x = shape.x;
-      this.y = shape.y - this.height;
-      // this.move({
-      //   x: shape.x,
-      //   y: shape.y - this.height,
-      // });
-    } else {
-      this.x = shape.x + this.width;
-      this.y = shape.y;
-      // this.move({
-      //   x: shape.x + this.width,
-      //   y: shape.y,
-      // });
-    }
-  }
+  //   // Snap active shape
+  //   if (this.neighbourTop === shape) {
+  //     this.x = shape.x;
+  //     this.y = shape.y + this.height;
+  //     // this.move({
+  //     //   x: shape.x,
+  //     //   y: shape.y + this.height,
+  //     // });
+  //   } else if (this.neighbourRight === shape) {
+  //     this.x = shape.x - this.width;
+  //     this.y = shape.y;
+  //     // this.move({
+  //     //   x: shape.x - this.width,
+  //     //   y: shape.y,
+  //     // });
+  //   } else if (this.neighbourBottom === shape) {
+  //     this.x = shape.x;
+  //     this.y = shape.y - this.height;
+  //     // this.move({
+  //     //   x: shape.x,
+  //     //   y: shape.y - this.height,
+  //     // });
+  //   } else {
+  //     this.x = shape.x + this.width;
+  //     this.y = shape.y;
+  //     // this.move({
+  //     //   x: shape.x + this.width,
+  //     //   y: shape.y,
+  //     // });
+  //   }
+  // }
 }

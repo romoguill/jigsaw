@@ -1,7 +1,8 @@
 import { Coordinate, GameData, shapeSides } from "../../types";
 import { PuzzlePiece } from "./puzzle-piece";
 
-interface PieceGroup {
+export interface PieceGroup {
+  id: string;
   origin: Coordinate;
 }
 

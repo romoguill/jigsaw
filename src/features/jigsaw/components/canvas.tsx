@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useCallback, useRef } from "react";
 import useMouseCoordinate from "../../../hooks/use-mouse-coordinate";
 import { useRenderLoop } from "../../../hooks/use-render-loop";
 import useWindowSize from "../../../hooks/use-window-size";
-import { ShapeSide } from "../../../types";
+import { Coordinate, ShapeSide } from "../../../types";
+import { Jiggsaw, PieceGroup } from "../jigsaw";
 import { PuzzlePiece } from "../puzzle-piece";
 
 const drawShapes = (shapes: PuzzlePiece[], ctx: CanvasRenderingContext2D) => {
@@ -10,38 +11,70 @@ const drawShapes = (shapes: PuzzlePiece[], ctx: CanvasRenderingContext2D) => {
 };
 
 interface CanvasProps {
-  shapes: PuzzlePiece[];
+  jigsaw: Jiggsaw;
 }
 
-function Canvas({ shapes }: CanvasProps) {
+function Canvas({ jigsaw }: CanvasProps) {
+  const activeGroupRef = useRef<PieceGroup | null>(null);
+  const startDragCoordinateRef = useRef<Coordinate | null>(null);
+
   const { canvasRef } = useRenderLoop({
     draw: (ctx) => {
-      drawShapes(shapes, ctx);
+      drawShapes(jigsaw.pieces, ctx);
     },
   });
   const windowSize = useWindowSize();
   const mouseCoordinate = useMouseCoordinate();
 
-  // Check which shape is intersection with mouse. TODO: solve case where there are multiple
-  const hoveredShape = useMemo(() => {
-    return (
-      shapes.find((shape) => shape.isIntersecting(mouseCoordinate)) ?? null
-    );
-  }, [mouseCoordinate, shapes]);
+  // Update spatial grid (grid for performance. Typical in game development)
+  const updateSpatialGrid = useCallback(
+    (pieces: PuzzlePiece[]) => {
+      const grid = new Map<string, PuzzlePiece[]>();
 
-  const handleMouseDown: React.MouseEventHandler<HTMLCanvasElement> = (e) => {
-    hoveredShape?.onMouseDown(e);
+      pieces.forEach((piece) => {
+        const cellX = Math.floor(piece.position.x / jigsaw.data.pieceSize);
+        const cellY = Math.floor(piece.position.y / jigsaw.data.pieceSize);
+        const key = `${cellX},${cellY}`;
+
+        if (!grid.has(key)) grid.set(key, []);
+        grid.get(key)?.push(piece);
+      });
+
+      return grid;
+    },
+    [jigsaw.data.pieceSize]
+  );
+
+  // // Check which shape is intersecting with mouse. TODO: solve case where there are multiple
+  // const hoveredShape = useMemo(() => {
+  //   return (
+  //     shapes.find((shape) => shape.isIntersecting(mouseCoordinate)) ?? null
+  //   );
+  // }, [mouseCoordinate, shapes]);
+
+  const handleMouseDown: React.MouseEventHandler<HTMLCanvasElement> = () => {
+    const activePiece = jigsaw.pieces.find((piece) =>
+      piece.isIntersecting(mouseCoordinate)
+    );
+
+    // Register the initial mouse position and set active the group being focused.
+    if (activePiece) {
+      startDragCoordinateRef.current = mouseCoordinate;
+      activeGroupRef.current = jigsaw.groups.get(activePiece.groupId) || null;
+    }
   };
 
   const handleMouseMove: React.MouseEventHandler<HTMLCanvasElement> = () => {
-    const activeShape = shapes.find((shape) => shape.active);
+    if (!startDragCoordinateRef.current) return;
+    if (!activeGroupRef.current) return;
 
-    if (activeShape) {
-      activeShape.move({
-        x: mouseCoordinate.x - activeShape.offset.x,
-        y: mouseCoordinate.y - activeShape.offset.y,
-      });
-    }
+    // Get the difference in coordinates from mouse initial click to dragged position.
+    const delta: Coordinate = {
+      x: mouseCoordinate.x - startDragCoordinateRef.current.x,
+      y: mouseCoordinate.y - startDragCoordinateRef.current.y,
+    };
+
+    jigsaw.moveGroup(activeGroupRef.current.id, delta);
   };
 
   const handleMouseUp: React.MouseEventHandler<HTMLCanvasElement> = () => {

@@ -1,10 +1,10 @@
 import { Loader2 } from "lucide-react";
 import { useRef } from "react";
-import { Jiggsaw } from "../game";
+import { Jiggsaw } from "../jigsaw";
 import { usePuzzleData } from "../queries/get-shape-data";
 import Canvas from "./canvas";
 
-function Jigsaw() {
+function Puzzle() {
   // // Generate some shapes for testing
   // const shapes = useMemo(() => {
   //   return generateTestingShapes();
@@ -24,6 +24,6 @@ function Jigsaw() {
   gameRef.current = new Jiggsaw(data);
   const jigsaw = gameRef.current;
 
-  return <Canvas shapes={jigsaw.pieces} />;
+  return <Canvas jigsaw={jigsaw} />;
 }
-export default Jigsaw;
+export default Puzzle;
