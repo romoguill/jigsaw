@@ -98,18 +98,19 @@ export class PuzzlePiece {
     this.active = state;
   }
 
-  onMouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
-    this.setActive(true);
-    // this.offset.x = e.clientX - this.x;
-    // this.offset.y = e.clientY - this.y;
-  }
+  // onMouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
+  //   this.setActive(true);
+  //   // this.offset.x = e.clientX - this.x;
+  //   // this.offset.y = e.clientY - this.y;
+  // }
 
-  onMouseUp() {
-    this.setActive(false);
-    // this.offset.x = 0;
-    // this.offset.y = 0;
-  }
+  // onMouseUp() {
+  //   this.setActive(false);
+  //   // this.offset.x = 0;
+  //   // this.offset.y = 0;
+  // }
 
+  // Is the coordinate inside the piece?
   isIntersecting(coordinate: Coordinate): boolean {
     return (
       coordinate.x >= this.x &&
@@ -119,127 +120,35 @@ export class PuzzlePiece {
     );
   }
 
-  // Distance from the side of the shape to onother shape's opposite side
-  // I guess for now, calculating using pythagoras is enought
-  distanceToShape(side: ShapeSide, shape: PuzzlePiece): number {
+  // Get the relative coordinate delte between one side of the piece and the opposite side of another.
+  relativeCoordinatesTo(side: ShapeSide, shape: PuzzlePiece): Coordinate {
     switch (side) {
       case "top":
-        return Math.sqrt(
-          Math.pow(
-            this.getCoordinates().topLeft.y -
-              shape.getCoordinates().bottomLeft.y,
-            2
-          ) +
-            Math.pow(
-              this.getCoordinates().topLeft.x -
-                shape.getCoordinates().bottomLeft.x,
-              2
-            )
-        );
+        return {
+          x: shape.position.x - this.position.x,
+          y: shape.position.y + shape.height - this.position.y,
+        };
       case "bottom":
-        return Math.sqrt(
-          Math.pow(
-            this.getCoordinates().bottomLeft.y -
-              shape.getCoordinates().topLeft.y,
-            2
-          ) +
-            Math.pow(
-              this.getCoordinates().bottomLeft.x -
-                shape.getCoordinates().topLeft.x,
-              2
-            )
-        );
+        return {
+          x: shape.position.x - this.position.x,
+          y: shape.position.y - this.position.y,
+        };
       case "right":
-        return Math.sqrt(
-          Math.pow(
-            this.getCoordinates().topRight.y - shape.getCoordinates().topLeft.y,
-            2
-          ) +
-            Math.pow(
-              this.getCoordinates().topRight.x -
-                shape.getCoordinates().topLeft.x,
-              2
-            )
-        );
+        return {
+          x: shape.position.x + shape.width - this.position.x,
+          y: shape.position.y - this.position.y,
+        };
       case "left":
-        return Math.sqrt(
-          Math.pow(
-            this.getCoordinates().topLeft.y - shape.getCoordinates().topRight.y,
-            2
-          ) +
-            Math.pow(
-              this.getCoordinates().topLeft.x -
-                shape.getCoordinates().topRight.x,
-              2
-            )
-        );
+        return {
+          x: shape.position.x - this.position.x,
+          y: shape.position.y - this.position.y,
+        };
     }
   }
 
-  // // When shapes are draged near their corresponding neighbour they should stick together.
-  // // This will only return to what size could be stiched based on proximity
-  // canStitch(shape: PuzzlePiece, threshold = 8): ShapeSide | null {
-  //   return (
-  //     shapeSides.find(
-  //       (side) => this.distanceToShape(side, shape) <= threshold
-  //     ) ?? null
-  //   );
-  // }
-
-  // // Verify if the shapes are placed according to the valid image.
-  // shouldStitch(side: ShapeSide, shape: PuzzlePiece): boolean {
-  //   switch (side) {
-  //     case "top":
-  //       return this.neighbourTop ? this.neighbourTop === shape : false;
-  //     case "right":
-  //       return this.neighbourRight ? this.neighbourRight === shape : false;
-  //     case "bottom":
-  //       return this.neighbourBottom ? this.neighbourBottom === shape : false;
-  //     case "left":
-  //       return this.neighbourLeft ? this.neighbourLeft === shape : false;
-  //   }
-  // }
-
-  // // Stich them both ways
-  // stitchTo(shape: PuzzlePiece): void {
-  //   // Once they are stitched, no need to snap anything
-  //   if (this.stitchedTo.has(shape)) return;
-
-  //   // TODO: Look for a better algorithm. Each shape in the same group will have a copy of every shap in group
-  //   this.stitchedTo.add(shape);
-  //   shape.stitchedTo.forEach((shape) => this.stitchedTo.add(shape));
-  //   shape.stitchedTo.add(this);
-  //   this.stitchedTo.forEach((shape) => shape.stitchedTo.add(this));
-
-  //   // Snap active shape
-  //   if (this.neighbourTop === shape) {
-  //     this.x = shape.x;
-  //     this.y = shape.y + this.height;
-  //     // this.move({
-  //     //   x: shape.x,
-  //     //   y: shape.y + this.height,
-  //     // });
-  //   } else if (this.neighbourRight === shape) {
-  //     this.x = shape.x - this.width;
-  //     this.y = shape.y;
-  //     // this.move({
-  //     //   x: shape.x - this.width,
-  //     //   y: shape.y,
-  //     // });
-  //   } else if (this.neighbourBottom === shape) {
-  //     this.x = shape.x;
-  //     this.y = shape.y - this.height;
-  //     // this.move({
-  //     //   x: shape.x,
-  //     //   y: shape.y - this.height,
-  //     // });
-  //   } else {
-  //     this.x = shape.x + this.width;
-  //     this.y = shape.y;
-  //     // this.move({
-  //     //   x: shape.x + this.width,
-  //     //   y: shape.y,
-  //     // });
-  //   }
-  // }
+  // Pythagoras absolute distance
+  absoluteDistance(side: ShapeSide, shape: PuzzlePiece): number {
+    const { x, y } = this.relativeCoordinatesTo(side, shape);
+    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+  }
 }

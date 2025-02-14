@@ -45,13 +45,6 @@ function Canvas({ jigsaw }: CanvasProps) {
     [jigsaw.data.pieceSize]
   );
 
-  // // Check which shape is intersecting with mouse. TODO: solve case where there are multiple
-  // const hoveredShape = useMemo(() => {
-  //   return (
-  //     shapes.find((shape) => shape.isIntersecting(mouseCoordinate)) ?? null
-  //   );
-  // }, [mouseCoordinate, shapes]);
-
   // ----- MOUSE HANDLERS -----
   const handleMouseDown: React.MouseEventHandler<HTMLCanvasElement> =
     useCallback(() => {
@@ -62,7 +55,6 @@ function Canvas({ jigsaw }: CanvasProps) {
       // Register the initial mouse position and set active the group being focused.
       if (activePiece) {
         startDragCoordinateRef.current = { ...mouseCoordinate };
-        console.log(activePiece);
         activeGroupRef.current = jigsaw.groups.get(activePiece.groupId) || null;
       }
     }, [jigsaw.groups, mouseCoordinate, jigsaw.pieces]);
@@ -72,22 +64,39 @@ function Canvas({ jigsaw }: CanvasProps) {
       if (!startDragCoordinateRef.current) return;
       if (!activeGroupRef.current) return;
 
-      console.log("mouse coordinate", { ...startDragCoordinateRef.current });
       // Get the difference in coordinates from mouse initial click to dragged position.
       const delta: Coordinate = {
         x: mouseCoordinate.x - startDragCoordinateRef.current.x,
         y: mouseCoordinate.y - startDragCoordinateRef.current.y,
       };
 
+      // Move the origin of the group, which then moves the offset of every piece
       jigsaw.moveGroup(activeGroupRef.current.id, delta);
+
+      // After each frame, reset the start drag position to the current mouse x, y
       startDragCoordinateRef.current = { ...mouseCoordinate };
     }, [jigsaw, mouseCoordinate]);
 
   const handleMouseUp: React.MouseEventHandler<HTMLCanvasElement> =
     useCallback(() => {
+      if (!activeGroupRef.current) return null;
+
+      const spatialGrid = updateSpatialGrid(jigsaw.pieces);
+      console.log({ spatialGrid });
+
+      const validSnaps = jigsaw.findValidSnaps(
+        activeGroupRef.current.id,
+        spatialGrid
+      );
+
+      if (validSnaps.length > 0) {
+        const { snappedGroupId } = validSnaps[0];
+        jigsaw.snap(activeGroupRef.current.id, snappedGroupId);
+      }
+
       startDragCoordinateRef.current = null;
       activeGroupRef.current = null;
-    }, []);
+    }, [jigsaw, updateSpatialGrid]);
 
   return (
     <canvas

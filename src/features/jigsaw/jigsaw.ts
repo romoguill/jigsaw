@@ -10,6 +10,7 @@ export class Jiggsaw {
   pieces: PuzzlePiece[] = [];
   groups: Map<string, PieceGroup> = new Map([]);
   size: { rows: number; cols: number } = { rows: 0, cols: 0 };
+  snapThreshold: number = 0;
 
   constructor(public readonly data: GameData) {
     // Create pieces
@@ -40,6 +41,9 @@ export class Jiggsaw {
       rows: data.piecesData.length,
       cols: data.piecesData[0]?.length,
     };
+
+    // Set snap threshold to % of piece size
+    this.snapThreshold = (data.pieceSize * 10) / 100;
   }
 
   // Utility for merging groups. A into B and delete B from the Map
@@ -82,8 +86,6 @@ export class Jiggsaw {
       y: group.origin.y + delta.y,
     };
 
-    console.log(group.origin);
-
     // Move the pieces en that group
     this.pieces
       .filter((piece) => piece.groupId === groupId)
@@ -107,16 +109,24 @@ export class Jiggsaw {
     return nearbyPieces;
   }
 
+  snap(draggedGroupId: string, targetGroupId: string) {
+    this.mergeGroups(draggedGroupId, targetGroupId);
+  }
+
   // Check if two pieces can snap together
   checkSnap(draggedPiece: PuzzlePiece, otherPiece: PuzzlePiece) {
     for (const side of shapeSides) {
       // const oppositeSide = PuzzlePiece.oppositeSide(side);
-
       if (draggedPiece.neighbours[side] === otherPiece.id) {
         // Calculate snap offset
-        const dx = otherPiece.position.x - draggedPiece.position.x;
-        const dy = otherPiece.position.y - draggedPiece.position.y;
-        return { x: dx, y: dy };
+        // const dx = otherPiece.position.x - draggedPiece.position.x;
+        // const dy = otherPiece.position.y - draggedPiece.position.y;
+        // return { x: dx, y: dy };
+        const distance = draggedPiece.distanceToShape(side, otherPiece);
+
+        return {
+          side,
+        };
       }
     }
 
@@ -128,7 +138,7 @@ export class Jiggsaw {
     draggedGroupId: string,
     spatialGrid: Map<string, PuzzlePiece[]>
   ) {
-    const validSnaps: { snappedGroupId: string; snapOffset: Coordinate }[] = [];
+    const validSnaps: { snappedGroupId: string }[] = [];
 
     this.pieces
       .filter((piece) => piece.groupId === draggedGroupId)
@@ -142,7 +152,6 @@ export class Jiggsaw {
           if (snap) {
             validSnaps.push({
               snappedGroupId: otherPiece.groupId,
-              snapOffset: snap,
             });
           }
         });
