@@ -11,13 +11,19 @@ function RouteComponent() {
       <img width={150} src="/main-logo.png" alt="logo" />
       <ul className="flex flex-col gap-4">
         <li>
-          <ButtonMainOption withPiece>Continue</ButtonMainOption>
+          <ButtonMainOption withPiece scheme="blue">
+            Continue
+          </ButtonMainOption>
         </li>
         <li>
-          <ButtonMainOption withPiece>New Game</ButtonMainOption>
+          <ButtonMainOption withPiece scheme="purple">
+            New Game
+          </ButtonMainOption>
         </li>
         <li>
-          <ButtonMainOption withPiece>Join with ID</ButtonMainOption>
+          <ButtonMainOption withPiece scheme="yellow">
+            Join with ID
+          </ButtonMainOption>
         </li>
       </ul>
     </main>
