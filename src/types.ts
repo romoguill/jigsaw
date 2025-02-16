@@ -1,7 +1,4 @@
-export type Coordinate = {
-  x: number;
-  y: number;
-};
+export type Coordinate = { x: number; y: number };
 
 export const shapeSides = ["top", "right", "bottom", "left"] as const;
 export type ShapeSide = (typeof shapeSides)[number];
@@ -13,7 +10,6 @@ export type ShapeCorners =
 
 type PiecesData = { id: string; image: string }[][];
 
-export type GameData = {
-  piecesData: PiecesData;
-  pieceSize: number;
-};
+export type GameData = { piecesData: PiecesData; pieceSize: number };
+
+export type Theme = "dark" | "light" | "system";
