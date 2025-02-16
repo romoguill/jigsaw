@@ -26,4 +26,5 @@ function Puzzle() {
 
   return <Canvas jigsaw={jigsaw} />;
 }
+
 export default Puzzle;
