@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import ButtonMainOption from "@/components/button-main-option";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
@@ -9,8 +9,17 @@ function RouteComponent() {
   return (
     <main className="flex flex-col items-center justify-center h-screen">
       <img width={150} src="/main-logo.png" alt="logo" />
-      <Button>New Game</Button>
-      <Button></Button>
+      <ul className="flex flex-col gap-4">
+        <li>
+          <ButtonMainOption withPiece>Continue</ButtonMainOption>
+        </li>
+        <li>
+          <ButtonMainOption withPiece>New Game</ButtonMainOption>
+        </li>
+        <li>
+          <ButtonMainOption withPiece>Join with ID</ButtonMainOption>
+        </li>
+      </ul>
     </main>
   );
 }
