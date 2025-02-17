@@ -6,27 +6,21 @@ export const Route = createFileRoute("/")({ component: RouteComponent });
 
 function RouteComponent() {
   return (
-    <div>
+    <div className="h-full">
       <header>
         <ThemeToggle />
       </header>
-      <main className="flex flex-col items-center justify-center h-screen">
-        <img width={150} src="/main-logo.png" alt="logo" />
+      <main className="flex flex-col items-center justify-center h-3/4">
+        <img width={250} src="/main-logo.png" alt="logo" />
         <ul className="flex flex-col gap-4">
           <li>
-            <ButtonMainOption withPiece scheme="blue">
-              Continue
-            </ButtonMainOption>
+            <ButtonMainOption withPiece>Continue</ButtonMainOption>
           </li>
           <li>
-            <ButtonMainOption withPiece scheme="purple">
-              New Game
-            </ButtonMainOption>
+            <ButtonMainOption withPiece>New Game</ButtonMainOption>
           </li>
           <li>
-            <ButtonMainOption withPiece scheme="yellow">
-              Join with ID
-            </ButtonMainOption>
+            <ButtonMainOption withPiece>Join with ID</ButtonMainOption>
           </li>
         </ul>
       </main>

@@ -1,5 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Itim&display=swap");
 @import "tailwindcss";
-
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
@@ -15,6 +15,7 @@ body,
 
 @theme {
   --color-bg-canvas: #ddd;
+  --font-playful: "Itim", sans-serif;
 }
 
 :root {
