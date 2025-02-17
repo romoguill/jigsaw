@@ -1,0 +1,6 @@
+services:
+  sqlite:
+    image: ghcr.io/tursodatabase/libsql-server:v0.24.32
+    container_name: puzzle
+    volumes:
+      - ./data:/var/lib/sqld
