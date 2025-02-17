@@ -1,10 +1,17 @@
 import ButtonMainOption from "@/components/button-main-option";
 import ThemeToggle from "@/components/theme-toggle";
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({ component: RouteComponent });
 
 function RouteComponent() {
+  useEffect(() => {
+    fetch("api")
+      .then((res) => res.text())
+      .then((data) => console.log(data));
+  }, []);
+
   return (
     <div className="h-full">
       <header>
