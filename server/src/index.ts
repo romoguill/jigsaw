@@ -3,14 +3,16 @@ import { Hono } from 'hono';
 
 const app = new Hono().basePath('/api');
 
-app.get('/', (c) => {
+const route = app.get('/', (c) => {
   return c.text('Hello Hono!');
 });
 
 const port = 5000;
 console.log(`Server is running on http://localhost:${port}`);
 
+export type AppType = typeof route;
+
 serve({
-  fetch: app.fetch,
+  fetch: route.fetch,
   port,
 });
