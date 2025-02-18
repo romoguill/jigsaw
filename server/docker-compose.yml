@@ -2,5 +2,7 @@ services:
   sqlite:
     image: ghcr.io/tursodatabase/libsql-server:v0.24.32
     container_name: puzzle
+    environment:
+      - SQLD_DB_PATH=local.db
     volumes:
       - ./data:/var/lib/sqld
