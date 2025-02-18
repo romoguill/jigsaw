@@ -10,7 +10,7 @@ const route = app.get('/', (c) => {
 const port = 5000;
 console.log(`Server is running on http://localhost:${port}`);
 
-export type AppType = typeof route;
+export type ApiType = typeof route;
 
 serve({
   fetch: route.fetch,

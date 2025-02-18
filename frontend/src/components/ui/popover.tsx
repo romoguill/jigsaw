@@ -1,4 +1,3 @@
-import * as React from "react"
 import {
   Dialog as AriaDialog,
   DialogProps as AriaDialogProps,
@@ -6,11 +5,11 @@ import {
   Popover as AriaPopover,
   PopoverProps as AriaPopoverProps,
   composeRenderProps,
-} from "react-aria-components"
+} from "react-aria-components";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-const PopoverTrigger = AriaDialogTrigger
+const PopoverTrigger = AriaDialogTrigger;
 
 const Popover = ({ className, offset = 4, ...props }: AriaPopoverProps) => (
   <AriaPopover
@@ -29,12 +28,12 @@ const Popover = ({ className, offset = 4, ...props }: AriaPopoverProps) => (
     )}
     {...props}
   />
-)
+);
 
 function PopoverDialog({ className, ...props }: AriaDialogProps) {
   return (
     <AriaDialog className={cn("p-4 outline outline-0", className)} {...props} />
-  )
+  );
 }
 
-export { Popover, PopoverTrigger, PopoverDialog }
+export { Popover, PopoverTrigger, PopoverDialog };

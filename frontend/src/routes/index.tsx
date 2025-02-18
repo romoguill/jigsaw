@@ -1,5 +1,6 @@
 import ButtonMainOption from "@/components/button-main-option";
 import ThemeToggle from "@/components/theme-toggle";
+import { apiClient } from "@/lib/api-client";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 
@@ -7,7 +8,8 @@ export const Route = createFileRoute("/")({ component: RouteComponent });
 
 function RouteComponent() {
   useEffect(() => {
-    fetch("api")
+    apiClient.api
+      .$get()
       .then((res) => res.text())
       .then((data) => console.log(data));
   }, []);
