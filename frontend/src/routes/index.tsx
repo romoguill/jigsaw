@@ -1,3 +1,4 @@
+import GoogleOAuthButton from "@/components/auth/google-oauth-button";
 import ButtonMainOption from "@/components/button-main-option";
 import ThemeToggle from "@/components/theme-toggle";
 import { apiClient } from "@/lib/api-client";
@@ -17,6 +18,7 @@ function RouteComponent() {
   return (
     <div className="h-full">
       <header>
+        <GoogleOAuthButton />
         <ThemeToggle />
       </header>
       <main className="flex flex-col items-center justify-center h-3/4">

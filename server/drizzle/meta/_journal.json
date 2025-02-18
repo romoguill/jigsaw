@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1739909968602,
+      "tag": "0000_fair_gateway",
+      "breakpoints": true
+    }
+  ]
+}
