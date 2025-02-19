@@ -1,16 +1,11 @@
-import { authClient } from "@/lib/auth-client";
+import { useLogin } from "@/features/users/hooks/mutations";
 import { Button } from "../ui/button";
 
 function GoogleOAuthButton() {
-  const handleClick = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/",
-    });
-  };
+  const { mutate: login } = useLogin();
 
   return (
-    <Button onPress={handleClick} className="gap-1 m-4" variant="secondary">
+    <Button onPress={() => login()} className="gap-1 m-4" variant="secondary">
       <span>
         <img src="/providers-google.png" width={15} height={15} />
       </span>
@@ -18,4 +13,5 @@ function GoogleOAuthButton() {
     </Button>
   );
 }
+
 export default GoogleOAuthButton;

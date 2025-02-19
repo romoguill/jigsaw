@@ -1,6 +1,7 @@
 import GoogleOAuthButton from "@/components/auth/google-oauth-button";
 import ButtonMainOption from "@/components/button-main-option";
 import ThemeToggle from "@/components/theme-toggle";
+import { useAuth } from "@/features/users/hooks/auth-provider";
 import { apiClient } from "@/lib/api-client";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
@@ -8,6 +9,9 @@ import { useEffect } from "react";
 export const Route = createFileRoute("/")({ component: RouteComponent });
 
 function RouteComponent() {
+  const user = useAuth();
+
+  console.log(user);
   useEffect(() => {
     apiClient.api
       .$get()
