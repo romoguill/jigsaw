@@ -17,3 +17,17 @@ export function useLogin() {
     },
   });
 }
+
+export function useLogout() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      await authClient.signOut();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: currentUserKey });
+      queryClient.setQueryData(currentUserKey, null);
+    },
+  });
+}

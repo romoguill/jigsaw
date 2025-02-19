@@ -1,4 +1,4 @@
-import { useLogin } from "@/features/users/hooks/mutations";
+import { useLogin } from "@/features/auth/hooks/mutations";
 import { Button } from "../ui/button";
 
 function GoogleOAuthButton() {

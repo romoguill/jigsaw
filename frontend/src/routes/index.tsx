@@ -1,28 +1,19 @@
+import AccountMenu from "@/components/account-menu";
 import GoogleOAuthButton from "@/components/auth/google-oauth-button";
 import ButtonMainOption from "@/components/button-main-option";
 import ThemeToggle from "@/components/theme-toggle";
-import { useAuth } from "@/features/users/hooks/auth-provider";
-import { apiClient } from "@/lib/api-client";
+import { useAuth } from "@/features/auth/hooks/auth-provider";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({ component: RouteComponent });
 
 function RouteComponent() {
   const user = useAuth();
 
-  console.log(user);
-  useEffect(() => {
-    apiClient.api
-      .$get()
-      .then((res) => res.text())
-      .then((data) => console.log(data));
-  }, []);
-
   return (
     <div className="h-full">
       <header className="flex justify-between items-center">
-        <GoogleOAuthButton />
+        {!user ? <GoogleOAuthButton /> : <AccountMenu />}
         <ThemeToggle />
       </header>
       <main className="flex flex-col items-center justify-center h-3/4">
