@@ -17,7 +17,7 @@ function RouteComponent() {
 
   return (
     <div className="h-full">
-      <header>
+      <header className="flex justify-between items-center">
         <GoogleOAuthButton />
         <ThemeToggle />
       </header>

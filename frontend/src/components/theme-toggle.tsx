@@ -12,9 +12,9 @@ function ThemeToggle() {
       className="group m-4 block ml-auto"
     >
       {theme === "light" ? (
-        <MoonIcon className="stroke-gray-700 group-hover:stroke-gray-800" />
+        <MoonIcon className="stroke-gray-700 group-data-[hovered]:stroke-gray-800" />
       ) : (
-        <SunIcon className="stroke-amber-300 group-hover:stroke-amber-400" />
+        <SunIcon className="stroke-amber-300 group-data-[hovered]:stroke-amber-400" />
       )}
     </Button>
   );

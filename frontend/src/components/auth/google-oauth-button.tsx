@@ -10,11 +10,11 @@ function GoogleOAuthButton() {
   };
 
   return (
-    <Button onPress={handleClick}>
+    <Button onPress={handleClick} className="gap-1 m-4" variant="secondary">
       <span>
-        <img src="/providers-google.png" width={20} height={20} />
+        <img src="/providers-google.png" width={15} height={15} />
       </span>
-      Sign in with Google
+      Sign in
     </Button>
   );
 }
