@@ -126,7 +126,6 @@ export class Jiggsaw {
         );
         const distanceToOtherPiece = absoluteDistance(relativeCoordinates);
 
-        console.log({ distanceToOtherPiece }, this.snapThreshold);
         if (distanceToOtherPiece < this.snapThreshold) {
           return {
             side,

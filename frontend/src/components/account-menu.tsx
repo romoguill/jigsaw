@@ -1,15 +1,13 @@
-import { useAuth } from "@/features/auth/hooks/auth-provider";
 import { useLogout } from "@/features/auth/hooks/mutations";
+import { useCurrentUser } from "@/features/auth/hooks/queries";
 import { Button } from "./ui/button";
 import { Popover, PopoverDialog, PopoverTrigger } from "./ui/popover";
 
 function AccountMenu() {
-  const user = useAuth();
+  const user = useCurrentUser();
   const { mutate: logout } = useLogout();
 
   if (!user) return null;
-
-  console.log(user.name.split(" "));
 
   return (
     <PopoverTrigger>

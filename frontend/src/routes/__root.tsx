@@ -11,11 +11,9 @@ export const Route = createRootRoute({ component: RootComponent });
 function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProvider defaultTheme="dark">
-          <Outlet />
-        </ThemeProvider>
-      </AuthProvider>
+      <ThemeProvider defaultTheme="dark">
+        <Outlet />
+      </ThemeProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

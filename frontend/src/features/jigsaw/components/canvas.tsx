@@ -82,7 +82,6 @@ function Canvas({ jigsaw }: CanvasProps) {
       if (!activeGroupRef.current) return null;
 
       const spatialGrid = updateSpatialGrid(jigsaw.pieces);
-      console.log({ spatialGrid });
 
       const validSnaps = jigsaw.findValidSnaps(
         activeGroupRef.current.id,

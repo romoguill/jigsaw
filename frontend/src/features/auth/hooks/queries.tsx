@@ -4,16 +4,24 @@ import type { User } from "../../../../../shared/types";
 
 export const currentUserKey = ["current-user"];
 
-export const useCurrentUser = () =>
-  useQuery({
+export const useCurrentUser = () => {
+  const { data } = useQuery({
     queryKey: currentUserKey,
-    queryFn: async (): Promise<User> => {
+    queryFn: async (): Promise<User | null> => {
       const { data, error } = await authClient.getSession();
 
       if (error) {
-        throw new Error(error.message);
+        return null;
       }
 
-      return data.user as User;
+      // THERE IS AN ERROR IN THE LIBRARY TYPES. DATA CAN BE NULL, DONT DELETE THIS.
+      if (!data) {
+        return null;
+      }
+
+      return data.user as User | null;
     },
   });
+
+  return data;
+};
