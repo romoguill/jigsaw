@@ -1,29 +1,39 @@
 import './lib/load-env.js';
 
-console.log(process.env.DATABASE_URL);
-
 import { serve } from '@hono/node-server';
-import { Hono } from 'hono';
-import { auth } from './lib/auth.js';
 import { serveStatic } from '@hono/node-server/serve-static';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+import { authRoutes } from './routes/auth.js';
+import { healthCheckRoute } from './routes/health-check.js';
 
 const app = new Hono();
 
-app.get('*', serveStatic({ root: '../frontend/dist' }));
-
-const apiRoutes = app
-  .basePath('/api')
-  .get('/', (c) => {
-    return c.text('Hello Hono!');
+app.use(logger());
+app.use(
+  '/api/auth/**',
+  cors({
+    origin: 'http://localhost:5173', // replace with your origin
+    allowHeaders: ['Content-Type', 'Authorization'],
+    allowMethods: ['POST', 'GET', 'OPTIONS'],
+    exposeHeaders: ['Content-Length'],
+    maxAge: 600,
+    credentials: true,
   })
-  .on(['POST', 'GET'], '/api/auth/**', (c) => auth.handler(c.req.raw));
+);
+// app.use(cors());
+
+app.route('/api', healthCheckRoute);
+app.route('/api/auth', authRoutes);
+app.get('*', serveStatic({ root: '../frontend/dist' }));
 
 const port = 5000;
 console.log(`Server is running on http://localhost:${port}`);
 
-export type ApiType = typeof apiRoutes;
+export type ApiType = typeof app;
 
 serve({
-  fetch: apiRoutes.fetch,
+  fetch: app.fetch,
   port,
 });

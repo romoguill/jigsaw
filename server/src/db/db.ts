@@ -1,9 +1,5 @@
 import { drizzle } from 'drizzle-orm/libsql/node';
 import path from 'path';
-import { pathToFileURL } from 'url';
-
-console.log(pathToFileURL(path.resolve('./data/local.db')).toString());
-console.log(`file:${path.resolve('./data/local.db')}`);
 
 export const db = drizzle({
   connection: {
