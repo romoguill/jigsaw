@@ -2,7 +2,9 @@
   "name": "my-app",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node build/index.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",

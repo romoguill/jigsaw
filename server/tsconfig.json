@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
+    "outDir": "build",
     "target": "ESNext",
     "module": "NodeNext",
     "strict": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
-  }
+    "jsxImportSource": "hono/jsx"
+  },
+  "include": ["src"]
 }

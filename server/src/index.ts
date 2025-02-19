@@ -8,25 +8,23 @@ import { logger } from 'hono/logger';
 import { authRoutes } from './routes/auth.js';
 import { healthCheckRoute } from './routes/health-check.js';
 
-const app = new Hono();
-
-app.use(logger());
-app.use(
-  '/api/auth/**',
-  cors({
-    origin: 'http://localhost:5173', // replace with your origin
-    allowHeaders: ['Content-Type', 'Authorization'],
-    allowMethods: ['POST', 'GET', 'OPTIONS'],
-    exposeHeaders: ['Content-Length'],
-    maxAge: 600,
-    credentials: true,
-  })
-);
-// app.use(cors());
-
-app.route('/api', healthCheckRoute);
-app.route('/api/auth', authRoutes);
-app.get('*', serveStatic({ root: '../frontend/dist' }));
+const app = new Hono()
+  .use(logger())
+  .use(
+    '/api/auth/**',
+    cors({
+      origin: 'http://localhost:5173', // Vite origin
+      allowHeaders: ['Content-Type', 'Authorization'],
+      allowMethods: ['POST', 'GET', 'OPTIONS'],
+      exposeHeaders: ['Content-Length'],
+      maxAge: 600,
+      credentials: true,
+    })
+  )
+  .route('/api', healthCheckRoute)
+  .route('/api/auth', authRoutes)
+  // Static files from Vite build
+  .get('*', serveStatic({ root: '../frontend/dist' }));
 
 const port = 5000;
 console.log(`Server is running on http://localhost:${port}`);
