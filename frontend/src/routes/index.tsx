@@ -3,14 +3,12 @@ import GoogleOAuthButton from "@/components/auth/google-oauth-button";
 import ButtonMainOption from "@/components/button-main-option";
 import ThemeToggle from "@/components/theme-toggle";
 import { useCurrentUser } from "@/features/auth/hooks/queries";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({ component: RouteComponent });
 
 function RouteComponent() {
   const user = useCurrentUser();
-  console.log({ user });
 
   return (
     <div className="h-full">
