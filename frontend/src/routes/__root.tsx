@@ -2,6 +2,7 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { User } from "../../../shared/types";
+import { type QueryClient } from "@tanstack/react-query";
 
 export interface RouterAuthContext {
   auth: {
@@ -9,7 +10,9 @@ export interface RouterAuthContext {
   };
 }
 
-export const Route = createRootRouteWithContext<RouterAuthContext>()({
+export const Route = createRootRouteWithContext<
+  RouterAuthContext & { queryClient: QueryClient }
+>()({
   component: RootComponent,
 });
 

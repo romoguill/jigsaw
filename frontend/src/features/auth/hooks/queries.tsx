@@ -5,7 +5,7 @@ import type { User } from "../../../../../shared/types";
 export const currentUserKey = ["current-user"];
 
 export const useCurrentUser = () => {
-  const { data } = useQuery({
+  return useQuery({
     queryKey: currentUserKey,
     queryFn: async (): Promise<User | null> => {
       const { data, error } = await authClient.getSession();
@@ -22,6 +22,4 @@ export const useCurrentUser = () => {
       return data.user as User | null;
     },
   });
-
-  return data;
 };

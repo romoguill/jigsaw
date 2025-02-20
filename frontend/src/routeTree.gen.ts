@@ -13,7 +13,6 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as MainImport } from './routes/main'
 import { Route as GameImport } from './routes/game'
 import { Route as IndexImport } from './routes/index'
 import { Route as AdminAdminImport } from './routes/admin/_admin'
@@ -28,12 +27,6 @@ const AdminImport = createFileRoute('/admin')()
 const AdminRoute = AdminImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const MainRoute = MainImport.update({
-  id: '/main',
-  path: '/main',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -76,13 +69,6 @@ declare module '@tanstack/react-router' {
       path: '/game'
       fullPath: '/game'
       preLoaderRoute: typeof GameImport
-      parentRoute: typeof rootRoute
-    }
-    '/main': {
-      id: '/main'
-      path: '/main'
-      fullPath: '/main'
-      preLoaderRoute: typeof MainImport
       parentRoute: typeof rootRoute
     }
     '/admin': {
@@ -136,7 +122,6 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/game': typeof GameRoute
-  '/main': typeof MainRoute
   '/admin': typeof AdminAdminRouteWithChildren
   '/admin/': typeof AdminAdminIndexRoute
 }
@@ -144,7 +129,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/game': typeof GameRoute
-  '/main': typeof MainRoute
   '/admin': typeof AdminAdminIndexRoute
 }
 
@@ -152,7 +136,6 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/game': typeof GameRoute
-  '/main': typeof MainRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin/_admin': typeof AdminAdminRouteWithChildren
   '/admin/_admin/': typeof AdminAdminIndexRoute
@@ -160,31 +143,22 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/game' | '/main' | '/admin' | '/admin/'
+  fullPaths: '/' | '/game' | '/admin' | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/game' | '/main' | '/admin'
-  id:
-    | '__root__'
-    | '/'
-    | '/game'
-    | '/main'
-    | '/admin'
-    | '/admin/_admin'
-    | '/admin/_admin/'
+  to: '/' | '/game' | '/admin'
+  id: '__root__' | '/' | '/game' | '/admin' | '/admin/_admin' | '/admin/_admin/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GameRoute: typeof GameRoute
-  MainRoute: typeof MainRoute
   AdminRoute: typeof AdminRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GameRoute: GameRoute,
-  MainRoute: MainRoute,
   AdminRoute: AdminRouteWithChildren,
 }
 
@@ -200,7 +174,6 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/game",
-        "/main",
         "/admin"
       ]
     },
@@ -209,9 +182,6 @@ export const routeTree = rootRoute
     },
     "/game": {
       "filePath": "game.tsx"
-    },
-    "/main": {
-      "filePath": "main.tsx"
     },
     "/admin": {
       "filePath": "admin",

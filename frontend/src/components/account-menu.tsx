@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { Popover, PopoverDialog, PopoverTrigger } from "./ui/popover";
 
 function AccountMenu() {
-  const user = useCurrentUser();
+  const { data: user } = useCurrentUser();
   const { mutate: logout } = useLogout();
 
   if (!user) return null;
