@@ -8,7 +8,8 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/")({ component: RouteComponent });
 
 function RouteComponent() {
-  const user = useCurrentUser();
+  const { data: user } = useCurrentUser();
+  console.log({ user });
 
   return (
     <div className="h-full">

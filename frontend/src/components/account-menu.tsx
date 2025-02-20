@@ -1,7 +1,9 @@
 import { useLogout } from "@/features/auth/hooks/mutations";
 import { useCurrentUser } from "@/features/auth/hooks/queries";
+import { Link } from "@tanstack/react-router";
 import { Button } from "./ui/button";
-import { Popover, PopoverDialog, PopoverTrigger } from "./ui/popover";
+import { Menu, MenuItem, MenuPopover, MenuTrigger } from "./ui/menu";
+import { Route as adminRoute } from "./../routes/admin/_admin/index";
 
 function AccountMenu() {
   const { data: user } = useCurrentUser();
@@ -10,7 +12,7 @@ function AccountMenu() {
   if (!user) return null;
 
   return (
-    <PopoverTrigger>
+    <MenuTrigger>
       <Button
         variant="ghost"
         className="m-4 rounded-full size-10 p-0 overflow-hidden"
@@ -29,16 +31,15 @@ function AccountMenu() {
           </div>
         )}
       </Button>
-      <Popover offset={10}>
-        <PopoverDialog>
-          <div className="space-y-3">
-            <Button variant="destructive" onPress={() => logout()}>
-              Logout
-            </Button>
-          </div>
-        </PopoverDialog>
-      </Popover>
-    </PopoverTrigger>
+      <MenuPopover>
+        <Menu>
+          <MenuItem>
+            <Link to={adminRoute.to}>Admin</Link>
+          </MenuItem>
+          <MenuItem onAction={() => logout()}>Logout</MenuItem>
+        </Menu>
+      </MenuPopover>
+    </MenuTrigger>
   );
 }
 

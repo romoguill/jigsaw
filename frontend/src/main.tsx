@@ -16,12 +16,12 @@ const router = createRouter({
   },
 });
 
+// eslint-disable-next-line react-refresh/only-export-components
 function App() {
   const { data: user, isPending } = useCurrentUser();
 
   if (isPending) return;
 
-  console.log({ user });
   return <RouterProvider router={router} context={{ auth: { user } }} />;
 }
 
