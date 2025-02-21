@@ -9,7 +9,8 @@ export const uploadRouter = {
       maxFileSize: '2MB',
     },
   }).onUploadComplete((data) => {
-    console.log('upload complete', data);
+    console.log('IMAGE UPLOADEDDDD');
+    console.log(data.file);
   }),
 } satisfies FileRouter;
 

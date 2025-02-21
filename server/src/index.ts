@@ -22,6 +22,14 @@ const app = new Hono()
       credentials: true,
     })
   )
+  .use(
+    '/api/uploadthing/**',
+    cors({
+      origin: '*',
+      allowMethods: ['POST', 'GET'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    })
+  )
   .route('/api', healthCheckRoute)
   .route('/api/auth', authRoute)
   .route('/api/uploadthing', uploadRoute)
