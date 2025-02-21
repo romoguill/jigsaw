@@ -1,5 +1,7 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
+// ----- BETER AUTH SCHEMAS -----
+
 export const user = sqliteTable('user', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
@@ -53,4 +55,12 @@ export const verification = sqliteTable('verification', {
   expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }),
   updatedAt: integer('updated_at', { mode: 'timestamp' }),
+});
+
+// ----------
+
+export const uploadedImage = sqliteTable('uploaded_image', {
+  id: integer('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  imageUrl: text('image_url'),
 });
