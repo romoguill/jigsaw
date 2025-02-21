@@ -5,8 +5,9 @@ import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { authRoutes } from './routes/auth.js';
+import { authRoute } from './routes/auth.js';
 import { healthCheckRoute } from './routes/health-check.js';
+import { uploadRoute } from './routes/upload.js';
 
 const app = new Hono()
   .use(logger())
@@ -22,7 +23,8 @@ const app = new Hono()
     })
   )
   .route('/api', healthCheckRoute)
-  .route('/api/auth', authRoutes)
+  .route('/api/auth', authRoute)
+  .route('/api/uploadthing', uploadRoute)
   // Static files from Vite build
   .get('*', serveStatic({ root: '../frontend/dist' }));
 
