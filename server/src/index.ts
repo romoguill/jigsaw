@@ -8,6 +8,7 @@ import { logger } from 'hono/logger';
 import { authRoute } from './routes/auth.js';
 import { healthCheckRoute } from './routes/health-check.js';
 import { uploadRoute } from './routes/upload.js';
+import { gameRoute } from './routes/game.js';
 
 const app = new Hono()
   .use(logger())
@@ -32,6 +33,7 @@ const app = new Hono()
   )
   .route('/api', healthCheckRoute)
   .route('/api/auth', authRoute)
+  .route('/api/game', gameRoute)
   .route('/api/uploadthing', uploadRoute)
   // Static files from Vite build
   .get('*', serveStatic({ root: '../frontend/dist' }));
