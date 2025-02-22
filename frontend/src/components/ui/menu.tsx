@@ -1,6 +1,6 @@
-import * as React from "react"
-import { VariantProps } from "class-variance-authority"
-import { Check, ChevronRight, Circle } from "lucide-react"
+import * as React from "react";
+import { VariantProps } from "class-variance-authority";
+import { Check, ChevronRight, Circle } from "lucide-react";
 import {
   Header as AriaHeader,
   Keyboard as AriaKeyboard,
@@ -15,21 +15,21 @@ import {
   SubmenuTrigger as AriaSubmenuTrigger,
   composeRenderProps,
   PopoverProps,
-} from "react-aria-components"
+} from "react-aria-components";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { Button, buttonVariants } from "./button"
-import { ListBoxCollection, ListBoxSection } from "./list-box"
-import { SelectPopover } from "./select"
+import { Button, buttonVariants } from "./button";
+import { ListBoxCollection, ListBoxSection } from "./list-box";
+import { SelectPopover } from "./select";
 
-const MenuTrigger = AriaMenuTrigger
+const MenuTrigger = AriaMenuTrigger;
 
-const MenuSubTrigger = AriaSubmenuTrigger
+const MenuSubTrigger = AriaSubmenuTrigger;
 
-const MenuSection = ListBoxSection
+const MenuSection = ListBoxSection;
 
-const MenuCollection = ListBoxCollection
+const MenuCollection = ListBoxCollection;
 
 function MenuPopover({ className, ...props }: PopoverProps) {
   return (
@@ -39,7 +39,7 @@ function MenuPopover({ className, ...props }: PopoverProps) {
       )}
       {...props}
     />
-  )
+  );
 }
 
 const Menu = <T extends object>({ className, ...props }: AriaMenuProps<T>) => (
@@ -50,9 +50,18 @@ const Menu = <T extends object>({ className, ...props }: AriaMenuProps<T>) => (
     )}
     {...props}
   />
-)
+);
 
-const MenuItem = ({ children, className, ...props }: AriaMenuItemProps) => (
+type MenuItemAditionalProps = {
+  disableSelection?: boolean;
+};
+
+const MenuItem = ({
+  children,
+  className,
+  disableSelection = false,
+  ...props
+}: AriaMenuItemProps & MenuItemAditionalProps) => (
   <AriaMenuItem
     textValue={
       props.textValue || (typeof children === "string" ? children : undefined)
@@ -73,18 +82,20 @@ const MenuItem = ({ children, className, ...props }: AriaMenuItemProps) => (
   >
     {composeRenderProps(children, (children, renderProps) => (
       <>
-        <span className="absolute left-2 flex size-4 items-center justify-center">
-          {renderProps.isSelected && (
-            <>
-              {renderProps.selectionMode == "single" && (
-                <Circle className="size-2 fill-current" />
-              )}
-              {renderProps.selectionMode == "multiple" && (
-                <Check className="size-4" />
-              )}
-            </>
-          )}
-        </span>
+        {!disableSelection && (
+          <span className="absolute left-2 flex size-4 items-center justify-center">
+            {renderProps.isSelected && (
+              <>
+                {renderProps.selectionMode == "single" && (
+                  <Circle className="size-2 fill-current" />
+                )}
+                {renderProps.selectionMode == "multiple" && (
+                  <Check className="size-4" />
+                )}
+              </>
+            )}
+          </span>
+        )}
 
         {children}
 
@@ -92,11 +103,11 @@ const MenuItem = ({ children, className, ...props }: AriaMenuItemProps) => (
       </>
     ))}
   </AriaMenuItem>
-)
+);
 
 interface MenuHeaderProps extends React.ComponentProps<typeof AriaHeader> {
-  inset?: boolean
-  separator?: boolean
+  inset?: boolean;
+  separator?: boolean;
 }
 
 const MenuHeader = ({
@@ -114,14 +125,14 @@ const MenuHeader = ({
     )}
     {...props}
   />
-)
+);
 
 const MenuSeparator = ({ className, ...props }: AriaSeparatorProps) => (
   <AriaSeparator
     className={cn("-mx-1 my-1 h-px bg-muted", className)}
     {...props}
   />
-)
+);
 
 const MenuKeyboard = ({
   className,
@@ -132,13 +143,13 @@ const MenuKeyboard = ({
       className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
       {...props}
     />
-  )
-}
+  );
+};
 interface JollyMenuProps<T>
   extends AriaMenuProps<T>,
     VariantProps<typeof buttonVariants>,
     Omit<AriaMenuTriggerProps, "children"> {
-  label?: string
+  label?: string;
 }
 function JollyMenu<T extends object>({
   label,
@@ -156,7 +167,7 @@ function JollyMenu<T extends object>({
         <Menu {...props}>{children}</Menu>
       </MenuPopover>
     </MenuTrigger>
-  )
+  );
 }
 
 export {
@@ -171,5 +182,5 @@ export {
   MenuSubTrigger,
   MenuCollection,
   JollyMenu,
-}
-export type { MenuHeaderProps, JollyMenuProps }
+};
+export type { MenuHeaderProps, JollyMenuProps };
