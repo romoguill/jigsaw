@@ -33,8 +33,8 @@ function AccountMenu() {
       </Button>
       <MenuPopover>
         <Menu>
-          <MenuItem>
-            <Link to={adminRoute.to}>Admin</Link>
+          <MenuItem disableSelection>
+            {user.role === "admin" && <Link to={adminRoute.to}>Admin</Link>}
           </MenuItem>
           <MenuItem onAction={() => logout()}>Logout</MenuItem>
         </Menu>
