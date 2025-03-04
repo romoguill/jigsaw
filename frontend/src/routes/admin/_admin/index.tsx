@@ -1,4 +1,4 @@
-import { UploadButton } from "@/features/uploadImages/components/upload-button";
+import { BuilderCard } from "@/features/jigsaw-builder/components/builder-card";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/_admin/")({
@@ -7,16 +7,8 @@ export const Route = createFileRoute("/admin/_admin/")({
 
 function RouteComponent() {
   return (
-    <div>
-      <UploadButton
-        endpoint="imageUploader"
-        onClientUploadComplete={(file) => {
-          console.log("uploaded", file);
-        }}
-        onUploadError={(error) => {
-          console.log(error);
-        }}
-      />
-    </div>
+    <main className="grow flex items-center justify-center">
+      <BuilderCard />
+    </main>
   );
 }

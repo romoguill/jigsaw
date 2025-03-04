@@ -1,6 +1,6 @@
 import { createMiddleware } from 'hono/factory';
 import { auth } from '../lib/auth.js';
-import type { User } from '../../../shared/types.js';
+import type { User } from '../../shared/types.js';
 import { HTTPException } from 'hono/http-exception';
 
 export type ContextWithAuth = {
@@ -20,7 +20,7 @@ export const authMiddleware = createMiddleware<ContextWithAuth>(
       throw new HTTPException(401);
     }
 
-    c.set('user', authData.user as User);
+    c.set('user', authData.user as unknown as User);
     c.set('session', authData.session);
     return next();
   }

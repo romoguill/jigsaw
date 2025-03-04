@@ -13,8 +13,7 @@ export const Route = createFileRoute("/admin/_admin")({
 
 function RouteComponent() {
   return (
-    <div>
-      Hello "/admin/_admin"!
+    <div className="h-full flex flex-col">
       <Outlet />
     </div>
   );
