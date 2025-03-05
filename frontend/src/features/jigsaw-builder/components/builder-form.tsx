@@ -1,5 +1,7 @@
+import FormFieldError from "@/components/global/forms/form-field-error";
+import { FormSubmitError } from "@/components/global/forms/form-submit-error";
 import { Button } from "@/components/ui/button";
-import { FieldError, Label } from "@/components/ui/field";
+import { Label } from "@/components/ui/field";
 import {
   Select,
   SelectItem,
@@ -12,11 +14,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { difficulty, pieceCount } from "../../../../../server/shared/types";
-import { FormSubmitError } from "@/components/global/form-submit-error";
 
 const formSchema = z.object({
-  difficulty: z.enum(difficulty),
-  pieceCount: z.enum(pieceCount),
+  difficulty: z
+    .enum(difficulty, { message: "Invalid option" })
+    .or(z.literal(""))
+    .refine((val) => val.length > 0, "Must select an option"),
+  pieceCount: z
+    .enum(pieceCount, { message: "Invalid option" })
+    .or(z.literal(""))
+    .refine((val) => val.length > 0, "Must select an option"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -51,7 +58,6 @@ function BuilderForm() {
               <SelectValue className="capitalize" />
             </SelectTrigger>
 
-            <FieldError>{formState.errors.difficulty?.message}</FieldError>
             <SelectPopover>
               <SelectListBox>
                 {difficulty.map((item) => (
@@ -61,6 +67,8 @@ function BuilderForm() {
                 ))}
               </SelectListBox>
             </SelectPopover>
+
+            <FormFieldError errorState={formState.errors} name="difficulty" />
           </Select>
         )}
       />
@@ -78,8 +86,6 @@ function BuilderForm() {
               <SelectValue className="capitalize" />
             </SelectTrigger>
 
-            <FieldError>{formState.errors.pieceCount?.message}</FieldError>
-            <p>{formState.errors.pieceCount?.message}</p>
             <SelectPopover>
               <SelectListBox>
                 {pieceCount.map((item) => (
@@ -89,6 +95,8 @@ function BuilderForm() {
                 ))}
               </SelectListBox>
             </SelectPopover>
+
+            <FormFieldError errorState={formState.errors} name="pieceCount" />
           </Select>
         )}
       />
