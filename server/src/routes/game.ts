@@ -1,21 +1,18 @@
-import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth-middleware.js';
 import { zValidator } from '@hono/zod-validator';
+import { Hono } from 'hono';
 import { z } from 'zod';
-import { difficulty, pieceCount } from '../../shared/types.js';
+import { jigsawBuilderFormSchema } from '../../shared/types.js';
+import { authMiddleware } from '../middleware/auth-middleware.js';
 
-export const gameRoute = new Hono().use(authMiddleware).post(
-  '/builder',
-  zValidator(
-    'json',
-    z.object({
-      imageId: z.string(),
-      difficulty: z.enum(difficulty),
-      availablePieceCount: z.enum(pieceCount).array(),
-    })
-  ),
-  (c) => {
-    const user = c.get('user');
-    return c.json({ user });
-  }
-);
+export const gameRoute = new Hono()
+  .use(authMiddleware)
+  .post(
+    '/builder',
+    zValidator(
+      'json',
+      z.intersection(jigsawBuilderFormSchema, z.object({ imageId: z.string() }))
+    ),
+    (c) => {
+      return c.json({ success: true });
+    }
+  );

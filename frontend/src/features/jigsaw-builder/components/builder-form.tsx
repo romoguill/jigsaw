@@ -10,40 +10,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
-import { difficulty, pieceCount } from "../../../../../server/shared/types";
-import { Switch } from "@/components/ui/switch";
+import {
+  difficulty,
+  jigsawBuilderFormSchema,
+  JigsawBuilderFormValues,
+  pieceCount,
+} from "../../../../../server/shared/types";
+import { useBuilderCreate } from "../api/mutations";
 
-const formSchema = z.object({
-  difficulty: z
-    .enum(difficulty, { message: "Invalid option" })
-    .or(z.literal(""))
-    .refine((val) => val.length > 0, "Must select an option"),
-  pieceCount: z
-    .enum(pieceCount, { message: "Invalid option" })
-    .or(z.literal(""))
-    .refine((val) => val.length > 0, "Must select an option"),
-  borders: z.boolean(),
-});
+interface BuilderFormProps {
+  imageId: string;
+}
 
-type FormValues = z.infer<typeof formSchema>;
+function BuilderForm({ imageId }: BuilderFormProps) {
+  const { mutate: buildJigsaw } = useBuilderCreate();
 
-function BuilderForm() {
-  const { handleSubmit, control, formState, getValues } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      difficulty: "",
-      pieceCount: "",
-      borders: true,
-    },
-  });
-  console.log(getValues());
-  console.log(formState);
+  const { handleSubmit, control, formState } = useForm<JigsawBuilderFormValues>(
+    {
+      resolver: zodResolver(jigsawBuilderFormSchema),
+      defaultValues: {
+        difficulty: "",
+        pieceCount: "",
+        borders: true,
+      },
+    }
+  );
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<JigsawBuilderFormValues> = (data) => {
+    buildJigsaw({ data: { ...data, imageId } });
   };
 
   return (

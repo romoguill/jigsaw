@@ -36,7 +36,7 @@ export function BuilderCard() {
               height={400}
               className="mx-auto object-cover"
             />
-            <BuilderForm />
+            <BuilderForm imageId={imageUpload.id} />
           </div>
         ) : (
           <UploadButton
