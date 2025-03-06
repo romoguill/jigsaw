@@ -61,6 +61,8 @@ export const verification = sqliteTable('verification', {
 
 export const uploadedImage = sqliteTable('uploaded_image', {
   id: integer('id').primaryKey(),
-  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
   imageUrl: text('image_url'),
 });
