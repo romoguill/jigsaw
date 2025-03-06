@@ -17,6 +17,7 @@ import { Route as GameImport } from './routes/game'
 import { Route as IndexImport } from './routes/index'
 import { Route as AdminAdminImport } from './routes/admin/_admin'
 import { Route as AdminAdminIndexImport } from './routes/admin/_admin/index'
+import { Route as AdminAdminPathsImport } from './routes/admin/_admin/paths'
 
 // Create Virtual Routes
 
@@ -53,6 +54,12 @@ const AdminAdminIndexRoute = AdminAdminIndexImport.update({
   getParentRoute: () => AdminAdminRoute,
 } as any)
 
+const AdminAdminPathsRoute = AdminAdminPathsImport.update({
+  id: '/paths',
+  path: '/paths',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -85,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/_admin/paths': {
+      id: '/admin/_admin/paths'
+      path: '/paths'
+      fullPath: '/admin/paths'
+      preLoaderRoute: typeof AdminAdminPathsImport
+      parentRoute: typeof AdminAdminImport
+    }
     '/admin/_admin/': {
       id: '/admin/_admin/'
       path: '/'
@@ -98,10 +112,12 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AdminAdminRouteChildren {
+  AdminAdminPathsRoute: typeof AdminAdminPathsRoute
   AdminAdminIndexRoute: typeof AdminAdminIndexRoute
 }
 
 const AdminAdminRouteChildren: AdminAdminRouteChildren = {
+  AdminAdminPathsRoute: AdminAdminPathsRoute,
   AdminAdminIndexRoute: AdminAdminIndexRoute,
 }
 
@@ -123,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/game': typeof GameRoute
   '/admin': typeof AdminAdminRouteWithChildren
+  '/admin/paths': typeof AdminAdminPathsRoute
   '/admin/': typeof AdminAdminIndexRoute
 }
 
@@ -130,6 +147,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/game': typeof GameRoute
   '/admin': typeof AdminAdminIndexRoute
+  '/admin/paths': typeof AdminAdminPathsRoute
 }
 
 export interface FileRoutesById {
@@ -138,15 +156,23 @@ export interface FileRoutesById {
   '/game': typeof GameRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin/_admin': typeof AdminAdminRouteWithChildren
+  '/admin/_admin/paths': typeof AdminAdminPathsRoute
   '/admin/_admin/': typeof AdminAdminIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/game' | '/admin' | '/admin/'
+  fullPaths: '/' | '/game' | '/admin' | '/admin/paths' | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/game' | '/admin'
-  id: '__root__' | '/' | '/game' | '/admin' | '/admin/_admin' | '/admin/_admin/'
+  to: '/' | '/game' | '/admin' | '/admin/paths'
+  id:
+    | '__root__'
+    | '/'
+    | '/game'
+    | '/admin'
+    | '/admin/_admin'
+    | '/admin/_admin/paths'
+    | '/admin/_admin/'
   fileRoutesById: FileRoutesById
 }
 
@@ -193,8 +219,13 @@ export const routeTree = rootRoute
       "filePath": "admin/_admin.tsx",
       "parent": "/admin",
       "children": [
+        "/admin/_admin/paths",
         "/admin/_admin/"
       ]
+    },
+    "/admin/_admin/paths": {
+      "filePath": "admin/_admin/paths.tsx",
+      "parent": "/admin/_admin"
     },
     "/admin/_admin/": {
       "filePath": "admin/_admin/index.tsx",
