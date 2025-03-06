@@ -22,7 +22,9 @@ function RouteComponent() {
     <div>
       <p>path: {path}</p>
       <svg
-        viewBox="0 -6 10 10"
+        width={500}
+        height={500}
+        viewBox="-5 -5 10 10"
         className="stroke-red-500 stroke-[1%] fill-none"
       >
         <path d={path} />
