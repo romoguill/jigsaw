@@ -10,6 +10,7 @@ function RouteComponent() {
   const [path, setPath] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log("calling");
     apiClient.api.game.builder.path
       .$get()
       .then((res) => res.json())
@@ -20,7 +21,7 @@ function RouteComponent() {
 
   return (
     <div>
-      <p>path: {path}</p>
+      <p>{path}</p>
       <svg
         width={500}
         height={500}

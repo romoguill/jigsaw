@@ -18,7 +18,7 @@ export function createPath({
   // if (detail < 1) {
   //   throw new Error('Minimum detail must be 1');
   // }
-  const pinSize = pieceSize / 8;
+  const pinSize = pieceSize * 0.2;
   const moveToOrigin = `M ${origin.x} ${origin.y}`;
 
   let path = moveToOrigin;
@@ -29,15 +29,17 @@ export function createPath({
   let endControlPointY = 0;
   let opositeControlPoint: Coordinate;
 
-  for (let i = 0; i <= pieceQuantity; i++) {
+  console.log({ endPointX });
+
+  for (let i = 0; i < pieceQuantity; i++) {
     let startControlPointX = endControlPointX;
     let startControlPointY = endControlPointY;
 
-    endControlPointX = (Math.random() - 0.5) * pieceSize * 0.5 + pieceSize / 4;
-    endControlPointY = (Math.random() - 0.5) * pieceSize * 0.5;
-
-    endPointX += pieceSize / 2 - pinSize;
+    endPointX += pieceSize / 2 - pinSize / 2;
     endPointY += 0;
+
+    endControlPointX = (Math.random() - 0.5) * endPointX;
+    endControlPointY = (Math.random() - 0.5) * endPointY;
 
     path += ` ${createCurve(
       startControlPointX,
@@ -55,72 +57,90 @@ export function createPath({
     startControlPointX = opositeControlPoint.x;
     startControlPointY = opositeControlPoint.y;
 
-    // Pin start
-    endControlPointX = (Math.random() - 0.5) * pieceSize * 0.5;
-    endControlPointY = (Math.random() - 0.5) * pieceSize * 0.5 + pieceSize / 6;
+    // // Pin start
+    // endPointX += 0;
+    // endPointY += pinSize;
 
-    endPointX += 0;
-    endPointY += pinSize;
+    // endControlPointX = (Math.random() - 0.5) * endPointX;
+    // endControlPointY = (Math.random() - 0.5) * endPointY;
 
-    path += ` ${createCurve(
-      startControlPointX,
-      startControlPointY,
-      endControlPointX,
-      endControlPointY,
-      endPointX,
-      endPointY
-    )}`;
+    // path += ` ${createCurve(
+    //   startControlPointX,
+    //   startControlPointY,
+    //   endControlPointX,
+    //   endControlPointY,
+    //   endPointX,
+    //   endPointY
+    // )}`;
 
-    startControlPointX = endControlPointX;
-    startControlPointY = endControlPointY;
+    // opositeControlPoint = calculateOppositeControlPoint(
+    //   { x: endControlPointX, y: endControlPointY },
+    //   { x: endPointX, y: endPointY }
+    // );
+    // startControlPointX = opositeControlPoint.x;
+    // startControlPointY = opositeControlPoint.y;
 
-    // Pin Middle
-    endControlPointX = (Math.random() - 0.5) * pieceSize * 0.5 + pieceSize / 8;
-    endControlPointY = (Math.random() - 0.5) * pieceSize * 0.5;
+    // // Pin Middle
+    // endPointX += pinSize;
+    // endPointY += 0;
 
-    endPointX += pinSize;
-    endPointY += 0;
+    // endControlPointX = (Math.random() - 0.5) * endPointX;
+    // endControlPointY = (Math.random() - 0.5) * endPointY;
 
-    path += ` ${createCurve(
-      startControlPointX,
-      startControlPointY,
-      endControlPointX,
-      endControlPointY,
-      endPointX,
-      endPointY
-    )}`;
+    // path += ` ${createCurve(
+    //   startControlPointX,
+    //   startControlPointY,
+    //   endControlPointX,
+    //   endControlPointY,
+    //   endPointX,
+    //   endPointY
+    // )}`;
 
-    // Pin End
-    endControlPointX = (Math.random() - 0.5) * pieceSize * 0.5 + pieceSize / 8;
-    endControlPointY = (Math.random() - 0.5) * pieceSize * 0.5;
+    // opositeControlPoint = calculateOppositeControlPoint(
+    //   { x: endControlPointX, y: endControlPointY },
+    //   { x: endPointX, y: endPointY }
+    // );
+    // startControlPointX = opositeControlPoint.x;
+    // startControlPointY = opositeControlPoint.y;
 
-    endPointX += 0;
-    endPointY += -pinSize;
+    // // Pin End
+    // endPointX += 0;
+    // endPointY += -pinSize;
 
-    path += ` ${createCurve(
-      startControlPointX,
-      startControlPointY,
-      endControlPointX,
-      endControlPointY,
-      endPointX,
-      endPointY
-    )}`;
+    // endControlPointX = (Math.random() - 0.5) * endPointX;
+    // endControlPointY = (Math.random() - 0.5) * endPointY;
 
-    // Piece End
-    endControlPointX = (Math.random() - 0.5) * pieceSize * 0.5 + pieceSize / 8;
-    endControlPointY = (Math.random() - 0.5) * pieceSize * 0.5;
+    // path += ` ${createCurve(
+    //   startControlPointX,
+    //   startControlPointY,
+    //   endControlPointX,
+    //   endControlPointY,
+    //   endPointX,
+    //   endPointY
+    // )}`;
 
-    endPointX += pieceSize;
-    endPointY += 0;
+    // opositeControlPoint = calculateOppositeControlPoint(
+    //   { x: endControlPointX, y: endControlPointY },
+    //   { x: endPointX, y: endPointY }
+    // );
+    // startControlPointX = opositeControlPoint.x;
+    // startControlPointY = opositeControlPoint.y;
 
-    path += ` ${createCurve(
-      startControlPointX,
-      startControlPointY,
-      endControlPointX,
-      endControlPointY,
-      endPointX,
-      endPointY
-    )}`;
+    // // Piece End
+    // endPointX += pieceSize;
+    // endPointY += 0;
+
+    // endControlPointX = (Math.random() - 0.5) * endPointX;
+    // endControlPointY = (Math.random() - 0.5) * endPointY;
+
+    // path += ` ${createCurve(
+    //   startControlPointX,
+    //   startControlPointY,
+    //   endControlPointX,
+    //   endControlPointY,
+    //   endPointX,
+    //   endPointY
+    // )}`;
   }
 
   return path;
@@ -143,15 +163,34 @@ export function createCurve(
 // To have a smooth transition, the control point on the previous curve must be parallel to the current curve, but opposite. In other words the vector can be any magnitude but opposite direction.
 export function calculateOppositeControlPoint(
   previousControlPoint: Coordinate,
-  perviouseEndPoint: Coordinate
+  previousEndPoint: Coordinate
 ): Coordinate {
-  const gradient = previousControlPoint.x / previousControlPoint.y;
-
-  const x = Math.random() * (perviouseEndPoint.x - previousControlPoint.x);
-  const y = gradient * x;
-
-  return {
-    x,
-    y,
+  const vector = {
+    x: previousControlPoint.x - previousEndPoint.x,
+    y: previousControlPoint.y - previousEndPoint.y,
   };
+
+  const vectorMagnitude = Math.sqrt(
+    Math.pow(vector.x, 2) + Math.pow(vector.y, 2)
+  );
+
+  const unitVector = {
+    x: vector.x / vectorMagnitude,
+    y: vector.y / vectorMagnitude,
+  };
+
+  const rand = Math.random() + 3;
+
+  const newVector = {
+    x: unitVector.x * rand,
+    y: unitVector.y * rand,
+  };
+
+  console.log({
+    previousControlPoint,
+    previousEndPoint,
+    newControlPoint: newVector,
+  });
+
+  return newVector;
 }
