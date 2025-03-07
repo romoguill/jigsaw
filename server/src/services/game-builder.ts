@@ -41,8 +41,8 @@ export function createPath({
         pieceSize: 10,
         pinSize: 2,
         config: {
-          maxAngleControlPointStart: Math.PI / 3,
-          minAngleControlPointEnd: (Math.PI / 3) * 2,
+          startControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
+          endControlPointAngleRange: [(2 / 3) * Math.PI, (4 / 3) * Math.PI],
           maxMagnitudeControlPoint: 2,
         },
       });
@@ -214,8 +214,8 @@ interface CreateFlatBodyPathProps {
   pinSize: number;
   pieceSize: number;
   config: {
-    maxAngleControlPointStart: number;
-    minAngleControlPointEnd: number;
+    startControlPointAngleRange: [number, number];
+    endControlPointAngleRange: [number, number];
     maxMagnitudeControlPoint: number;
   };
 }
@@ -225,12 +225,12 @@ function createFlatBodyPath({
   pinSize,
   pieceSize,
   config: {
-    minAngleControlPointEnd,
-    maxAngleControlPointStart,
+    startControlPointAngleRange,
+    endControlPointAngleRange,
     maxMagnitudeControlPoint,
   },
 }: CreateFlatBodyPathProps) {
-  const maxF = (maxAngleControlPointStart + minAngleControlPointEnd) / Math.PI;
+  // const maxF = (maxAngleControlPointStart + minAngleControlPointEnd) / Math.PI;
 
   const startPoint = {
     x: 0,
@@ -242,12 +242,18 @@ function createFlatBodyPath({
   const controlPointStartMagnitud = Math.random() * maxMagnitudeControlPoint;
   const controlPointEndMagnitud = Math.random() * maxMagnitudeControlPoint;
 
-  const alpha = Math.random() * maxAngleControlPointStart;
+  const alpha =
+    (Math.random() *
+      (startControlPointAngleRange[0] - startControlPointAngleRange[1]) +
+      startControlPointAngleRange[1]) %
+    (2 * Math.PI);
   const beta =
-    (2 * Math.PI - minAngleControlPointEnd) * Math.random() +
-    minAngleControlPointEnd;
+    (Math.random() *
+      (endControlPointAngleRange[1] - endControlPointAngleRange[0]) +
+      endControlPointAngleRange[0]) %
+    (2 * Math.PI);
 
-  console.log({ beta, minAngleControlPointEnd });
+  console.log({ alpha, beta });
 
   const controlPointStart = {
     x: startPoint.x + controlPointStartMagnitud * Math.cos(alpha),
