@@ -1,5 +1,7 @@
 import type { Coordinate } from '../../shared/types.js';
 
+type PinType = 'inside' | 'outside';
+
 type CreatePathProps = {
   origin: {
     x: number;
@@ -32,30 +34,42 @@ export function createPath({
   console.log({ endPointX });
 
   for (let i = 0; i < pieceQuantity; i++) {
-    let startControlPointX = endControlPointX;
-    let startControlPointY = endControlPointY;
+    path +=
+      ' ' +
+      createFlatBodyPath({
+        pinType: 'outside',
+        pieceSize: 10,
+        pinSize: 2,
+        config: {
+          maxAngleControlPointStart: Math.PI / 3,
+          minAngleControlPointEnd: (Math.PI / 3) * 2,
+          maxMagnitudeControlPoint: 2,
+        },
+      });
+    // let startControlPointX = endControlPointX;
+    // let startControlPointY = endControlPointY;
 
-    endPointX += pieceSize / 2 - pinSize / 2;
-    endPointY += 0;
+    // endPointX += pieceSize / 2 - pinSize / 2;
+    // endPointY += 0;
 
-    endControlPointX = (Math.random() - 0.5) * endPointX;
-    endControlPointY = (Math.random() - 0.5) * endPointY;
+    // endControlPointX = (Math.random() - 0.5) * endPointX;
+    // endControlPointY = (Math.random() - 0.5) * endPointY;
 
-    path += ` ${createCurve(
-      startControlPointX,
-      startControlPointY,
-      endControlPointX,
-      endControlPointY,
-      endPointX,
-      endPointY
-    )}`;
+    // path += ` ${createCurve(
+    //   startControlPointX,
+    //   startControlPointY,
+    //   endControlPointX,
+    //   endControlPointY,
+    //   endPointX,
+    //   endPointY
+    // )}`;
 
-    opositeControlPoint = calculateOppositeControlPoint(
-      { x: endControlPointX, y: endControlPointY },
-      { x: endPointX, y: endPointY }
-    );
-    startControlPointX = opositeControlPoint.x;
-    startControlPointY = opositeControlPoint.y;
+    // opositeControlPoint = calculateOppositeControlPoint(
+    //   { x: endControlPointX, y: endControlPointY },
+    //   { x: endPointX, y: endPointY }
+    // );
+    // startControlPointX = opositeControlPoint.x;
+    // startControlPointY = opositeControlPoint.y;
 
     // // Pin start
     // endPointX += 0;
@@ -193,4 +207,71 @@ export function calculateOppositeControlPoint(
   });
 
   return newVector;
+}
+
+interface CreateFlatBodyPathProps {
+  pinType: PinType;
+  pinSize: number;
+  pieceSize: number;
+  config: {
+    maxAngleControlPointStart: number;
+    minAngleControlPointEnd: number;
+    maxMagnitudeControlPoint: number;
+  };
+}
+
+function createFlatBodyPath({
+  pinType,
+  pinSize,
+  pieceSize,
+  config: {
+    minAngleControlPointEnd,
+    maxAngleControlPointStart,
+    maxMagnitudeControlPoint,
+  },
+}: CreateFlatBodyPathProps) {
+  const maxF = (maxAngleControlPointStart + minAngleControlPointEnd) / Math.PI;
+
+  const startPoint = {
+    x: 0,
+    y: 0,
+  };
+
+  const endPoint = { x: pieceSize / 2 - pinSize / 2, y: 0 };
+
+  const controlPointStartMagnitud = Math.random() * maxMagnitudeControlPoint;
+  const controlPointEndMagnitud = Math.random() * maxMagnitudeControlPoint;
+
+  const alpha = Math.random() * maxAngleControlPointStart;
+  const beta =
+    (2 * Math.PI - minAngleControlPointEnd) * Math.random() +
+    minAngleControlPointEnd;
+
+  console.log({ beta, minAngleControlPointEnd });
+
+  const controlPointStart = {
+    x: startPoint.x + controlPointStartMagnitud * Math.cos(alpha),
+    y: startPoint.y - controlPointStartMagnitud * Math.sin(alpha), // y is inverted in paths: y positive below
+  };
+
+  const controlPointEnd = {
+    x: endPoint.x + controlPointEndMagnitud * Math.cos(beta),
+    y: endPoint.y - controlPointEndMagnitud * Math.sin(beta), // y is inverted in paths: y positive below
+  };
+
+  console.log({ controlPointStart, controlPointEnd });
+
+  const path = createCurve(
+    controlPointStart.x,
+    controlPointStart.y,
+    controlPointEnd.x,
+    controlPointEnd.y,
+    endPoint.x,
+    endPoint.y
+  );
+
+  return path;
+  // switch (pinType) {
+  //   case 'outside':
+  // }
 }
