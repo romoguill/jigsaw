@@ -44,7 +44,10 @@ export function createPath({
       pieceSize,
       pinSize,
       config: {
-        startControlPointAngleRange: [(1 / 3) * Math.PI, (1 / 3) * Math.PI],
+        startControlPointAngleRange: getOppositeUnitVector(
+          flatBodyPath1.controlPointEnd,
+          flatBodyPath1.endPoint
+        ).angle,
         endControlPointAngleRange: [Math.PI, (5 / 3) * Math.PI],
         maxMagnitudeControlPoint: pinSize / 4,
         startPoint: flatBodyPath1.endPoint,
@@ -56,7 +59,10 @@ export function createPath({
       pieceSize,
       pinSize,
       config: {
-        startControlPointAngleRange: [(1 / 12) * Math.PI, (11 / 12) * Math.PI],
+        startControlPointAngleRange: getOppositeUnitVector(
+          pinSidePath1.controlPointEnd,
+          pinSidePath1.endPoint
+        ).angle,
         endControlPointAngleRange: [(1 / 12) * Math.PI, (11 / 12) * Math.PI],
         maxMagnitudeControlPoint: pinSize / 4,
         startPoint: pinSidePath1.endPoint,
@@ -69,7 +75,10 @@ export function createPath({
       pieceSize,
       pinSize,
       config: {
-        startControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
+        startControlPointAngleRange: getOppositeUnitVector(
+          pinTopPath.controlPointEnd,
+          pinTopPath.endPoint
+        ).angle,
         endControlPointAngleRange: [(7 / 12) * Math.PI, (5 / 4) * Math.PI],
         maxMagnitudeControlPoint: pinSize / 4,
         startPoint: pinTopPath.endPoint,
@@ -81,7 +90,10 @@ export function createPath({
       pieceSize,
       pinSize,
       config: {
-        startControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
+        startControlPointAngleRange: getOppositeUnitVector(
+          pinSidePath2.controlPointEnd,
+          pinSidePath2.endPoint
+        ).angle,
         endControlPointAngleRange: [(2 / 3) * Math.PI, (4 / 3) * Math.PI],
         maxMagnitudeControlPoint: pieceSize / 5,
         startPoint: pinSidePath2.endPoint,
@@ -115,10 +127,10 @@ export function createCurve(
 }
 
 // To have a smooth transition, the control point on the previous curve must be parallel to the current curve, but opposite. In other words the vector can be any magnitude but opposite direction.
-export function calculateOppositeControlPoint(
+export function getOppositeUnitVector(
   previousControlPoint: Coordinate,
   previousEndPoint: Coordinate
-): Coordinate {
+) {
   const vector = {
     x: previousControlPoint.x - previousEndPoint.x,
     y: previousControlPoint.y - previousEndPoint.y,
@@ -129,24 +141,27 @@ export function calculateOppositeControlPoint(
   );
 
   const unitVector = {
-    x: vector.x / vectorMagnitude,
-    y: vector.y / vectorMagnitude,
+    coordinates: {
+      x: vector.x / vectorMagnitude,
+      y: vector.y / vectorMagnitude,
+    },
+    angle: (Math.atan2(-vector.y, vector.x) + 2 * Math.PI) % (2 * Math.PI),
   };
 
-  const rand = Math.random() + 3;
-
-  const newVector = {
-    x: unitVector.x * rand,
-    y: unitVector.y * rand,
+  const oppositeUnitVector = {
+    coordinates: {
+      x: -unitVector.coordinates.x,
+      y: -unitVector.coordinates.y,
+    },
+    angle:
+      (Math.atan2(unitVector.coordinates.y, -unitVector.coordinates.x) +
+        2 * Math.PI) %
+      (2 * Math.PI),
   };
 
-  console.log({
-    previousControlPoint,
-    previousEndPoint,
-    newControlPoint: newVector,
-  });
+  console.log({ vector, unitVector, oppositeUnitVector });
 
-  return newVector;
+  return oppositeUnitVector;
 }
 
 interface CreateFlatBodyPathProps {
@@ -154,7 +169,7 @@ interface CreateFlatBodyPathProps {
   pinSize: number;
   pieceSize: number;
   config: {
-    startControlPointAngleRange: [number, number];
+    startControlPointAngleRange: [number, number] | number;
     endControlPointAngleRange: [number, number];
     maxMagnitudeControlPoint: number;
     startPoint: Coordinate;
@@ -182,11 +197,18 @@ function createFlatBodyPath({
   const controlPointStartMagnitud = Math.random() * maxMagnitudeControlPoint;
   const controlPointEndMagnitud = Math.random() * maxMagnitudeControlPoint;
 
-  const alpha =
-    (Math.random() *
-      (startControlPointAngleRange[0] - startControlPointAngleRange[1]) +
-      startControlPointAngleRange[1]) %
-    (2 * Math.PI);
+  let alpha: number;
+
+  if (typeof startControlPointAngleRange === 'number') {
+    alpha = startControlPointAngleRange;
+  } else {
+    alpha =
+      (Math.random() *
+        (startControlPointAngleRange[0] - startControlPointAngleRange[1]) +
+        startControlPointAngleRange[1]) %
+      (2 * Math.PI);
+  }
+
   const beta =
     (Math.random() *
       (endControlPointAngleRange[1] - endControlPointAngleRange[0]) +
@@ -222,7 +244,7 @@ interface CreatePinSidePathProps {
   pieceSize: number;
 
   config: {
-    startControlPointAngleRange: [number, number];
+    startControlPointAngleRange: [number, number] | number;
     endControlPointAngleRange: [number, number];
     maxMagnitudeControlPoint: number;
     startPoint: Coordinate;
@@ -275,11 +297,18 @@ function createPinSidePath({
   const controlPointStartMagnitud = Math.random() * maxMagnitudeControlPoint;
   const controlPointEndMagnitud = Math.random() * maxMagnitudeControlPoint;
 
-  const alpha =
-    (Math.random() *
-      (startControlPointAngleRange[0] - startControlPointAngleRange[1]) +
-      startControlPointAngleRange[1]) %
-    (2 * Math.PI);
+  let alpha: number;
+
+  if (typeof startControlPointAngleRange === 'number') {
+    alpha = startControlPointAngleRange;
+  } else {
+    alpha =
+      (Math.random() *
+        (startControlPointAngleRange[0] - startControlPointAngleRange[1]) +
+        startControlPointAngleRange[1]) %
+      (2 * Math.PI);
+  }
+
   const beta =
     (Math.random() *
       (endControlPointAngleRange[1] - endControlPointAngleRange[0]) +
@@ -317,7 +346,7 @@ interface CreatePinTopPathProps {
   pieceSize: number;
 
   config: {
-    startControlPointAngleRange: [number, number];
+    startControlPointAngleRange: [number, number] | number;
     endControlPointAngleRange: [number, number];
     maxMagnitudeControlPoint: number;
     startPoint: Coordinate;
@@ -344,11 +373,18 @@ function createPinTopPath({
   const controlPointStartMagnitud = Math.random() * maxMagnitudeControlPoint;
   const controlPointEndMagnitud = Math.random() * maxMagnitudeControlPoint;
 
-  const alpha =
-    (Math.random() *
-      (startControlPointAngleRange[0] - startControlPointAngleRange[1]) +
-      startControlPointAngleRange[1]) %
-    (2 * Math.PI);
+  let alpha: number;
+
+  if (typeof startControlPointAngleRange === 'number') {
+    alpha = startControlPointAngleRange;
+  } else {
+    alpha =
+      (Math.random() *
+        (startControlPointAngleRange[0] - startControlPointAngleRange[1]) +
+        startControlPointAngleRange[1]) %
+      (2 * Math.PI);
+  }
+
   const beta =
     (Math.random() *
       (endControlPointAngleRange[1] - endControlPointAngleRange[0]) +
