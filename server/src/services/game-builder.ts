@@ -23,95 +23,78 @@ export function createPath({
   let path: string = moveToOrigin;
 
   for (let i = 0; i < pieceQuantity; i++) {
-    path +=
-      ' ' +
-      createFlatBodyPath({
-        pinType: 'outside',
-        pieceSize,
-        pinSize,
-        config: {
-          startControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
-          endControlPointAngleRange: [(2 / 3) * Math.PI, (4 / 3) * Math.PI],
-          maxMagnitudeControlPoint: pieceSize / 5,
-          startPoint: {
-            x: 0,
-            y: 0,
-          },
+    const flatBodyPath1 = createFlatBodyPath({
+      pinType: 'outside',
+      pieceSize,
+      pinSize,
+      config: {
+        startControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
+        endControlPointAngleRange: [(2 / 3) * Math.PI, (4 / 3) * Math.PI],
+        maxMagnitudeControlPoint: pieceSize / 5,
+        startPoint: {
+          x: 0,
+          y: 0,
         },
-      });
+      },
+    });
 
-    path +=
-      ' ' +
-      createPinSidePath({
-        pinType: 'outside',
-        sideType: 'start',
-        pieceSize,
-        pinSize,
-        config: {
-          startControlPointAngleRange: [(1 / 3) * Math.PI, (1 / 3) * Math.PI],
-          endControlPointAngleRange: [Math.PI, (5 / 3) * Math.PI],
-          maxMagnitudeControlPoint: pinSize / 4,
-          startPoint: {
-            x: pieceSize / 2 - pinSize / 2,
-            y: 0,
-          },
-        },
-      });
+    const pinSidePath1 = createPinSidePath({
+      pinType: 'outside',
+      sideType: 'start',
+      pieceSize,
+      pinSize,
+      config: {
+        startControlPointAngleRange: [(1 / 3) * Math.PI, (1 / 3) * Math.PI],
+        endControlPointAngleRange: [Math.PI, (5 / 3) * Math.PI],
+        maxMagnitudeControlPoint: pinSize / 4,
+        startPoint: flatBodyPath1.endPoint,
+      },
+    });
 
-    path +=
-      ' ' +
-      createPinTopPath({
-        pinType: 'outside',
-        pieceSize,
-        pinSize,
-        config: {
-          startControlPointAngleRange: [
-            (1 / 12) * Math.PI,
-            (11 / 12) * Math.PI,
-          ],
-          endControlPointAngleRange: [(1 / 12) * Math.PI, (11 / 12) * Math.PI],
-          maxMagnitudeControlPoint: pinSize / 4,
-          startPoint: {
-            x: pieceSize / 2 - pinSize / 2,
-            y: pinSize,
-          },
-        },
-      });
+    const pinTopPath = createPinTopPath({
+      pinType: 'outside',
+      pieceSize,
+      pinSize,
+      config: {
+        startControlPointAngleRange: [(1 / 12) * Math.PI, (11 / 12) * Math.PI],
+        endControlPointAngleRange: [(1 / 12) * Math.PI, (11 / 12) * Math.PI],
+        maxMagnitudeControlPoint: pinSize / 4,
+        startPoint: pinSidePath1.endPoint,
+      },
+    });
 
-    path +=
-      ' ' +
-      createPinSidePath({
-        pinType: 'outside',
-        sideType: 'end',
-        pieceSize,
-        pinSize,
-        config: {
-          startControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
-          endControlPointAngleRange: [(7 / 12) * Math.PI, (5 / 4) * Math.PI],
-          maxMagnitudeControlPoint: pinSize / 4,
-          startPoint: {
-            x: pieceSize + pinSize,
-            y: pinSize,
-          },
-        },
-      });
+    const pinSidePath2 = createPinSidePath({
+      pinType: 'outside',
+      sideType: 'end',
+      pieceSize,
+      pinSize,
+      config: {
+        startControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
+        endControlPointAngleRange: [(7 / 12) * Math.PI, (5 / 4) * Math.PI],
+        maxMagnitudeControlPoint: pinSize / 4,
+        startPoint: pinTopPath.endPoint,
+      },
+    });
 
-    path +=
-      ' ' +
-      createFlatBodyPath({
-        pinType: 'outside',
-        pieceSize,
-        pinSize,
-        config: {
-          startControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
-          endControlPointAngleRange: [(2 / 3) * Math.PI, (4 / 3) * Math.PI],
-          maxMagnitudeControlPoint: pieceSize / 5,
-          startPoint: {
-            x: pieceSize + pinSize,
-            y: 0,
-          },
-        },
-      });
+    const flatBodyPath2 = createFlatBodyPath({
+      pinType: 'outside',
+      pieceSize,
+      pinSize,
+      config: {
+        startControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
+        endControlPointAngleRange: [(2 / 3) * Math.PI, (4 / 3) * Math.PI],
+        maxMagnitudeControlPoint: pieceSize / 5,
+        startPoint: pinSidePath2.endPoint,
+      },
+    });
+
+    path += [
+      flatBodyPath1.path,
+      pinSidePath1.path,
+      pinTopPath.path,
+      pinSidePath2.path,
+      flatBodyPath2.path,
+    ].join(' ');
   }
 
   return path;
