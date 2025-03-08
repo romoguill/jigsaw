@@ -188,8 +188,11 @@ function createFlatBodyPath({
     y: 0 + startPoint.y,
   };
 
-  const controlPointStartMagnitud = Math.random() * maxMagnitudeControlPoint;
-  const controlPointEndMagnitud = Math.random() * maxMagnitudeControlPoint;
+  // maxMagnitud X Factor as minimum value. Found by trial en error
+  const controlPointStartMagnitud =
+    maxMagnitudeControlPoint * 0.3 + Math.random() * maxMagnitudeControlPoint;
+  const controlPointEndMagnitud =
+    maxMagnitudeControlPoint * 0.3 + Math.random() * maxMagnitudeControlPoint;
 
   const beta =
     (Math.random() *
@@ -295,9 +298,10 @@ function createPinSidePath({
     }
   }
 
-  const controlPointStartMagnitud = Math.random() * maxMagnitudeControlPoint;
-  const controlPointEndMagnitud = Math.random() * maxMagnitudeControlPoint;
-
+  const controlPointStartMagnitud =
+    maxMagnitudeControlPoint * 0.3 + Math.random() * maxMagnitudeControlPoint;
+  const controlPointEndMagnitud =
+    maxMagnitudeControlPoint * 0.3 + Math.random() * maxMagnitudeControlPoint;
   const beta =
     (Math.random() *
       (endControlPointAngleRange[1] - endControlPointAngleRange[0]) +
@@ -375,9 +379,10 @@ function createPinTopPath({
     y: startPoint.y,
   };
 
-  const controlPointStartMagnitud = Math.random() * maxMagnitudeControlPoint;
-  const controlPointEndMagnitud = Math.random() * maxMagnitudeControlPoint;
-
+  const controlPointStartMagnitud =
+    maxMagnitudeControlPoint * 0.3 + Math.random() * maxMagnitudeControlPoint;
+  const controlPointEndMagnitud =
+    maxMagnitudeControlPoint * 0.3 + Math.random() * maxMagnitudeControlPoint;
   const beta =
     (Math.random() *
       (endControlPointAngleRange[1] - endControlPointAngleRange[0]) +

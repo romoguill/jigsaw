@@ -26,7 +26,7 @@ function RouteComponent() {
         width={600}
         height={600}
         viewBox="-200 -300 1500 1300"
-        className="stroke-red-500 stroke-[1%] fill-none"
+        className="stroke-red-500 stroke-3 fill-none"
       >
         <path d={path} />
       </svg>
