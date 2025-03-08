@@ -21,7 +21,7 @@ export const gameRoute = new Hono()
     const path = builderService.createPath({
       origin: { x: 0, y: 0 },
       pieceQuantity: 1,
-      pieceSize: 10,
+      pieceSize: 1000,
     });
 
     return c.json({ path });
