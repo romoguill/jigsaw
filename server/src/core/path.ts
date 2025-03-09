@@ -9,13 +9,14 @@ export class Path {
 
   constructor(
     public origin: Coordinate,
-    pieceSize: number,
-    pieceQuantity: number
+    public pieceSize: number,
+    public pinSize: number,
+    public pieceQuantity: number
   ) {
     this.path.push(`M ${origin.x} ${origin.y}`);
   }
 
-  createCurve({
+  appendCurve({
     startControlPoint,
     endControlPoint,
     endPoint,
@@ -23,7 +24,7 @@ export class Path {
     endPoint: Coordinate;
     endControlPoint: Coordinate;
     startControlPoint?: Coordinate;
-  }) {
+  }): void {
     if (startControlPoint) {
       const path = [
         startControlPoint.x,
@@ -34,15 +35,50 @@ export class Path {
         endPoint.y,
       ];
 
-      return path.reduce((prev, curr) => prev.concat(curr.toFixed(2)), 'C');
+      // Return a path string using bezier curve with start control point.
+
+      this.path.push(`C ${path.join(' ')}`);
     } else {
+      if (this.path.length <= 1) {
+        throw new Error(
+          'Missing the first curve with C command to set the starting control point.'
+        );
+      }
+
       const path = [
         endControlPoint.x,
         endControlPoint.y,
         endPoint.x,
         endPoint.y,
       ];
-      return path.reduce((prev, curr) => prev.concat(curr.toFixed(2)), 'S');
+
+      // Return a path string using bezier curve without start control point (previous endControlPoint = new startControlPoint).
+      this.path.push(`S ${path.join(' ')}`);
     }
+  }
+
+  toString(): string {
+    return this.path.join(' ');
+  }
+
+  get endPoint(): Coordinate {
+    // Endpoint are the two last values of any curve except the len = 1
+    if (this.path.length <= 1) return this.origin;
+
+    const lastDigits = this.path[this.path.length - 1].split(' ').slice(-2);
+
+    return {
+      x: Number(lastDigits[0]),
+      y: Number(lastDigits[1]),
+    };
+  }
+
+  generateCompletePath() {
+    const endPoints: Coordinate[] = [
+      {
+        x: this.pieceSize / 2 - this.pinSize / 2 + this.endPoint.x,
+        y: 0 + this.endPoint.y,
+      },
+    ];
   }
 }

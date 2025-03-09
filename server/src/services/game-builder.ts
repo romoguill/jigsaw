@@ -1,4 +1,5 @@
 import type { Coordinate } from '../../shared/types.js';
+import { Path } from '../core/path.js';
 
 type PinType = 'inside' | 'outside';
 type SideType = 'start' | 'end';
@@ -92,6 +93,27 @@ export function createPath({
       flatBodyPath2.path,
     ].join(' ');
   }
+
+  const newPath = new Path(origin, pieceSize, pinSize, pieceQuantity);
+
+  console.log(newPath.path);
+
+  newPath.appendCurve({
+    startControlPoint: {
+      x: 1,
+      y: 2,
+    },
+    endControlPoint: {
+      x: 4,
+      y: 6,
+    },
+    endPoint: {
+      x: 5,
+      y: 0,
+    },
+  });
+
+  console.log(newPath.endPoint);
 
   return path;
 }
