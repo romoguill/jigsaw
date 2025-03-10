@@ -6,6 +6,16 @@ export class Path {
   // The magnitude affects how sharp corners are. Too small and the shape has rougth cornes, while too big will result in the overall shape to be affected.
   // RANGE -> % of PIECE SIZE.
   rangeMagnitudeControlPoint: [number, number] = [0.2, 0.4];
+  // For shapes to look good, there must be restrictions on the angles the control form has with respect to the [1, 0] vector.
+  //  Arrived at them by trial and error. Mesaured in radians.
+  rangeAngleControlPoints: [number, number][] = [
+    [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
+    [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
+    [Math.PI, (5 / 3) * Math.PI],
+    [(1 / 12) * Math.PI, (11 / 12) * Math.PI],
+    [(7 / 12) * Math.PI, (5 / 4) * Math.PI],
+    [(2 / 3) * Math.PI, (4 / 3) * Math.PI],
+  ];
 
   constructor(
     public origin: Coordinate,
@@ -17,9 +27,9 @@ export class Path {
   }
 
   appendCurve({
-    startControlPoint,
     endControlPoint,
     endPoint,
+    startControlPoint,
   }: {
     endPoint: Coordinate;
     endControlPoint: Coordinate;
@@ -73,12 +83,56 @@ export class Path {
     };
   }
 
+  // Using a base magnitud (piece body and pin will have different bases) and the range, get a random value
+  randomMagnitude(baseMagnitude: number, magnitudeRange: [number, number]) {
+    return (
+      (magnitudeRange[1] - magnitudeRange[0]) * Math.random() +
+      magnitudeRange[0]
+    );
+  }
+
+  // Get a random angle. Always positive < 2 pi
+  randomAngle(angleRange: [number, number]) {
+    return (
+      ((angleRange[1] - angleRange[0]) * Math.random() + angleRange[0]) %
+      (2 * Math.PI)
+    );
+  }
+
   generateCompletePath() {
-    const endPoints: Coordinate[] = [
+    // Variations in end point values to draw the side of a piece
+    const endPointsDelta: Coordinate[] = [
+      // First flat edge
       {
-        x: this.pieceSize / 2 - this.pinSize / 2 + this.endPoint.x,
-        y: 0 + this.endPoint.y,
+        x: this.pieceSize / 2 - this.pinSize / 2,
+        y: 0,
+      },
+      // First side pin
+      {
+        x: 0,
+        y: this.pinSize,
+      },
+      // Top side pin
+      {
+        x: this.pinSize,
+        y: 0,
+      },
+      // Second side pin
+      {
+        x: 0,
+        y: -this.pinSize,
+      },
+      // Second flat edge
+      {
+        x: this.pinSize / 2 - this.pinSize / 2,
+        y: 0,
       },
     ];
+
+    endPointsDelta.forEach((epd) => {
+      if (this.path.length <= 1) {
+        this.appendCurve({ endPoint: { x: this.endPoint + endPointsDelta } });
+      }
+    });
   }
 }
