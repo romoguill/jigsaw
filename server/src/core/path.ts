@@ -29,13 +29,18 @@ export class Path {
   appendCurve({
     endControlPoint,
     endPoint,
-    startControlPoint,
   }: {
     endPoint: Coordinate;
     endControlPoint: Coordinate;
-    startControlPoint?: Coordinate;
   }): void {
-    if (startControlPoint) {
+    // The first point must specify a starting control point
+    if (this.path.length <= 1) {
+      const startControlPoint = this.generateControlPoint(
+        this.pieceSize,
+        this.rangeMagnitudeControlPoint,
+        this.rangeAngleControlPoints[0]
+      );
+
       const path = [
         startControlPoint.x,
         startControlPoint.y,
@@ -48,23 +53,14 @@ export class Path {
       // Return a path string using bezier curve with start control point.
 
       this.path.push(`C ${path.join(' ')}`);
-    } else {
-      if (this.path.length <= 1) {
-        throw new Error(
-          'Missing the first curve with C command to set the starting control point.'
-        );
-      }
 
-      const path = [
-        endControlPoint.x,
-        endControlPoint.y,
-        endPoint.x,
-        endPoint.y,
-      ];
-
-      // Return a path string using bezier curve without start control point (previous endControlPoint = new startControlPoint).
-      this.path.push(`S ${path.join(' ')}`);
+      return;
     }
+
+    const path = [endControlPoint.x, endControlPoint.y, endPoint.x, endPoint.y];
+
+    // Return a path string using bezier curve without start control point (previous endControlPoint = new startControlPoint).
+    this.path.push(`S ${path.join(' ')}`);
   }
 
   toString(): string {
@@ -86,8 +82,9 @@ export class Path {
   // Using a base magnitud (piece body and pin will have different bases) and the range, get a random value
   randomMagnitude(baseMagnitude: number, magnitudeRange: [number, number]) {
     return (
-      (magnitudeRange[1] - magnitudeRange[0]) * Math.random() +
-      magnitudeRange[0]
+      ((magnitudeRange[1] - magnitudeRange[0]) * Math.random() +
+        magnitudeRange[0]) *
+      baseMagnitude
     );
   }
 
@@ -97,6 +94,20 @@ export class Path {
       ((angleRange[1] - angleRange[0]) * Math.random() + angleRange[0]) %
       (2 * Math.PI)
     );
+  }
+
+  generateControlPoint(
+    baseMagnitude: number,
+    magnitudeRange: [number, number],
+    angleRange: [number, number]
+  ): Coordinate {
+    const magnitud = this.randomMagnitude(baseMagnitude, magnitudeRange);
+    const angle = this.randomAngle(angleRange);
+
+    return {
+      x: this.endPoint.x + magnitud * Math.cos(angle),
+      y: this.endPoint.y + magnitud * Math.sin(angle),
+    };
   }
 
   generateCompletePath() {
