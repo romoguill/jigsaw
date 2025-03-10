@@ -30,7 +30,7 @@ export function createPath({
       pinSize,
       config: {
         startControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
-        endControlPointAngleRange: [(2 / 3) * Math.PI, (4 / 3) * Math.PI],
+        endControlPointAngleRange: [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
         maxMagnitudeControlPoint: pieceSize / 5,
         startPoint: {
           x: 0,
@@ -94,26 +94,14 @@ export function createPath({
     ].join(' ');
   }
 
+  console.log({ pieceSize, pinSize });
   const newPath = new Path(origin, pieceSize, pinSize, pieceQuantity);
 
   console.log(newPath.path);
 
-  newPath.appendCurve({
-    startControlPoint: {
-      x: 1,
-      y: 2,
-    },
-    endControlPoint: {
-      x: 4,
-      y: 6,
-    },
-    endPoint: {
-      x: 5,
-      y: 0,
-    },
-  });
+  newPath.generateCompletePath(5);
 
-  console.log(newPath.endPoint);
+  console.log(newPath.toString());
 
   return path;
 }

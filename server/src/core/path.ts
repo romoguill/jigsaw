@@ -5,7 +5,7 @@ export class Path {
   // Control point refers to the point that is responsible for affecting the curvature.
   // The magnitude affects how sharp corners are. Too small and the shape has rougth cornes, while too big will result in the overall shape to be affected.
   // RANGE -> % of PIECE SIZE.
-  rangeMagnitudeControlPoint: [number, number] = [0.2, 0.4];
+  rangeMagnitudeControlPoint: [number, number][];
   // For shapes to look good, there must be restrictions on the angles the control form has with respect to the [1, 0] vector.
   //  Arrived at them by trial and error. Mesaured in radians.
   rangeAngleControlPoints: [number, number][] = [
@@ -24,6 +24,16 @@ export class Path {
     public pieceQuantity: number
   ) {
     this.path.push(`M ${origin.x} ${origin.y}`);
+
+    // Magnitudes will depend on the curve length.
+    this.rangeMagnitudeControlPoint = [
+      [0.12 * pieceSize, 0.18 * pieceSize],
+      [0.18 * pinSize, 0.22 * pinSize],
+      [0.12 * pinSize, 0.18 * pinSize],
+      [0.12 * pinSize, 0.18 * pinSize],
+      [0.18 * pinSize, 0.22 * pinSize],
+      [0.12 * pieceSize, 0.18 * pieceSize],
+    ];
   }
 
   appendCurve({
@@ -36,9 +46,9 @@ export class Path {
     // The first point must specify a starting control point
     if (this.path.length <= 1) {
       const startControlPoint = this.generateControlPoint(
-        this.pieceSize,
-        this.rangeMagnitudeControlPoint,
-        this.rangeAngleControlPoints[0]
+        this.rangeMagnitudeControlPoint[0],
+        this.rangeAngleControlPoints[0],
+        this.origin
       );
 
       const path = [
@@ -52,7 +62,7 @@ export class Path {
 
       // Return a path string using bezier curve with start control point.
 
-      this.path.push(`C ${path.join(' ')}`);
+      this.path.push(`C ${path.map((n) => n.toFixed(2)).join(' ')}`);
 
       return;
     }
@@ -60,7 +70,7 @@ export class Path {
     const path = [endControlPoint.x, endControlPoint.y, endPoint.x, endPoint.y];
 
     // Return a path string using bezier curve without start control point (previous endControlPoint = new startControlPoint).
-    this.path.push(`S ${path.join(' ')}`);
+    this.path.push(`S ${path.map((n) => n.toFixed(2)).join(' ')}`);
   }
 
   toString(): string {
@@ -80,11 +90,10 @@ export class Path {
   }
 
   // Using a base magnitud (piece body and pin will have different bases) and the range, get a random value
-  randomMagnitude(baseMagnitude: number, magnitudeRange: [number, number]) {
+  randomMagnitude(magnitudeRange: [number, number]) {
     return (
-      ((magnitudeRange[1] - magnitudeRange[0]) * Math.random() +
-        magnitudeRange[0]) *
-      baseMagnitude
+      (magnitudeRange[1] - magnitudeRange[0]) * Math.random() +
+      magnitudeRange[0]
     );
   }
 
@@ -97,20 +106,24 @@ export class Path {
   }
 
   generateControlPoint(
-    baseMagnitude: number,
     magnitudeRange: [number, number],
-    angleRange: [number, number]
+    angleRange: [number, number],
+    from: Coordinate
   ): Coordinate {
-    const magnitud = this.randomMagnitude(baseMagnitude, magnitudeRange);
+    const magnitud = this.randomMagnitude(magnitudeRange);
     const angle = this.randomAngle(angleRange);
 
-    return {
-      x: this.endPoint.x + magnitud * Math.cos(angle),
-      y: this.endPoint.y + magnitud * Math.sin(angle),
+    const controlPoint: Coordinate = {
+      x: from.x + magnitud * Math.cos(angle),
+      y: from.y + magnitud * Math.sin(angle),
     };
+
+    console.log({ magnitud, angle, endPoint: this.endPoint, controlPoint });
+
+    return controlPoint;
   }
 
-  generateCompletePath() {
+  generateCompletePath(n: number | 'complete') {
     // Variations in end point values to draw the side of a piece
     const endPointsDelta: Coordinate[] = [
       // First flat edge
@@ -135,15 +148,32 @@ export class Path {
       },
       // Second flat edge
       {
-        x: this.pinSize / 2 - this.pinSize / 2,
+        x: this.pieceSize / 2 - this.pinSize / 2,
         y: 0,
       },
     ];
 
-    endPointsDelta.forEach((epd) => {
-      if (this.path.length <= 1) {
-        this.appendCurve({ endPoint: { x: this.endPoint + endPointsDelta } });
-      }
-    });
+    let iterations: number;
+
+    n === 'complete' ? (iterations = this.pieceQuantity) : (iterations = n);
+
+    for (let j = 0; j < iterations; j++) {
+      endPointsDelta.forEach((epd, i) => {
+        const endPoint = {
+          x: this.endPoint.x + epd.x,
+          y: this.endPoint.y + epd.y,
+        };
+        const controlPoint = this.generateControlPoint(
+          this.rangeMagnitudeControlPoint[i + 1],
+          this.rangeAngleControlPoints[i + 1],
+          endPoint
+        );
+
+        this.appendCurve({
+          endPoint: { x: this.endPoint.x + epd.x, y: this.endPoint.y + epd.y },
+          endControlPoint: controlPoint,
+        });
+      });
+    }
   }
 }
