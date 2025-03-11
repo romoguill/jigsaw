@@ -8,12 +8,13 @@ export class Path {
   rangeMagnitudeControlPoint: [number, number][];
   // For shapes to look good, there must be restrictions on the angles the control form has with respect to the [1, 0] vector.
   //  Arrived at them by trial and error. Mesaured in radians.
+  // Good resource to dive deeper later: https://pomax.github.io/bezierinfo/#canonical
   rangeAngleControlPoints: [number, number][] = [
     [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
-    [(1 / 3) * Math.PI, -(1 / 3) * Math.PI],
-    [Math.PI, (5 / 3) * Math.PI],
-    [(1 / 12) * Math.PI, (11 / 12) * Math.PI],
-    [(7 / 12) * Math.PI, (5 / 4) * Math.PI],
+    [(5 / 6) * Math.PI, (7 / 6) * Math.PI],
+    [(11 / 12) * Math.PI, (11 / 6) * Math.PI],
+    [(1 / 6) * Math.PI, (13 / 12) * Math.PI],
+    [(5 / 6) * Math.PI, (7 / 6) * Math.PI],
     [(2 / 3) * Math.PI, (4 / 3) * Math.PI],
   ];
 
@@ -28,10 +29,10 @@ export class Path {
     // Magnitudes will depend on the curve length.
     this.rangeMagnitudeControlPoint = [
       [0.12 * pieceSize, 0.18 * pieceSize],
-      [0.18 * pinSize, 0.22 * pinSize],
+      [0.08 * pieceSize, 0.12 * pieceSize],
       [0.12 * pinSize, 0.18 * pinSize],
       [0.12 * pinSize, 0.18 * pinSize],
-      [0.18 * pinSize, 0.22 * pinSize],
+      [0.08 * pieceSize, 0.12 * pieceSize],
       [0.12 * pieceSize, 0.18 * pieceSize],
     ];
   }
@@ -124,8 +125,13 @@ export class Path {
   }
 
   generateCompletePath(n: number | 'complete') {
+    // Randomize if pin will be inside or outside
+    const randomDirection = () => (Math.random() - 0.5 > 0 ? 1 : -1);
+
     // Variations in end point values to draw the side of a piece
-    const endPointsDelta: Coordinate[] = [
+    const endPointsDelta: (pinDirection: number) => Coordinate[] = (
+      pinDirection
+    ) => [
       // First flat edge
       {
         x: this.pieceSize / 2 - this.pinSize / 2,
@@ -134,7 +140,7 @@ export class Path {
       // First side pin
       {
         x: 0,
-        y: this.pinSize,
+        y: this.pinSize * pinDirection,
       },
       // Top side pin
       {
@@ -144,7 +150,7 @@ export class Path {
       // Second side pin
       {
         x: 0,
-        y: -this.pinSize,
+        y: this.pinSize * -pinDirection,
       },
       // Second flat edge
       {
@@ -158,14 +164,18 @@ export class Path {
     n === 'complete' ? (iterations = this.pieceQuantity) : (iterations = n);
 
     for (let j = 0; j < iterations; j++) {
-      endPointsDelta.forEach((epd, i) => {
+      const pinDirection = randomDirection();
+
+      endPointsDelta(pinDirection).forEach((epd, i) => {
         const endPoint = {
           x: this.endPoint.x + epd.x,
           y: this.endPoint.y + epd.y,
         };
         const controlPoint = this.generateControlPoint(
           this.rangeMagnitudeControlPoint[i + 1],
-          this.rangeAngleControlPoints[i + 1],
+          this.rangeAngleControlPoints[i + 1].map(
+            (range) => range * pinDirection
+          ) as [number, number],
           endPoint
         );
 

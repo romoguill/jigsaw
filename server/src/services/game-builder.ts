@@ -99,7 +99,7 @@ export function createPath({
 
   console.log(newPath.path);
 
-  newPath.generateCompletePath(5);
+  newPath.generateCompletePath(10);
 
   console.log(newPath.toString());
 
