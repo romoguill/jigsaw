@@ -21,7 +21,7 @@ function RouteComponent() {
 
   return (
     <div>
-      <p>{JSON.stringify(paths)}</p>
+      {/* <p>{JSON.stringify(paths)}</p> */}
       <svg
         width={600}
         height={600}
@@ -37,12 +37,11 @@ function RouteComponent() {
           ))}
         </g>
 
-        <g>
+        <g transform={`rotate(90)`}>
           {paths.vertical.map((path, i) => (
             <path
               d={path}
-              rotate={"0 0 90"}
-              transform={`translate(${i * gameProps.pieceSize} 0)`}
+              transform={`translate(0 ${-i * gameProps.pieceSize} )`}
             />
           ))}
         </g>
