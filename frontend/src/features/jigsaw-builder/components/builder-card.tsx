@@ -8,6 +8,7 @@ import {
 import { UploadButton } from "@/features/uploadImages/components/upload-button";
 import { useState } from "react";
 import BuilderForm from "./builder-form";
+import PreviewPiecesButton from "./preview-pieces-button";
 
 export function BuilderCard() {
   const [imageUpload, setImageUpload] = useState<{
@@ -29,13 +30,16 @@ export function BuilderCard() {
       <CardContent>
         {imageUpload ? (
           <div>
-            <img
-              src={imageUpload.url}
-              alt="Uploaded image"
-              width={400}
-              height={400}
-              className="mx-auto object-cover"
-            />
+            <div className="relative">
+              <PreviewPiecesButton />
+              <img
+                src={imageUpload.url}
+                alt="Uploaded image"
+                width={400}
+                height={400}
+                className="mx-auto object-cover w-full max-h-[600px]"
+              />
+            </div>
             <BuilderForm imageId={imageUpload.id} />
           </div>
         ) : (
