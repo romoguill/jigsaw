@@ -25,7 +25,7 @@ export function BuilderCard() {
 
   const [enableQuery, setEnableQuery] = useState(false);
   const gameData = useImageToGameData({ image: imgRef, pieceQuantity });
-  console.log(gameData);
+
   const { data: paths, isPending } = usePaths(
     {
       origin: { x: 0, y: 0 },

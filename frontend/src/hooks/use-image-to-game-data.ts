@@ -28,12 +28,10 @@ function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
 
     if (rows * columns !== pieceQuantity) continue;
 
-    const newAspectRatio = rows / columns;
+    const newAspectRatio = columns / rows;
 
     const error = Math.abs((newAspectRatio - aspectRatio) / aspectRatio);
 
-    console.log(rows, columns);
-    console.log(error);
     if (!bestError || error < bestError) {
       bestError = error;
       finalColumns = columns;

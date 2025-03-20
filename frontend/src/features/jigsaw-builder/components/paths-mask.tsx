@@ -9,14 +9,13 @@ interface PathsMaskProps {
 function PathsMask({ paths, pieceSize, scale }: PathsMaskProps) {
   return (
     <svg
-      width={600}
-      height={600}
-      viewBox="-200 -300 1500 1300"
-      className="stroke-red-500 stroke-3 fill-none"
+      // viewBox="-200 -300 1500 1300"
+      className="stroke-red-500 stroke-3 fill-none w-full absolute top-0 h-full"
     >
       <g>
         {paths.horizontal.map((path, i) => (
           <path
+            key={i}
             d={path}
             transform={`translate(0 ${i * pieceSize * scale}) scale(${scale})`}
           />
@@ -26,6 +25,7 @@ function PathsMask({ paths, pieceSize, scale }: PathsMaskProps) {
       <g transform={`rotate(90)`}>
         {paths.vertical.map((path, i) => (
           <path
+            key={i}
             d={path}
             transform={`translate(0 ${-i * pieceSize * scale} ) scale(${scale})`}
           />
