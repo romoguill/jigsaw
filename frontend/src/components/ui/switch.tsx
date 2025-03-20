@@ -1,13 +1,17 @@
-import * as React from "react"
+import * as React from "react";
 import {
   Switch as AriaSwitch,
   SwitchProps as AriaSwitchProps,
   composeRenderProps,
-} from "react-aria-components"
+} from "react-aria-components";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-const Switch = ({ children, className, ...props }: AriaSwitchProps) => (
+const Switch = ({
+  children,
+  className,
+  ...props
+}: Omit<AriaSwitchProps, "inputRef">) => (
   <AriaSwitch
     className={composeRenderProps(className, (className) =>
       cn(
@@ -46,6 +50,6 @@ const Switch = ({ children, className, ...props }: AriaSwitchProps) => (
       </>
     ))}
   </AriaSwitch>
-)
+);
 
-export { Switch }
+export { Switch };

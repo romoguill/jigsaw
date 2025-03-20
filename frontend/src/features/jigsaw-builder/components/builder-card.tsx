@@ -6,10 +6,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UploadButton } from "@/features/uploadImages/components/upload-button";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import BuilderForm from "./builder-form";
 import PreviewPiecesButton from "./preview-pieces-button";
 import { usePaths } from "../api/queries";
+import useImageToGameData from "@/hooks/use-image-to-game-data";
 
 export function BuilderCard() {
   const [imageUpload, setImageUpload] = useState<{
@@ -29,7 +30,10 @@ export function BuilderCard() {
     { enabled: enableQuery }
   );
 
-  console.log(data);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  const gameData = useImageToGameData({ image: imgRef, pieceQuantity: 50 });
+  console.log({ gameData });
 
   return (
     <Card className="max-w-lg">
@@ -56,6 +60,7 @@ export function BuilderCard() {
                 width={400}
                 height={400}
                 className="mx-auto object-cover w-full max-h-[600px]"
+                ref={imgRef}
                 onLoad={() => setImageLoaded(true)}
               />
             </div>
