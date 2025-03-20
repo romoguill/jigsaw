@@ -9,14 +9,27 @@ import { UploadButton } from "@/features/uploadImages/components/upload-button";
 import { useState } from "react";
 import BuilderForm from "./builder-form";
 import PreviewPiecesButton from "./preview-pieces-button";
+import { usePaths } from "../api/queries";
 
 export function BuilderCard() {
   const [imageUpload, setImageUpload] = useState<{
     id: string;
     url: string;
   } | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-  console.log(imageUpload);
+  const [enableQuery, setEnableQuery] = useState(false);
+  const { data, isPending } = usePaths(
+    {
+      origin: { x: 0, y: 0 },
+      pieceQuantity: 20,
+      pieceSize: 10,
+      pinSize: 2,
+    },
+    { enabled: enableQuery }
+  );
+
+  console.log(data);
 
   return (
     <Card className="max-w-lg">
@@ -31,13 +44,19 @@ export function BuilderCard() {
         {imageUpload ? (
           <div>
             <div className="relative">
-              <PreviewPiecesButton />
+              {imageLoaded && (
+                <PreviewPiecesButton
+                  onPreview={() => setEnableQuery(true)}
+                  isLoading={isPending && enableQuery}
+                />
+              )}
               <img
                 src={imageUpload.url}
                 alt="Uploaded image"
                 width={400}
                 height={400}
                 className="mx-auto object-cover w-full max-h-[600px]"
+                onLoad={() => setImageLoaded(true)}
               />
             </div>
             <BuilderForm imageId={imageUpload.id} />

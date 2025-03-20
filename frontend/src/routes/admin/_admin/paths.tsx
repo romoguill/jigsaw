@@ -1,7 +1,5 @@
 import { usePaths } from "@/features/jigsaw-builder/api/queries";
-import { apiClient } from "@/lib/api-client";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/admin/_admin/paths")({
   component: RouteComponent,

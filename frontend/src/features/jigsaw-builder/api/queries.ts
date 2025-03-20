@@ -6,8 +6,14 @@ import { pathKeys } from "./keys";
 const route = apiClient.api.game.builder.path.$post;
 
 type RequestType = InferRequestType<typeof route>;
+type Options = {
+  enabled?: boolean;
+};
 
-export const usePaths = (json: RequestType["json"]) =>
+export const usePaths = (
+  json: RequestType["json"],
+  opts: Partial<Options> = {}
+) =>
   useQuery({
     queryKey: pathKeys.all,
     queryFn: async () => {
@@ -16,4 +22,6 @@ export const usePaths = (json: RequestType["json"]) =>
 
       return data;
     },
+    enabled: opts.enabled ?? true,
+    staleTime: Infinity,
   });
