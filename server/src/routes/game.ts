@@ -29,31 +29,32 @@ export const gameRoute = new Hono()
         origin: coordinateSchema,
         pieceSize: z.number(),
         pinSize: z.number(),
-        pieceQuantity: z.number(),
+        cols: z.number(),
+        rows: z.number(),
       })
     ),
     (c) => {
-      const { origin, pieceSize, pinSize, pieceQuantity } = c.req.valid('json');
+      const { origin, pieceSize, pinSize, cols, rows } = c.req.valid('json');
 
       const paths: { horizontal: string[]; vertical: string[] } = {
         horizontal: [],
         vertical: [],
       };
 
-      for (let i = 0; i < pieceQuantity; i++) {
-        for (let j = 0; j <= 1; j++) {
-          const pathBuilder = new Path(
-            origin,
-            pieceSize,
-            pinSize,
-            pieceQuantity
-          );
-          pathBuilder.generateCompletePath('complete');
+      for (let i = 0; i < rows; i++) {
+        const pathBuilder = new Path(origin, pieceSize, pinSize, cols);
 
-          j === 0
-            ? paths.horizontal.push(pathBuilder.toString())
-            : paths.vertical.push(pathBuilder.toString());
-        }
+        pathBuilder.generateCompletePath('complete');
+
+        paths.horizontal.push(pathBuilder.toString());
+      }
+
+      for (let i = 0; i < cols; i++) {
+        const pathBuilder = new Path(origin, pieceSize, pinSize, rows);
+
+        pathBuilder.generateCompletePath('complete');
+
+        paths.vertical.push(pathBuilder.toString());
       }
 
       return c.json({ success: true, data: paths });

@@ -29,7 +29,8 @@ export function BuilderCard() {
   const { data: paths, isPending } = usePaths(
     {
       origin: { x: 0, y: 0 },
-      pieceQuantity,
+      cols: gameData?.columns || 0,
+      rows: gameData?.rows || 0,
       pieceSize: gameData?.pieceSize || 0,
       pinSize: (gameData?.pieceSize || 0) * 0.2,
     },
@@ -66,11 +67,11 @@ export function BuilderCard() {
                 ref={imgRef}
                 onLoad={() => setImageLoaded(true)}
               />
-              {enableQuery && paths && gameData && (
+              {enableQuery && paths && gameData && imgRef.current && (
                 <PathsMask
                   paths={paths}
                   pieceSize={gameData?.pieceSize}
-                  scale={imgRef.current?.width / imgRef.current?.naturalWidth}
+                  scale={imgRef.current.width / imgRef.current.naturalWidth}
                 />
               )}
             </div>
