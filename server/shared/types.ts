@@ -50,3 +50,10 @@ export const jigsawBuilderFormSchema = z.object({
 });
 
 export type JigsawBuilderFormValues = z.infer<typeof jigsawBuilderFormSchema>;
+
+export const pathsSchema = z.object({
+  horizontal: z.string().array(),
+  vertical: z.string().array(),
+});
+
+export type Paths = z.infer<typeof pathsSchema>;

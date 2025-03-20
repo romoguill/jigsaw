@@ -11,8 +11,12 @@ import BuilderForm from "./builder-form";
 import PreviewPiecesButton from "./preview-pieces-button";
 import { usePaths } from "../api/queries";
 import useImageToGameData from "@/hooks/use-image-to-game-data";
+import PathsMask from "./paths-mask";
+
+const pieceQuantity = 50;
 
 export function BuilderCard() {
+  const imgRef = useRef<HTMLImageElement>(null);
   const [imageUpload, setImageUpload] = useState<{
     id: string;
     url: string;
@@ -20,19 +24,18 @@ export function BuilderCard() {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const [enableQuery, setEnableQuery] = useState(false);
-  const { data, isPending } = usePaths(
+  const gameData = useImageToGameData({ image: imgRef, pieceQuantity });
+  console.log(gameData);
+  const { data: paths, isPending } = usePaths(
     {
       origin: { x: 0, y: 0 },
-      pieceQuantity: 20,
-      pieceSize: 10,
-      pinSize: 2,
+      pieceQuantity,
+      pieceSize: gameData?.pieceSize || 0,
+      pinSize: (gameData?.pieceSize || 0) * 0.2,
     },
-    { enabled: enableQuery }
+    { enabled: enableQuery && gameData !== null }
   );
 
-  const imgRef = useRef<HTMLImageElement>(null);
-
-  const gameData = useImageToGameData({ image: imgRef, pieceQuantity: 50 });
   console.log({ gameData });
 
   return (
@@ -63,6 +66,13 @@ export function BuilderCard() {
                 ref={imgRef}
                 onLoad={() => setImageLoaded(true)}
               />
+              {enableQuery && paths && gameData && (
+                <PathsMask
+                  paths={paths}
+                  pieceSize={gameData?.pieceSize}
+                  scale={imgRef.current?.width / imgRef.current?.naturalWidth}
+                />
+              )}
             </div>
             <BuilderForm imageId={imageUpload.id} />
           </div>
