@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-export type Coordinate = { x: number; y: number };
+export const coordinateSchema = z.object({ x: z.number(), y: z.number() });
+export type Coordinate = z.infer<typeof coordinateSchema>;
 
 export const shapeSides = ['top', 'right', 'bottom', 'left'] as const;
 export type ShapeSide = (typeof shapeSides)[number];

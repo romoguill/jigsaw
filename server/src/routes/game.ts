@@ -1,9 +1,13 @@
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { jigsawBuilderFormSchema } from '../../shared/types.js';
+import {
+  coordinateSchema,
+  jigsawBuilderFormSchema,
+  type Coordinate,
+} from '../../shared/types.js';
 import { authMiddleware } from '../middleware/auth-middleware.js';
-import * as builderService from '../services/game-builder.js';
+import { Path } from '../core/path.js';
 
 export const gameRoute = new Hono()
   .use(authMiddleware)
@@ -17,12 +21,41 @@ export const gameRoute = new Hono()
       return c.json({ success: true });
     }
   )
-  .get('/builder/path', (c) => {
-    const path = builderService.createPath({
-      origin: { x: 0, y: 0 },
-      pieceQuantity: 1,
-      pieceSize: 1000,
-    });
+  .post(
+    '/builder/path',
+    zValidator(
+      'json',
+      z.object({
+        origin: coordinateSchema,
+        pieceSize: z.number(),
+        pinSize: z.number(),
+        pieceQuantity: z.number(),
+      })
+    ),
+    (c) => {
+      const { origin, pieceSize, pinSize, pieceQuantity } = c.req.valid('json');
 
-    return c.json({ path });
-  });
+      const paths: { horizontal: string[]; vertical: string[] } = {
+        horizontal: [],
+        vertical: [],
+      };
+
+      for (let i = 0; i < pieceQuantity; i++) {
+        for (let j = 0; j <= 1; j++) {
+          const pathBuilder = new Path(
+            origin,
+            pieceSize,
+            pinSize,
+            pieceQuantity
+          );
+          pathBuilder.generateCompletePath('complete');
+
+          j === 0
+            ? paths.horizontal.push(pathBuilder.toString())
+            : paths.vertical.push(pathBuilder.toString());
+        }
+      }
+
+      return c.json({ success: true, data: paths });
+    }
+  );
