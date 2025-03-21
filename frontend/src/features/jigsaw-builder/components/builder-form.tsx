@@ -20,12 +20,14 @@ import {
   pieceCount,
 } from "../../../../../server/shared/types";
 import { useBuilderCreate } from "../api/mutations";
+import { useEffect } from "react";
 
 interface BuilderFormProps {
   imageId: string;
+  onPieceQuantityChange: (n: number | undefined) => void;
 }
 
-function BuilderForm({ imageId }: BuilderFormProps) {
+function BuilderForm({ imageId, onPieceQuantityChange }: BuilderFormProps) {
   const { mutate: buildJigsaw } = useBuilderCreate();
 
   const { handleSubmit, control, formState } = useForm<JigsawBuilderFormValues>(
@@ -84,7 +86,10 @@ function BuilderForm({ imageId }: BuilderFormProps) {
           <Select
             {...field}
             selectedKey={field.value}
-            onSelectionChange={(key) => field.onChange(key)}
+            onSelectionChange={(key) => {
+              field.onChange(key);
+              onPieceQuantityChange(Number(key));
+            }}
           >
             <Label>Piece Count</Label>
             <SelectTrigger>

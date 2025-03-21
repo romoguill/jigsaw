@@ -2,11 +2,12 @@ import { RefObject } from "react";
 
 interface UseImageToGameDataProps {
   image: RefObject<HTMLImageElement>;
-  pieceQuantity: number;
+  pieceQuantity: number | undefined;
 }
 
 function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
   if (!image.current) return null;
+  if (pieceQuantity === undefined) return null;
 
   // Get the original size of the image
   const { naturalWidth, naturalHeight } = image.current;

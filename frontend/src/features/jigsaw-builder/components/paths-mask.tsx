@@ -42,6 +42,7 @@ function PathsMask({ paths, pieceSize, scale }: PathsMaskProps) {
         <rect
           width={rect.width}
           height={rect.height}
+          strokeWidth={20}
           transform={`scale(${scale})`}
         />
       </g>

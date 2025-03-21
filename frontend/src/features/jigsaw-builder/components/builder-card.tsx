@@ -6,16 +6,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UploadButton } from "@/features/uploadImages/components/upload-button";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import BuilderForm from "./builder-form";
 import PreviewPiecesButton from "./preview-pieces-button";
 import { usePaths } from "../api/queries";
 import useImageToGameData from "@/hooks/use-image-to-game-data";
 import PathsMask from "./paths-mask";
-
-const pieceQuantity = 50;
+import { useQueryClient } from "@tanstack/react-query";
+import { pathKeys } from "../api/keys";
 
 export function BuilderCard() {
+  const [pieceQuantity, setPieceQuantity] = useState<number | undefined>(
+    undefined
+  );
+  const queryClient = useQueryClient();
   const imgRef = useRef<HTMLImageElement>(null);
   const [imageUpload, setImageUpload] = useState<{
     id: string;
@@ -37,7 +41,18 @@ export function BuilderCard() {
     { enabled: enableQuery && gameData !== null }
   );
 
-  console.log({ gameData });
+  const handlePieceQuantityChange = useCallback(
+    (n: number | undefined) => {
+      if (n === undefined) return;
+
+      setPieceQuantity(n);
+
+      queryClient.refetchQueries({ queryKey: pathKeys.all });
+    },
+    [queryClient]
+  );
+
+  console.log(pieceQuantity);
 
   return (
     <Card className="max-w-lg">
@@ -75,7 +90,10 @@ export function BuilderCard() {
                 />
               )}
             </div>
-            <BuilderForm imageId={imageUpload.id} />
+            <BuilderForm
+              imageId={imageUpload.id}
+              onPieceQuantityChange={handlePieceQuantityChange}
+            />
           </div>
         ) : (
           <UploadButton
