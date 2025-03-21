@@ -1,4 +1,4 @@
-import { RefObject } from "react";
+import { RefObject, useEffect, useState } from "react";
 
 interface UseImageToGameDataProps {
   image: RefObject<HTMLImageElement>;
@@ -6,50 +6,74 @@ interface UseImageToGameDataProps {
 }
 
 function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
-  if (!image.current) return null;
-  if (pieceQuantity === undefined) return null;
+  const [columns, setColumns] = useState(1);
+  const [rows, setRows] = useState(1);
+  const [pieceSize, setPieceSize] = useState(0);
 
-  // Get the original size of the image
-  const { naturalWidth, naturalHeight } = image.current;
+  useEffect(() => {
+    const calculateGameData = () => {
+      if (!image.current) return null;
+      if (pieceQuantity === undefined) return null;
+      // Get the original size of the image
+      const { naturalWidth, naturalHeight } = image.current;
 
-  // Equations to solve:
-  // 1- Columns x Rows <= PieceQuantity
-  // 2- (Rows / Columns) = AspectRatio
-  //   const columns = Math.sqrt(pieceQuantity / aspectRatio);
-  //   const rows = pieceQuantity / columns;
-  // There is no guarantee to have integer values, must iterate to find biggest pieces possible, or in other words maximize the area of the valid grid vs the image original size
-  let maxArea;
-  let finalColumns: number = pieceQuantity;
-  let finalRows: number = 1;
-  let finalPieceSize: number = 0;
-  for (let columns = 1; columns <= pieceQuantity; columns++) {
-    const rows = Math.floor(pieceQuantity / columns);
+      // Equations to solve:
+      // 1- Columns x Rows <= PieceQuantity
+      // 2- (Rows / Columns) = AspectRatio
+      //   const columns = Math.sqrt(pieceQuantity / aspectRatio);
+      //   const rows = pieceQuantity / columns;
+      // There is no guarantee to have integer values, must iterate to find biggest pieces possible, or in other words maximize the area of the valid grid vs the image original size
+      let maxArea;
+      let finalColumns = 1;
+      let finalRows = 1;
+      let finalPieceSize = 1;
+      for (let columns = 1; columns <= pieceQuantity; columns++) {
+        const rows = Math.floor(pieceQuantity / columns);
 
-    // Avoid iterating if piece quantity is not satisfied
-    if (pieceQuantity !== rows * columns) continue;
+        // Avoid iterating if piece quantity is not satisfied
+        if (pieceQuantity !== rows * columns) continue;
 
-    // Since pieces are squares i need the minimun value from sizes relations
-    const pieceSize = Math.min(naturalWidth / columns, naturalHeight / rows);
-    // Get the area covered by the iteration
-    const gridArea = pieceSize ** 2 * pieceQuantity;
+        // Since pieces are squares i need the minimun value from sizes relations
+        const pieceSize = Math.min(
+          naturalWidth / columns,
+          naturalHeight / rows
+        );
+        // Get the area covered by the iteration
+        const gridArea = pieceSize ** 2 * pieceQuantity;
 
-    if (!maxArea || gridArea > maxArea) {
-      maxArea = gridArea;
-      finalColumns = columns;
-      finalRows = rows;
-      finalPieceSize = pieceSize;
-    } else {
-      // Function is quadratic meaning that once the error starts increasing is pointless to keep iterating
-      break;
-    }
-  }
+        if (!maxArea || gridArea > maxArea) {
+          maxArea = gridArea;
+          finalColumns = columns;
+          finalRows = rows;
+          finalPieceSize = pieceSize;
+        } else {
+          // Function is quadratic meaning that once the error starts increasing is pointless to keep iterating
+          break;
+        }
+      }
+
+      return {
+        finalColumns,
+        finalRows,
+        finalPieceSize,
+      };
+    };
+
+    const gameData = calculateGameData();
+
+    if (!gameData) return;
+
+    setColumns(gameData.finalColumns - 1);
+    setRows(gameData.finalRows - 1);
+    setPieceSize(gameData.finalPieceSize);
+  }, [image, pieceQuantity]);
 
   return {
-    columns: finalColumns - 1,
-    rows: finalRows - 1,
-    pieceSize: finalPieceSize,
-    adjustedWidth: finalColumns * finalPieceSize,
-    adjustedHeight: finalRows * finalPieceSize,
+    columns,
+    rows,
+    pieceSize: pieceSize,
+    adjustedWidth: columns * pieceSize,
+    adjustedHeight: rows * pieceSize,
   };
 }
 

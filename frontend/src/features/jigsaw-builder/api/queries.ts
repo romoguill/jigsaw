@@ -23,5 +23,25 @@ export const usePaths = (
       return data;
     },
     enabled: opts.enabled ?? true,
-    staleTime: Infinity,
+    staleTime: 5,
+  });
+
+export const usePath = (
+  json: RequestType["json"] & { imgSrc: string },
+  opts: Partial<Options> = {}
+) =>
+  useQuery({
+    queryKey: pathKeys.single({
+      imgSrc: json.imgSrc,
+      cols: json.cols,
+      rows: json.rows,
+    }),
+    queryFn: async () => {
+      const res = await route({ json });
+      const { data } = await res.json();
+
+      return data;
+    },
+    enabled: opts.enabled ?? true,
+    staleTime: 5,
   });

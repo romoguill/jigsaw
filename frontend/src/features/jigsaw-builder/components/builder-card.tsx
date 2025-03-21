@@ -6,20 +6,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UploadButton } from "@/features/uploadImages/components/upload-button";
-import { useCallback, useRef, useState } from "react";
-import BuilderForm from "./builder-form";
-import PreviewPiecesButton from "./preview-pieces-button";
-import { usePaths } from "../api/queries";
 import useImageToGameData from "@/hooks/use-image-to-game-data";
+import { useCallback, useRef, useState } from "react";
+import { usePath } from "../api/queries";
+import BuilderForm from "./builder-form";
 import PathsMask from "./paths-mask";
-import { useQueryClient } from "@tanstack/react-query";
-import { pathKeys } from "../api/keys";
+import PreviewPiecesButton from "./preview-pieces-button";
 
 export function BuilderCard() {
   const [pieceQuantity, setPieceQuantity] = useState<number | undefined>(
     undefined
   );
-  const queryClient = useQueryClient();
   const imgRef = useRef<HTMLImageElement>(null);
   const [imageUpload, setImageUpload] = useState<{
     id: string;
@@ -30,29 +27,31 @@ export function BuilderCard() {
   const [enableQuery, setEnableQuery] = useState(false);
   const gameData = useImageToGameData({ image: imgRef, pieceQuantity });
 
-  const { data: paths, isPending } = usePaths(
+  console.log({ gameData });
+
+  const { data: paths, isPending } = usePath(
     {
       origin: { x: 0, y: 0 },
       cols: gameData?.columns || 0,
       rows: gameData?.rows || 0,
       pieceSize: gameData?.pieceSize || 0,
       pinSize: (gameData?.pieceSize || 0) * 0.2,
+      imgSrc: imgRef.current?.src || "",
     },
     { enabled: enableQuery && gameData !== null }
   );
 
-  const handlePieceQuantityChange = useCallback(
-    (n: number | undefined) => {
-      if (n === undefined) return;
+  const handlePieceQuantityChange = useCallback((n: number | undefined) => {
+    if (n === undefined) return;
 
-      setPieceQuantity(n);
+    setPieceQuantity(n);
+  }, []);
 
-      queryClient.refetchQueries({ queryKey: pathKeys.all });
-    },
-    [queryClient]
-  );
-
-  console.log(pieceQuantity);
+  console.log({ gameData });
+  // console.log({
+  //   scaleX: imgRef.current.width / imgRef.current.naturalWidth,
+  //   scaleY: imgRef.current.height / imgRef.current.naturalHeight,
+  // });
 
   return (
     <Card className="max-w-lg">
@@ -78,7 +77,7 @@ export function BuilderCard() {
                 alt="Uploaded image"
                 width={400}
                 height={400}
-                className="mx-auto object-cover w-full max-h-[600px]"
+                className="mx-auto object-cover w-full"
                 ref={imgRef}
                 onLoad={() => setImageLoaded(true)}
               />

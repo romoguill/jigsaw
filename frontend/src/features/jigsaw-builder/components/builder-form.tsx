@@ -20,7 +20,6 @@ import {
   pieceCount,
 } from "../../../../../server/shared/types";
 import { useBuilderCreate } from "../api/mutations";
-import { useEffect } from "react";
 
 interface BuilderFormProps {
   imageId: string;

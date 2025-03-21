@@ -119,8 +119,6 @@ export class Path {
       y: from.y + magnitud * Math.sin(angle),
     };
 
-    console.log({ magnitud, angle, endPoint: this.endPoint, controlPoint });
-
     return controlPoint;
   }
 
