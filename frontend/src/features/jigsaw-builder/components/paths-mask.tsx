@@ -7,17 +7,23 @@ interface PathsMaskProps {
 }
 
 function PathsMask({ paths, pieceSize, scale }: PathsMaskProps) {
+  const rect = {
+    height: (paths.horizontal.length + 1) * pieceSize,
+    width: (paths.vertical.length + 1) * pieceSize,
+  };
+
   return (
     <svg
-      // viewBox="-200 -300 1500 1300"
-      className="stroke-red-500 stroke-3 fill-none w-full absolute top-0 h-full"
+      className="stroke-white/60 stroke-[10] fill-none absolute top-[50%] -translate-y-[50%] -left-[50%] translate-x-[50%]"
+      width={rect.width * scale}
+      height={rect.height * scale}
     >
       <g>
         {paths.horizontal.map((path, i) => (
           <path
             key={i}
             d={path}
-            transform={`translate(0 ${i * pieceSize * scale}) scale(${scale})`}
+            transform={`translate(0 ${(i + 1) * pieceSize * scale}) scale(${scale})`}
           />
         ))}
       </g>
@@ -27,9 +33,17 @@ function PathsMask({ paths, pieceSize, scale }: PathsMaskProps) {
           <path
             key={i}
             d={path}
-            transform={`translate(0 ${-i * pieceSize * scale} ) scale(${scale})`}
+            transform={`translate(0 ${(-i - 1) * pieceSize * scale} ) scale(${scale})`}
           />
         ))}
+      </g>
+
+      <g>
+        <rect
+          width={rect.width}
+          height={rect.height}
+          transform={`scale(${scale})`}
+        />
       </g>
     </svg>
   );

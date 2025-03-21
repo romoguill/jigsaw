@@ -42,7 +42,7 @@ export const gameRoute = new Hono()
       };
 
       for (let i = 0; i < rows; i++) {
-        const pathBuilder = new Path(origin, pieceSize, pinSize, cols);
+        const pathBuilder = new Path(origin, pieceSize, pinSize, cols + 1);
 
         pathBuilder.generateCompletePath('complete');
 
@@ -50,7 +50,7 @@ export const gameRoute = new Hono()
       }
 
       for (let i = 0; i < cols; i++) {
-        const pathBuilder = new Path(origin, pieceSize, pinSize, rows);
+        const pathBuilder = new Path(origin, pieceSize, pinSize, rows + 1);
 
         pathBuilder.generateCompletePath('complete');
 

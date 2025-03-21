@@ -44,8 +44,8 @@ function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
   }
 
   return {
-    columns: finalColumns,
-    rows: finalRows,
+    columns: finalColumns - 1,
+    rows: finalRows - 1,
     pieceSize: finalPieceSize,
     adjustedWidth: finalColumns * finalPieceSize,
     adjustedHeight: finalRows * finalPieceSize,
