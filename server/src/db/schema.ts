@@ -1,9 +1,22 @@
 import { sqliteTable, text, integer, blob } from 'drizzle-orm/sqlite-core';
-import { difficulty } from '../../shared/types.js';
 import { sql } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { createSelectSchema } from 'drizzle-zod';
 import type { z } from 'zod';
+
+// ----- ENUMS -----
+
+const gameDifficulty = ['easy', 'medium', 'hard'] as const;
+// ----- UTILITIES -----
+
+export const timestamps = {
+  createdAt: text('created_at')
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: text('updated_at')
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+};
 
 // ----- BETER AUTH SCHEMAS -----
 
@@ -69,14 +82,17 @@ export const uploadedImage = sqliteTable('uploaded_image', {
   userId: text('user_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
-  imageUrl: text('image_url'),
+  imageKey: text('image_key').notNull(),
+  width: integer('width').notNull(),
+  height: integer('height').notNull(),
+  ...timestamps,
 });
 
 export const games = sqliteTable('games', {
   id: integer('id').primaryKey(),
   title: text('title').notNull(),
-  imageUrl: text('image_url').notNull(),
-  difficulty: text('difficulty', { enum: difficulty }).notNull(),
+  imageKey: text('image_key').notNull(),
+  difficulty: text('difficulty', { enum: gameDifficulty }).notNull(),
   pieceCount: integer('piece_count').notNull(),
   hasBorders: integer('has_borders', { mode: 'boolean' })
     .default(true)
@@ -86,12 +102,7 @@ export const games = sqliteTable('games', {
   pieceSize: integer('piece_size').notNull(),
   columns: integer('columns').notNull(),
   rows: integer('rows').notNull(),
-  createdAt: text('created_at')
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-  updatedAt: text('updated_at')
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
+  ...timestamps,
 });
 
 // Schema for inserting a new game

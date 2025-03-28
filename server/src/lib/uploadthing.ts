@@ -7,6 +7,7 @@ import { db } from '../db/db.js';
 import { uploadedImage } from '../db/schema.js';
 import { auth } from './auth.js';
 import { HTTPException } from 'hono/http-exception';
+import sharp from 'sharp';
 
 const f = createUploadthing();
 
@@ -24,13 +25,30 @@ export const uploadRouter = {
         throw new UploadThingError('Unauthorized');
       }
 
-      return { userId: session.user.id };
+      return {
+        userId: session.user.id,
+      };
     })
     .onUploadComplete(async ({ file, metadata }) => {
-      await db.insert(uploadedImage).values({
-        imageUrl: file.ufsUrl,
-        userId: metadata.userId,
-      });
+      try {
+        // Fetch the image data and get the metadata
+        const response = await fetch(file.ufsUrl);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        const fileMetadata = await sharp(buffer).metadata();
+
+        // Insert the image into the database
+        await db.insert(uploadedImage).values({
+          imageKey: file.key,
+          userId: metadata.userId,
+          width: fileMetadata.width ?? 0,
+          height: fileMetadata.height ?? 0,
+        });
+      } catch (error) {
+        console.error('Error processing image:', error);
+        throw error;
+      }
     }),
 } satisfies FileRouter;
 
