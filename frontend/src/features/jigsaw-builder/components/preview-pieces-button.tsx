@@ -1,28 +1,17 @@
 import { Toggle } from "@/components/ui/toggle";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
 
 interface PreviewPiecesButtonProps {
-  // pieceQuantity: number;
-  // imageSize: {
-  //   width: number;
-  //   heigth: number;
-  // }
-  onPreview: () => void;
+  onToggle: (toggle: boolean) => void;
+  isToggled: boolean;
   isLoading: boolean;
 }
 
 function PreviewPiecesButton({
-  onPreview,
+  onToggle,
   isLoading,
+  isToggled,
 }: PreviewPiecesButtonProps) {
-  const [isToggled, setIsToggled] = useState(false);
-
-  const onToggle = (isSelected: boolean) => {
-    setIsToggled(isSelected);
-    onPreview();
-  };
-
   return (
     <Toggle
       isSelected={isToggled}

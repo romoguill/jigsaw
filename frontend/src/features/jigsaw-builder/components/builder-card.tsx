@@ -14,20 +14,19 @@ import PathsMask from "./paths-mask";
 import PreviewPiecesButton from "./preview-pieces-button";
 
 export function BuilderCard() {
+  const imgRef = useRef<HTMLImageElement>(null);
   const [pieceQuantity, setPieceQuantity] = useState<number | undefined>(
     undefined
   );
-  const imgRef = useRef<HTMLImageElement>(null);
   const [imageUpload, setImageUpload] = useState<{
     id: string;
     url: string;
   } | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-
+  const [showPreview, setShowPreview] = useState(false);
   const [enableQuery, setEnableQuery] = useState(false);
-  const gameData = useImageToGameData({ image: imgRef, pieceQuantity });
 
-  console.log({ gameData });
+  const gameData = useImageToGameData({ image: imgRef, pieceQuantity });
 
   const { data: paths, isPending } = usePath(
     {
@@ -47,11 +46,16 @@ export function BuilderCard() {
     setPieceQuantity(n);
   }, []);
 
-  console.log({ gameData });
-  // console.log({
-  //   scaleX: imgRef.current.width / imgRef.current.naturalWidth,
-  //   scaleY: imgRef.current.height / imgRef.current.naturalHeight,
-  // });
+  console.log(showPreview);
+  const handlePreview = (toggle: boolean) => {
+    // Just enable query if it's not enabled
+    if (!enableQuery) setEnableQuery(true);
+
+    setShowPreview(toggle);
+  };
+
+  const showMask =
+    enableQuery && showPreview && paths && gameData && imgRef.current;
 
   return (
     <Card className="max-w-lg">
@@ -68,7 +72,8 @@ export function BuilderCard() {
             <div className="relative">
               {imageLoaded && (
                 <PreviewPiecesButton
-                  onPreview={() => setEnableQuery(true)}
+                  isToggled={showPreview}
+                  onToggle={(toogle) => handlePreview(toogle)}
                   isLoading={isPending && enableQuery}
                 />
               )}
@@ -81,7 +86,7 @@ export function BuilderCard() {
                 ref={imgRef}
                 onLoad={() => setImageLoaded(true)}
               />
-              {enableQuery && paths && gameData && imgRef.current && (
+              {showMask && (
                 <PathsMask
                   paths={paths}
                   pieceSize={gameData?.pieceSize}

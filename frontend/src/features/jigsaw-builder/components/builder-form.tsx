@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import {
@@ -110,7 +109,8 @@ function BuilderForm({ imageId, onPieceQuantityChange }: BuilderFormProps) {
         )}
       />
 
-      <Controller
+      {/* TODO: Add borders to the puzzle */}
+      {/* <Controller
         control={control}
         name="borders"
         render={({ field }) => (
@@ -123,7 +123,7 @@ function BuilderForm({ imageId, onPieceQuantityChange }: BuilderFormProps) {
             <Label>with borders (edge pieces)</Label>
           </Switch>
         )}
-      />
+      /> */}
 
       <FormSubmitError error={formState.errors.root?.message} />
       <Button isDisabled={formState.isSubmitting} type="submit">
