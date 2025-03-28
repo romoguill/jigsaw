@@ -41,6 +41,7 @@ export const gameRoute = new Hono()
         vertical: [],
       };
 
+      // Generate horizontal paths
       for (let i = 0; i < rows; i++) {
         const pathBuilder = new Path(origin, pieceSize, pinSize, cols + 1);
 
@@ -49,6 +50,7 @@ export const gameRoute = new Hono()
         paths.horizontal.push(pathBuilder.toString());
       }
 
+      // Generate vertical paths
       for (let i = 0; i < cols; i++) {
         const pathBuilder = new Path(origin, pieceSize, pinSize, rows + 1);
 

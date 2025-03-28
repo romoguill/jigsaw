@@ -1,4 +1,9 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, blob } from 'drizzle-orm/sqlite-core';
+import { difficulty } from '../../shared/types.js';
+import { sql } from 'drizzle-orm';
+import { createInsertSchema } from 'drizzle-zod';
+import { createSelectSchema } from 'drizzle-zod';
+import type { z } from 'zod';
 
 // ----- BETER AUTH SCHEMAS -----
 
@@ -66,3 +71,36 @@ export const uploadedImage = sqliteTable('uploaded_image', {
     .references(() => user.id, { onDelete: 'cascade' }),
   imageUrl: text('image_url'),
 });
+
+export const games = sqliteTable('games', {
+  id: integer('id').primaryKey(),
+  title: text('title').notNull(),
+  imageUrl: text('image_url').notNull(),
+  difficulty: text('difficulty', { enum: difficulty }).notNull(),
+  pieceCount: integer('piece_count').notNull(),
+  hasBorders: integer('has_borders', { mode: 'boolean' })
+    .default(true)
+    .notNull(),
+  horizontalPaths: blob('horizontal_paths').$type<string[]>().notNull(),
+  verticalPaths: blob('vertical_paths').$type<string[]>().notNull(),
+  pieceSize: integer('piece_size').notNull(),
+  columns: integer('columns').notNull(),
+  rows: integer('rows').notNull(),
+  createdAt: text('created_at')
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: text('updated_at')
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+// Schema for inserting a new game
+export const insertGameSchema = createInsertSchema(games);
+
+// Schema for selecting a game
+export const selectGameSchema = createSelectSchema(games);
+
+// Type for a new game
+export type NewGame = z.infer<typeof insertGameSchema>;
+// Type for a game from the database
+export type Game = z.infer<typeof selectGameSchema>;
