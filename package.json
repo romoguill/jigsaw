@@ -9,13 +9,21 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:shared\" \"npm run dev:frontend\" \"npm run dev:server\"",
     "dev:shared": "npm run dev --workspace=@jigsaw/shared",
-    "dev:frontend": "npm run dev --workspace=frontend",
-    "dev:server": "npm run dev --workspace=server",
+    "dev:frontend": "npm run dev --workspace=@jigsaw/frontend",
+    "dev:server": "npm run dev --workspace=@jigsaw/server",
     "build": "npm run build:shared && npm run build:frontend && npm run build:server",
     "build:shared": "npm run build --workspace=@jigsaw/shared",
-    "build:frontend": "npm run build --workspace=frontend",
-    "build:server": "npm run build --workspace=server",
-    "install:all": "npm install && npm run build:shared"
+    "build:frontend": "npm run build --workspace=@jigsaw/frontend",
+    "build:server": "npm run build --workspace=@jigsaw/server",
+    "install:all": "npm install && npm run build:shared",
+    "lint": "npm run lint:shared && npm run lint:frontend && npm run lint:server",
+    "lint:shared": "npm run lint --workspace=@jigsaw/shared",
+    "lint:frontend": "npm run lint --workspace=@jigsaw/frontend",
+    "lint:server": "npm run lint --workspace=@jigsaw/server",
+    "format": "npm run format:shared && npm run format:frontend && npm run format:server",
+    "format:shared": "npm run format --workspace=@jigsaw/shared",
+    "format:frontend": "npm run format --workspace=@jigsaw/frontend",
+    "format:server": "npm run format --workspace=@jigsaw/server"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

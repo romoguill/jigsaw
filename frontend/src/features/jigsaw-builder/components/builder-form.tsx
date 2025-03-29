@@ -13,12 +13,12 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import {
-  difficulty,
+  gameDifficulty,
   jigsawBuilderFormSchema,
   JigsawBuilderFormValues,
   Paths,
   pieceCount,
-} from "../../../../../server/shared/types";
+} from "@jigsaw/shared";
 import { useBuilderCreate } from "../api/mutations";
 
 interface BuilderFormProps {
@@ -30,7 +30,7 @@ interface BuilderFormProps {
 function BuilderForm({
   imageId,
   onPieceQuantityChange,
-  paths,
+  // paths,
 }: BuilderFormProps) {
   const { mutate: buildJigsaw } = useBuilderCreate();
 
@@ -38,8 +38,8 @@ function BuilderForm({
     {
       resolver: zodResolver(jigsawBuilderFormSchema),
       defaultValues: {
-        difficulty: "",
-        pieceCount: "",
+        difficulty: undefined,
+        pieceCount: undefined,
         borders: true,
       },
     }
@@ -70,7 +70,7 @@ function BuilderForm({
 
             <SelectPopover>
               <SelectListBox>
-                {difficulty.map((item) => (
+                {gameDifficulty.map((item) => (
                   <SelectItem key={item} id={item}>
                     {item}
                   </SelectItem>

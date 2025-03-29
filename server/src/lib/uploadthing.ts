@@ -1,3 +1,4 @@
+import sharp from 'sharp';
 import {
   createUploadthing,
   UploadThingError,
@@ -6,8 +7,6 @@ import {
 import { db } from '../db/db.js';
 import { uploadedImage } from '../db/schema.js';
 import { auth } from './auth.js';
-import { HTTPException } from 'hono/http-exception';
-import sharp from 'sharp';
 
 const f = createUploadthing();
 

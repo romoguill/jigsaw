@@ -7,12 +7,18 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc -w",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "typescript": "~5.6.2"
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "typescript": "~5.3.3",
+    "typescript-eslint": "^8.18.2"
   }
 }

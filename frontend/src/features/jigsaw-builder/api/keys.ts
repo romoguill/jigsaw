@@ -1,5 +1,3 @@
-import { Coordinate } from "@/types";
-
 export const jigsawBuilderKeys = {
   all: ["available-puzzles"] as const,
 };

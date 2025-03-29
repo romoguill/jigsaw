@@ -1,13 +1,12 @@
 import { zValidator } from '@hono/zod-validator';
-import { Hono } from 'hono';
 import { z } from 'zod';
+import { Hono } from 'hono';
+import { Path } from '../core/path.js';
+import { authMiddleware } from '../middleware/auth-middleware.js';
 import {
   coordinateSchema,
   jigsawBuilderFormSchema,
-  type Coordinate,
-} from '../../shared/types.js';
-import { authMiddleware } from '../middleware/auth-middleware.js';
-import { Path } from '../core/path.js';
+} from '@jigsaw/shared/schemas.js';
 
 export const gameRoute = new Hono()
   .use(authMiddleware)
