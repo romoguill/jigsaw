@@ -1,2 +1,2 @@
-// shared/src/index.ts
 export * from './schemas';
+export * from './api';

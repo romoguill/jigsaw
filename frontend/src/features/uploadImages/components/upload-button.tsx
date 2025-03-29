@@ -1,6 +1,8 @@
 import { generateUploadButton } from "@uploadthing/react";
-import type { UploadThingRouter } from "../../../../../server/src/lib/uploadthing";
 import { uploadThingInitOpts } from "../uploadthing-config";
+import type { UploadRouter } from "@jigsaw/shared";
+
+import "@uploadthing/react/styles.css";
 
 export const UploadButton =
-  generateUploadButton<UploadThingRouter>(uploadThingInitOpts);
+  generateUploadButton<UploadRouter>(uploadThingInitOpts);
