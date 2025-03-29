@@ -1,0 +1,27 @@
+{
+  "name": "jigsaw",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "server",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:shared\" \"npm run dev:frontend\" \"npm run dev:server\"",
+    "dev:shared": "npm run dev --workspace=@jigsaw/shared",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:server": "npm run dev --workspace=server",
+    "build": "npm run build:shared && npm run build:frontend && npm run build:server",
+    "build:shared": "npm run build --workspace=@jigsaw/shared",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:server": "npm run build --workspace=server",
+    "install:all": "npm install && npm run build:shared"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "optionalDependencies": {
+    "drizzle-orm": "^0.39.3",
+    "drizzle-zod": "^0.7.1"
+  }
+}

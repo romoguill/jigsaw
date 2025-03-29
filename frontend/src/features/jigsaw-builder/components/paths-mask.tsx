@@ -12,9 +12,6 @@ function PathsMask({ paths, pieceSize, scale }: PathsMaskProps) {
     width: (paths.vertical.length + 1) * pieceSize,
   };
 
-  console.log({ paths, pieceSize, scale });
-  console.log({ rect });
-
   return (
     <svg
       className="stroke-white/60 stroke-[10] fill-none absolute top-[50%] -translate-y-[50%] left-[50%] -translate-x-[50%]"

@@ -46,7 +46,6 @@ export function BuilderCard() {
     setPieceQuantity(n);
   }, []);
 
-  console.log(showPreview);
   const handlePreview = (toggle: boolean) => {
     // Just enable query if it's not enabled
     if (!enableQuery) setEnableQuery(true);
@@ -97,6 +96,7 @@ export function BuilderCard() {
             <BuilderForm
               imageId={imageUpload.id}
               onPieceQuantityChange={handlePieceQuantityChange}
+              paths={paths}
             />
           </div>
         ) : (

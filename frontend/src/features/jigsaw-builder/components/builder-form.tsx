@@ -16,6 +16,7 @@ import {
   difficulty,
   jigsawBuilderFormSchema,
   JigsawBuilderFormValues,
+  Paths,
   pieceCount,
 } from "../../../../../server/shared/types";
 import { useBuilderCreate } from "../api/mutations";
@@ -23,9 +24,14 @@ import { useBuilderCreate } from "../api/mutations";
 interface BuilderFormProps {
   imageId: string;
   onPieceQuantityChange: (n: number | undefined) => void;
+  paths?: Paths;
 }
 
-function BuilderForm({ imageId, onPieceQuantityChange }: BuilderFormProps) {
+function BuilderForm({
+  imageId,
+  onPieceQuantityChange,
+  paths,
+}: BuilderFormProps) {
   const { mutate: buildJigsaw } = useBuilderCreate();
 
   const { handleSubmit, control, formState } = useForm<JigsawBuilderFormValues>(
