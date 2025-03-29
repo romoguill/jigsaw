@@ -1,4 +1,4 @@
-import { Paths } from "../../../../../server/shared/types";
+import { Paths } from "@jigsaw/shared";
 
 interface PathsMaskProps {
   paths: Paths;

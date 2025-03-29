@@ -1,4 +1,4 @@
-import type { Coordinate } from '../../shared/types.js';
+import type { Coordinate } from '@jigsaw/shared/index.js';
 
 export class Vector {
   readonly x: number;

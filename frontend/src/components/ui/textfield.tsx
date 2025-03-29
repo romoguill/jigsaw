@@ -1,4 +1,3 @@
-import * as React from "react"
 import {
   Input as AriaInput,
   InputProps as AriaInputProps,
@@ -9,13 +8,13 @@ import {
   ValidationResult as AriaValidationResult,
   composeRenderProps,
   Text,
-} from "react-aria-components"
+} from "react-aria-components";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { FieldError, Label } from "./field"
+import { FieldError, Label } from "./field";
 
-const TextField = AriaTextField
+const TextField = AriaTextField;
 
 const Input = ({ className, ...props }: AriaInputProps) => {
   return (
@@ -34,8 +33,8 @@ const Input = ({ className, ...props }: AriaInputProps) => {
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
 const TextArea = ({ className, ...props }: AriaTextAreaProps) => {
   return (
@@ -54,14 +53,14 @@ const TextArea = ({ className, ...props }: AriaTextAreaProps) => {
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
 interface JollyTextFieldProps extends AriaTextFieldProps {
-  label?: string
-  description?: string
-  errorMessage?: string | ((validation: AriaValidationResult) => string)
-  textArea?: boolean
+  label?: string;
+  description?: string;
+  errorMessage?: string | ((validation: AriaValidationResult) => string);
+  textArea?: boolean;
 }
 
 function JollyTextField({
@@ -88,8 +87,8 @@ function JollyTextField({
       )}
       <FieldError>{errorMessage}</FieldError>
     </TextField>
-  )
+  );
 }
 
-export { Input, TextField, JollyTextField, TextArea }
-export type { JollyTextFieldProps }
+export { Input, JollyTextField, TextArea, TextField };
+export type { JollyTextFieldProps };

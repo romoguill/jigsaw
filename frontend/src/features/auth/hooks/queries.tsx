@@ -1,6 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
-import type { User } from "../../../../../shared/types";
+import type { User } from "@jigsaw/shared";
 
 export const currentUserKey = ["current-user"];
 

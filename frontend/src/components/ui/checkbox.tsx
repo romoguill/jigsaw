@@ -1,5 +1,4 @@
-import * as React from "react"
-import { Check, Minus } from "lucide-react"
+import { Check, Minus } from "lucide-react";
 import {
   Checkbox as AriaCheckbox,
   CheckboxGroup as AriaCheckboxGroup,
@@ -8,13 +7,14 @@ import {
   composeRenderProps,
   Text,
   type CheckboxProps as AriaCheckboxProps,
-} from "react-aria-components"
+} from "react-aria-components";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { FieldError, Label, labelVariants } from "./field"
+import { FieldError, Label } from "./field";
+import { labelVariants } from "./jolly-utils";
 
-const CheckboxGroup = AriaCheckboxGroup
+const CheckboxGroup = AriaCheckboxGroup;
 
 const Checkbox = ({ className, children, ...props }: AriaCheckboxProps) => (
   <AriaCheckbox
@@ -56,12 +56,12 @@ const Checkbox = ({ className, children, ...props }: AriaCheckboxProps) => (
       </>
     ))}
   </AriaCheckbox>
-)
+);
 
 interface JollyCheckboxGroupProps extends AriaCheckboxGroupProps {
-  label?: string
-  description?: string
-  errorMessage?: string | ((validation: AriaValidationResult) => string)
+  label?: string;
+  description?: string;
+  errorMessage?: string | ((validation: AriaValidationResult) => string);
 }
 
 function JollyCheckboxGroup({
@@ -92,8 +92,8 @@ function JollyCheckboxGroup({
         </>
       ))}
     </CheckboxGroup>
-  )
+  );
 }
 
-export { Checkbox, CheckboxGroup, JollyCheckboxGroup }
-export type { JollyCheckboxGroupProps }
+export { Checkbox, CheckboxGroup, JollyCheckboxGroup };
+export type { JollyCheckboxGroupProps };

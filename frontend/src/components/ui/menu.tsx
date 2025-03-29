@@ -19,9 +19,10 @@ import {
 
 import { cn } from "@/lib/utils";
 
-import { Button, buttonVariants } from "./button";
+import { Button } from "./button";
 import { ListBoxCollection, ListBoxSection } from "./list-box";
 import { SelectPopover } from "./select";
+import { buttonVariants } from "./jolly-utils";
 
 const MenuTrigger = AriaMenuTrigger;
 

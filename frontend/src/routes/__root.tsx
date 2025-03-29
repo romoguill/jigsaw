@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
-import { User } from "../../../shared/types";
+import { User } from "@jigsaw/shared";
 import { type QueryClient } from "@tanstack/react-query";
 
 export interface RouterAuthContext {

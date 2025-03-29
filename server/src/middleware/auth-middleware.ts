@@ -1,6 +1,6 @@
 import { createMiddleware } from 'hono/factory';
 import { auth } from '../lib/auth.js';
-import type { User } from '../../shared/types.js';
+import type { User } from '@jigsaw/shared/index.js';
 import { HTTPException } from 'hono/http-exception';
 
 export type ContextWithAuth = {

@@ -1,4 +1,4 @@
-import { Circle } from "lucide-react"
+import { Circle } from "lucide-react";
 import {
   Radio as AriaRadio,
   RadioGroup as AriaRadioGroup,
@@ -7,11 +7,12 @@ import {
   ValidationResult as AriaValidationResult,
   composeRenderProps,
   Text,
-} from "react-aria-components"
+} from "react-aria-components";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-import { FieldError, Label, labelVariants } from "./field"
+import { FieldError, Label } from "./field";
+import { labelVariants } from "./jolly-utils";
 
 const RadioGroup = ({ className, ...props }: AriaRadioGroupProps) => {
   return (
@@ -25,8 +26,8 @@ const RadioGroup = ({ className, ...props }: AriaRadioGroupProps) => {
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
 const Radio = ({ className, children, ...props }: AriaRadioProps) => {
   return (
@@ -65,13 +66,13 @@ const Radio = ({ className, children, ...props }: AriaRadioProps) => {
         </>
       ))}
     </AriaRadio>
-  )
-}
+  );
+};
 
 interface JollyRadioGroupProps extends AriaRadioGroupProps {
-  label?: string
-  description?: string
-  errorMessage?: string | ((validation: AriaValidationResult) => string)
+  label?: string;
+  description?: string;
+  errorMessage?: string | ((validation: AriaValidationResult) => string);
 }
 
 function JollyRadioGroup({
@@ -104,8 +105,8 @@ function JollyRadioGroup({
         </>
       ))}
     </RadioGroup>
-  )
+  );
 }
 
-export { RadioGroup, Radio, JollyRadioGroup }
-export type { JollyRadioGroupProps }
+export { RadioGroup, Radio, JollyRadioGroup };
+export type { JollyRadioGroupProps };
