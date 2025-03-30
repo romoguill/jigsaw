@@ -4,6 +4,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { routeTree } from "./routeTree.gen.ts";
+import { useCurrentUser } from "./features/auth/hooks/queries.tsx";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +18,9 @@ const router = createRouter({
 
 // eslint-disable-next-line react-refresh/only-export-components
 function App() {
-  return <RouterProvider router={router} />;
+  const { data: user } = useCurrentUser();
+
+  return <RouterProvider router={router} context={{ auth: { user } }} />;
 }
 
 createRoot(document.getElementById("root")!).render(
