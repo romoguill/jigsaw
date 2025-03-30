@@ -23,7 +23,9 @@
     "format": "npm run format:shared && npm run format:frontend && npm run format:server",
     "format:shared": "npm run format --workspace=@jigsaw/shared",
     "format:frontend": "npm run format --workspace=@jigsaw/frontend",
-    "format:server": "npm run format --workspace=@jigsaw/server"
+    "format:server": "npm run format --workspace=@jigsaw/server",
+    "db:push": "npm run db:push --workspace=@jigsaw/server",
+    "db:studio": "npm run db:studio --workspace=@jigsaw/server"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

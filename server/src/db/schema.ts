@@ -90,7 +90,6 @@ export const uploadedImage = sqliteTable('uploaded_image', {
 
 export const games = sqliteTable('games', {
   id: integer('id').primaryKey(),
-  title: text('title').notNull(),
   imageKey: text('image_key').notNull(),
   difficulty: text('difficulty', { enum: gameDifficulty }).notNull(),
   pieceCount: integer('piece_count').notNull(),

@@ -6,7 +6,9 @@
     "build": "tsc",
     "start": "node build/index.js",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:push": "npx drizzle-kit push",
+    "db:studio": "npx drizzle-kit studio"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",

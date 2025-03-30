@@ -7,6 +7,8 @@ import {
   coordinateSchema,
   jigsawBuilderFormSchema,
 } from '@jigsaw/shared/schemas.js';
+import { db } from 'src/db/db.js';
+import { games } from 'src/db/schema.js';
 
 export const gameRoute = new Hono()
   .use(authMiddleware)
@@ -14,9 +16,30 @@ export const gameRoute = new Hono()
     '/builder',
     zValidator(
       'json',
-      z.intersection(jigsawBuilderFormSchema, z.object({ imageId: z.string() }))
+      z
+        .intersection(
+          jigsawBuilderFormSchema,
+          z.object({ imageKey: z.string() })
+        )
+        .transform((data) => ({
+          ...data,
+          pieceCount: Number(data.pieceCount),
+        }))
     ),
-    (c) => {
+    async (c) => {
+      const { imageKey, borders, difficulty, pieceCount } = c.req.valid('json');
+
+      await db.insert(games).values({
+        imageKey,
+        difficulty,
+        pieceCount,
+        hasBorders: borders,
+        horizontalPaths: [],
+        verticalPaths: [],
+        columns: 0,
+        pieceSize: 0,
+        rows: 0,
+      });
       return c.json({ success: true });
     }
   )
