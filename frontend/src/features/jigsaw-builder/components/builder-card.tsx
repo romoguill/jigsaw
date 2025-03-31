@@ -93,9 +93,10 @@ export function BuilderCard() {
               )}
             </div>
             <BuilderForm
-              imageId={imageUpload.id}
+              imageKey={imageUpload.id}
               onPieceQuantityChange={handlePieceQuantityChange}
               basicGameData={{
+                origin: { x: 0, y: 0 },
                 pieceSize: gameData.pieceSize,
                 rows: gameData.rows,
                 columns: gameData.columns,

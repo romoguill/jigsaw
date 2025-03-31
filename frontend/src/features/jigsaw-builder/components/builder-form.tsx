@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Coordinate,
   gameDifficulty,
   jigsawBuilderFormSchema,
   JigsawBuilderFormValues,
@@ -22,10 +23,11 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useBuilderCreate } from "../api/mutations";
 
 interface BuilderFormProps {
-  imageId: string;
+  imageKey: string;
   onPieceQuantityChange: (n: number | undefined) => void;
   paths?: Paths;
-  basicGameData?: {
+  basicGameData: {
+    origin: Coordinate;
     pieceSize: number;
     rows: number;
     columns: number;
@@ -33,7 +35,7 @@ interface BuilderFormProps {
 }
 
 function BuilderForm({
-  imageId,
+  imageKey,
   onPieceQuantityChange,
   basicGameData,
   paths,
@@ -52,7 +54,20 @@ function BuilderForm({
   );
 
   const onSubmit: SubmitHandler<JigsawBuilderFormValues> = (data) => {
-    buildJigsaw({ data: { ...data, imageId } });
+    buildJigsaw({
+      data: {
+        ...data,
+        ...basicGameData,
+        imageKey: imageKey,
+        cached:
+          paths?.horizontal && paths.vertical
+            ? {
+                horizontalPaths: paths.horizontal,
+                verticalPaths: paths.vertical,
+              }
+            : undefined,
+      },
+    });
   };
 
   return (
