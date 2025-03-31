@@ -1,4 +1,4 @@
-import { createRouteHandler } from 'uploadthing/server';
+import { createRouteHandler, UTApi } from 'uploadthing/server';
 import { uploadRouter } from '../lib/uploadthing.js';
 import { Hono } from 'hono';
 
@@ -15,3 +15,5 @@ const handlers = createRouteHandler({
 });
 
 export const uploadRoute = new Hono().all('/', (c) => handlers(c.req.raw));
+
+export const utapi = new UTApi();

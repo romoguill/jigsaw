@@ -10,6 +10,9 @@ import { games } from 'src/db/schema.js';
 import { z } from 'zod';
 import { authMiddleware } from '../middleware/auth-middleware.js';
 import * as gameBuilderService from '../service/game-builder.js';
+import { utapi } from './upload.js';
+import { HTTPException } from 'hono/http-exception';
+import { eq } from 'drizzle-orm';
 
 const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
   gameSchema
@@ -97,5 +100,55 @@ export const gameRoute = new Hono()
       });
 
       return c.json({ success: true, data: paths });
+    }
+  )
+  .post(
+    '/builder/:gameId/pieces',
+    zValidator(
+      'json',
+      z.object({
+        imageKey: z.string(),
+        pieceSize: z.number(),
+        cols: z.number(),
+        rows: z.number(),
+      })
+    ),
+    async (c) => {
+      const gameId = c.req.param('gameId');
+      const { imageKey, pieceSize, cols, rows } = c.req.valid('json');
+
+      // Get the image from uploadthing
+      const { ufsUrl } = await utapi.generateSignedURL(imageKey);
+
+      // Fetch the image
+      const imageResponse = await fetch(ufsUrl);
+
+      // If the image is not found, throw an error
+      if (!imageResponse.ok) {
+        throw new HTTPException(404, { message: 'Image not found' });
+      }
+
+      // Convert the image to a buffer
+      const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+
+      // Get the game from the database
+      const [game] = await db
+        .select()
+        .from(games)
+        .where(eq(games.id, Number(gameId)));
+
+      if (!game) {
+        throw new HTTPException(404, { message: 'Game not found' });
+      }
+
+      // Cut the image into pieces
+      const pieces = gameBuilderService.cutImageIntoPieces({
+        imageBuffer: Buffer.from(imageBuffer),
+        pieceSize: game.pieceSize,
+        horizontalPaths: game.horizontalPaths,
+        verticalPaths: game.verticalPaths,
+      });
+
+      return c.json({ success: true });
     }
   );
