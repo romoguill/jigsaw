@@ -13,7 +13,7 @@ import { gameRoute } from './routes/game.js';
 const app = new Hono()
   .use(logger())
   .use(
-    '/api/auth/**',
+    '/api/auth/*',
     cors({
       origin: 'http://localhost:5173', // Vite origin
       allowHeaders: ['Content-Type', 'Authorization'],
