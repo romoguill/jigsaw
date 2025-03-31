@@ -1,7 +1,6 @@
-import { sqliteTable, text, integer, blob } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
-import { createInsertSchema } from 'drizzle-zod';
-import { createSelectSchema } from 'drizzle-zod';
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import type { z } from 'zod';
 
 // ----- ENUMS -----
@@ -96,8 +95,12 @@ export const games = sqliteTable('games', {
   hasBorders: integer('has_borders', { mode: 'boolean' })
     .default(true)
     .notNull(),
-  horizontalPaths: blob('horizontal_paths').$type<string[]>().notNull(),
-  verticalPaths: blob('vertical_paths').$type<string[]>().notNull(),
+  horizontalPaths: text('horizontal_paths', { mode: 'json' })
+    .$type<string[]>()
+    .notNull(),
+  verticalPaths: text('vertical_paths', { mode: 'json' })
+    .$type<string[]>()
+    .notNull(),
   pieceSize: integer('piece_size').notNull(),
   columns: integer('columns').notNull(),
   rows: integer('rows').notNull(),

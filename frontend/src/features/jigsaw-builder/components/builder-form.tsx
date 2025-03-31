@@ -54,6 +54,7 @@ function BuilderForm({
   );
 
   const onSubmit: SubmitHandler<JigsawBuilderFormValues> = (data) => {
+    // If paths are provided, use them to avoid rebuilding paths (cached option)
     buildJigsaw({
       data: {
         ...data,
