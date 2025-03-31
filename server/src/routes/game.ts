@@ -5,6 +5,7 @@ import { Path } from '../core/path.js';
 import { authMiddleware } from '../middleware/auth-middleware.js';
 import {
   coordinateSchema,
+  gameSchema,
   jigsawBuilderFormSchema,
 } from '@jigsaw/shared/schemas.js';
 import { db } from 'src/db/db.js';
@@ -16,10 +17,16 @@ export const gameRoute = new Hono()
     '/builder',
     zValidator(
       'json',
-      z
-        .intersection(
-          jigsawBuilderFormSchema,
-          z.object({ imageKey: z.string() })
+      jigsawBuilderFormSchema
+        // merge with imageKey. Mandatory for builder
+        .merge(
+          gameSchema.pick({
+            imageKey: true,
+          })
+        )
+        // merge with cached. If the client has a cached game, it will be merged with the new game data. (Preview button)
+        .merge(
+          z.object({ cached: gameSchema.omit({ imageKey: true }).optional() })
         )
         .transform((data) => ({
           ...data,
@@ -27,18 +34,19 @@ export const gameRoute = new Hono()
         }))
     ),
     async (c) => {
-      const { imageKey, borders, difficulty, pieceCount } = c.req.valid('json');
+      const { imageKey, borders, difficulty, pieceCount, cached } =
+        c.req.valid('json');
 
       await db.insert(games).values({
         imageKey,
         difficulty,
         pieceCount,
         hasBorders: borders,
-        horizontalPaths: [],
-        verticalPaths: [],
-        columns: 0,
-        pieceSize: 0,
-        rows: 0,
+        horizontalPaths: cached?.horizontalPaths,
+        verticalPaths: cached?.verticalPaths,
+        columns: cached?.columns,
+        pieceSize: cached?.pieceSize,
+        rows: cached?.rows,
       });
       return c.json({ success: true });
     }
