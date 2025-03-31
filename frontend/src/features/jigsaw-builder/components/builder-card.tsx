@@ -34,7 +34,6 @@ export function BuilderCard() {
       cols: gameData?.columns || 0,
       rows: gameData?.rows || 0,
       pieceSize: gameData?.pieceSize || 0,
-      pinSize: (gameData?.pieceSize || 0) * 0.2,
       imgSrc: imgRef.current?.src || "",
     },
     { enabled: enableQuery && gameData !== null }
@@ -96,6 +95,11 @@ export function BuilderCard() {
             <BuilderForm
               imageId={imageUpload.id}
               onPieceQuantityChange={handlePieceQuantityChange}
+              basicGameData={{
+                pieceSize: gameData.pieceSize,
+                rows: gameData.rows,
+                columns: gameData.columns,
+              }}
               paths={paths}
             />
           </div>

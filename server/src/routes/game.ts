@@ -10,6 +10,16 @@ import {
 } from '@jigsaw/shared/schemas.js';
 import { db } from 'src/db/db.js';
 import { games } from 'src/db/schema.js';
+import { calculatePinSize } from '../lib/utils.js';
+
+const basicGameSchema = jigsawBuilderFormSchema.merge(
+  gameSchema.pick({
+    imageKey: true,
+    pieceSize: true,
+    rows: true,
+    columns: true,
+  })
+);
 
 export const gameRoute = new Hono()
   .use(authMiddleware)
@@ -26,7 +36,17 @@ export const gameRoute = new Hono()
         )
         // merge with cached. If the client has a cached game, it will be merged with the new game data. (Preview button)
         .merge(
-          z.object({ cached: gameSchema.omit({ imageKey: true }).optional() })
+          z.object({
+            cached: gameSchema
+              .pick({
+                rows: true,
+                columns: true,
+                pieceSize: true,
+                horizontalPaths: true,
+                verticalPaths: true,
+              })
+              .optional(),
+          })
         )
         .transform((data) => ({
           ...data,
@@ -37,17 +57,26 @@ export const gameRoute = new Hono()
       const { imageKey, borders, difficulty, pieceCount, cached } =
         c.req.valid('json');
 
-      await db.insert(games).values({
-        imageKey,
-        difficulty,
-        pieceCount,
-        hasBorders: borders,
-        horizontalPaths: cached?.horizontalPaths,
-        verticalPaths: cached?.verticalPaths,
-        columns: cached?.columns,
-        pieceSize: cached?.pieceSize,
-        rows: cached?.rows,
-      });
+      // If Cached, use that info from the client to avoid rebuilding paths
+      if (cached) {
+        const gameData = {
+          pieceCount,
+          horizontalPaths: cached.horizontalPaths,
+          verticalPaths: cached.verticalPaths,
+          pieceSize: cached.pieceSize,
+          columns: cached.columns,
+          rows: cached.rows,
+        };
+
+        await db.insert(games).values({
+          ...gameData,
+          imageKey,
+          difficulty,
+          pieceCount,
+          hasBorders: borders,
+        });
+      }
+
       return c.json({ success: true });
     }
   )
@@ -58,18 +87,19 @@ export const gameRoute = new Hono()
       z.object({
         origin: coordinateSchema,
         pieceSize: z.number(),
-        pinSize: z.number(),
         cols: z.number(),
         rows: z.number(),
       })
     ),
     (c) => {
-      const { origin, pieceSize, pinSize, cols, rows } = c.req.valid('json');
+      const { origin, pieceSize, cols, rows } = c.req.valid('json');
 
       const paths: { horizontal: string[]; vertical: string[] } = {
         horizontal: [],
         vertical: [],
       };
+
+      const pinSize = calculatePinSize(pieceSize);
 
       // Generate horizontal paths
       for (let i = 0; i < rows; i++) {

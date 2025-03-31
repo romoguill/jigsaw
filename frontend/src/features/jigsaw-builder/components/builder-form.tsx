@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import {
   gameDifficulty,
   jigsawBuilderFormSchema,
@@ -19,18 +18,25 @@ import {
   Paths,
   pieceCount,
 } from "@jigsaw/shared";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useBuilderCreate } from "../api/mutations";
 
 interface BuilderFormProps {
   imageId: string;
   onPieceQuantityChange: (n: number | undefined) => void;
   paths?: Paths;
+  basicGameData?: {
+    pieceSize: number;
+    rows: number;
+    columns: number;
+  };
 }
 
 function BuilderForm({
   imageId,
   onPieceQuantityChange,
-  // paths,
+  basicGameData,
+  paths,
 }: BuilderFormProps) {
   const { mutate: buildJigsaw } = useBuilderCreate();
 

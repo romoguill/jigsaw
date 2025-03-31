@@ -1,0 +1,3 @@
+const PIN_SIZE_MULTIPLIER = 0.2;
+
+export { PIN_SIZE_MULTIPLIER };
