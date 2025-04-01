@@ -184,4 +184,27 @@ export class Path {
       });
     }
   }
+
+  static segmentDecomposer(path: string) {
+    // Get the path segments without the M, C or S. Remove the first element because it's the MoveTo command.
+    const pathArray = path.split(/[CS]/).slice(1);
+
+    const segments = pathArray.map((segment) => {
+      const values = segment.trim().split(' ');
+      return values;
+    });
+
+    return segments;
+  }
+
+  static createEnclosingPath(
+    verticalPaths: [string, string],
+    horizontalPaths: [string, string]
+  ) {
+    const path = [
+      'M 0 0',
+      `L ${verticalPaths[0]} 0`,
+      `L ${verticalPaths[1]} 0`,
+    ];
+  }
 }

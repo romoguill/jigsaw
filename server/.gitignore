@@ -29,3 +29,4 @@ lerna-debug.log*
 
 data/local.db
 build
+pieces_cut

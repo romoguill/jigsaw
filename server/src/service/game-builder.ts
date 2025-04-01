@@ -92,17 +92,40 @@ export const cutImageIntoPieces = async ({
   //   })
   //   .toBuffer();
 
+  console.log(Path.segmentDecomposer(horizontalPaths[0], 10));
+
   // Create pieces based on paths
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       // Create SVG mask for this piece
       const svgMask = `
         <svg width="${pieceSize}" height="${pieceSize}">
-          <path d="${horizontalPaths[row]}" transform="translate(0 ${(row + 1) * pieceSize})" fill="black"/>
-          <path d="${horizontalPaths[row + 1]}" transform="translate(0 ${(row + 1) * pieceSize})" fill="black"/>
-          <path d="${verticalPaths[col]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
-          <path d="${verticalPaths[col + 1]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
+          <defs>
+            <clipPath id="pieceClip">
+              <rect width="${pieceSize}" height="${pieceSize}" x="20" y="20" fill="black"/>
+            </clipPath>
+          </defs>
+          <g clip-path="url(#pieceClip)">
+            <path d="${horizontalPaths[row]}" transform="translate(0 ${(row + 1) * pieceSize})" fill="black"/>
+            <path d="${horizontalPaths[row + 1]}" transform="translate(0 ${(row + 1) * pieceSize})" fill="black"/>
+            <path d="${verticalPaths[col]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
+            <path d="${verticalPaths[col + 1]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
+          </g>
         </svg>`;
+
+      // <path fill-rule="evenodd" fill="white" d="
+      //     M0,0 L${pieceSize},0 L${pieceSize},${pieceSize} L0,${pieceSize} Z
+      //     ${horizontalPaths[row].replace(/M/g, `M${-col * pieceSize},${-row * pieceSize}`)}
+      //     ${horizontalPaths[row + 1].replace(/M/g, `M${-col * pieceSize},${-row * pieceSize}`)}
+      //     ${verticalPaths[col].replace(/M/g, `M${-col * pieceSize},${-row * pieceSize}`)}
+      //     ${verticalPaths[col + 1].replace(/M/g, `M${-col * pieceSize},${-row * pieceSize}`)}
+      //   "/>
+
+      // Simple but doens't work
+      // <path d="${horizontalPaths[row]}" transform="translate(0 ${(row + 1) * pieceSize})" fill="black"/>
+      // <path d="${horizontalPaths[row + 1]}" transform="translate(0 ${(row + 1) * pieceSize})" fill="black"/>
+      // <path d="${verticalPaths[col]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
+      // <path d="${verticalPaths[col + 1]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
 
       console.log({
         left: col * pieceSize,
@@ -113,10 +136,10 @@ export const cutImageIntoPieces = async ({
       // Create the piece using composite
       const pieceBuffer = await sharp(imageBuffer)
         .extract({
-          left: col * pieceSize,
-          top: row * pieceSize,
-          width: pieceSize,
-          height: pieceSize,
+          left: Math.max(0, col * pieceSize - 10),
+          top: Math.max(0, row * pieceSize - 10),
+          width: Math.min(pieceSize + 20, metadata.width),
+          height: Math.min(pieceSize + 20, metadata.height),
         })
         .composite([
           {
@@ -125,6 +148,7 @@ export const cutImageIntoPieces = async ({
             gravity: 'northwest',
           },
         ])
+        .png()
         .toBuffer();
 
       const piecePath = path.join(piecesDir, `piece_${row}_${col}.png`);
