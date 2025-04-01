@@ -185,7 +185,7 @@ export class Path {
     }
   }
 
-  static segmentDecomposer(path: string) {
+  static segmentsDecomposer(path: string): string[][] {
     // Get the path segments without the M, C or S. Remove the first element because it's the MoveTo command.
     const pathArray = path.split(/[CS]/).slice(1);
 
@@ -195,6 +195,56 @@ export class Path {
     });
 
     return segments;
+  }
+
+  static segmentDetails(
+    segments: string[][],
+    n: number
+  ): {
+    startPoint: Coordinate;
+    endPoint: Coordinate;
+    controlPointStart: Coordinate;
+    controlPointEnd: Coordinate;
+  } {
+    if (n === 0) {
+      return {
+        startPoint: {
+          x: 0,
+          y: 0,
+        },
+        endPoint: {
+          x: Number(segments[n][4]),
+          y: Number(segments[n][5]),
+        },
+        controlPointStart: {
+          x: Number(segments[n][1]),
+          y: Number(segments[n][2]),
+        },
+        controlPointEnd: {
+          x: Number(segments[n][3]),
+          y: Number(segments[n][4]),
+        },
+      };
+    } else {
+      return {
+        startPoint: {
+          x: Number(segments[n - 1][2]),
+          y: Number(segments[n - 1][3]),
+        },
+        endPoint: {
+          x: Number(segments[n][2]),
+          y: Number(segments[n][3]),
+        },
+        controlPointStart: {
+          x: Number(segments[n - 1][0]),
+          y: Number(segments[n - 1][1]),
+        },
+        controlPointEnd: {
+          x: Number(segments[n][0]),
+          y: Number(segments[n][1]),
+        },
+      };
+    }
   }
 
   static createEnclosingPath(
