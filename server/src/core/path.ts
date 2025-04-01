@@ -1,5 +1,12 @@
 import type { Coordinate } from '@jigsaw/shared/index.js';
 
+type SegmentDetails = {
+  startPoint: Coordinate;
+  endPoint: Coordinate;
+  controlPointStart: Coordinate;
+  controlPointEnd: Coordinate;
+};
+
 export class Path {
   path: string[] = [];
   // Control point refers to the point that is responsible for affecting the curvature.
@@ -185,6 +192,7 @@ export class Path {
     }
   }
 
+  // Decompose the path into segments (curves both longhand and shorthand)
   static segmentsDecomposer(path: string): string[][] {
     // Get the path segments without the M, C or S. Remove the first element because it's the MoveTo command.
     const pathArray = path.split(/[CS]/).slice(1);
@@ -197,15 +205,8 @@ export class Path {
     return segments;
   }
 
-  static segmentDetails(
-    segments: string[][],
-    n: number
-  ): {
-    startPoint: Coordinate;
-    endPoint: Coordinate;
-    controlPointStart: Coordinate;
-    controlPointEnd: Coordinate;
-  } {
+  // Get the details of a segment (all necesary points to create curves)
+  static segmentDetails(segments: string[][], n: number): SegmentDetails {
     if (n === 0) {
       return {
         startPoint: {
@@ -217,12 +218,12 @@ export class Path {
           y: Number(segments[n][5]),
         },
         controlPointStart: {
-          x: Number(segments[n][1]),
-          y: Number(segments[n][2]),
+          x: Number(segments[n][0]),
+          y: Number(segments[n][1]),
         },
         controlPointEnd: {
-          x: Number(segments[n][3]),
-          y: Number(segments[n][4]),
+          x: Number(segments[n][2]),
+          y: Number(segments[n][3]),
         },
       };
     } else {
@@ -247,14 +248,85 @@ export class Path {
     }
   }
 
+  // Create an enclosing path from the segments and the row and column of the piece.
   static createEnclosingPath(
-    verticalPaths: [string, string],
-    horizontalPaths: [string, string]
-  ) {
-    const path = [
-      'M 0 0',
-      `L ${verticalPaths[0]} 0`,
-      `L ${verticalPaths[1]} 0`,
+    paths: {
+      horizontalPaths: string[];
+      verticalPaths: string[];
+    },
+    row: number,
+    column: number,
+    pieceSize: number
+  ): SegmentDetails[] {
+    // Get the paths of the horizontal and vertical paths of the piece. Top and bottom; left and right.
+    const horizontalPaths = [
+      paths.horizontalPaths[row],
+      paths.horizontalPaths[row + 1],
     ];
+    const verticalPaths = [
+      paths.verticalPaths[column],
+      paths.verticalPaths[column + 1],
+    ];
+
+    // Decompose the paths into segments.
+    const [topSegments, bottomSegments] = horizontalPaths.map((path) =>
+      this.segmentsDecomposer(path)
+    );
+
+    const [leftSegments, rightSegments] = verticalPaths.map((path) =>
+      this.segmentsDecomposer(path)
+    );
+
+    // Get the details of the segments. Add to the coordinates the piece size. All paths are created from 0, 0. In reality the first would be the border.
+    const [topSegmentDetails, bottomSegmentDetails] = [
+      topSegments,
+      bottomSegments,
+    ]
+      .map((segment) => this.segmentDetails(segment, row))
+      .map((segmentDetail, i) => {
+        Object.entries(segmentDetail).forEach(([_key, value]) => {
+          value.x += pieceSize * (row + 1);
+          value.y += pieceSize * (row + 1 + i);
+        });
+        return segmentDetail;
+      });
+
+    const [leftSegmentDetails, rightSegmentDetails] = [
+      leftSegments,
+      rightSegments,
+    ]
+      .map((segment) => this.segmentDetails(segment, column))
+      .map((segmentDetail, i) => {
+        Object.entries(segmentDetail).forEach(([_key, value]) => {
+          value.x += pieceSize * (column + 1 + i);
+          value.y += pieceSize * (column + 1);
+        });
+
+        return segmentDetail;
+      });
+
+    return [
+      topSegmentDetails,
+      rightSegmentDetails,
+      bottomSegmentDetails,
+      leftSegmentDetails,
+    ];
+  }
+
+  // Get the path svg from the closed path
+  static getPathSvg(segmentDetails: SegmentDetails[]): string {
+    const close = 'Z';
+
+    return segmentDetails
+      .map((segmentDetail, i) => {
+        const moveTo = `M ${segmentDetail.startPoint.x} ${segmentDetail.startPoint.y}`;
+        const curve = `C ${segmentDetail.controlPointStart.x} ${segmentDetail.controlPointStart.y} ${segmentDetail.controlPointEnd.x} ${segmentDetail.controlPointEnd.y} ${segmentDetail.endPoint.x} ${segmentDetail.endPoint.y}`;
+
+        if (i === 0) return `${moveTo} ${curve}`;
+
+        return curve;
+      })
+      .join(' ')
+      .concat(' ', close);
   }
 }

@@ -92,7 +92,17 @@ export const cutImageIntoPieces = async ({
   //   })
   //   .toBuffer();
 
-  console.log(Path.segmentDecomposer(horizontalPaths[0], 10));
+  const enclosingPath = Path.createEnclosingPath(
+    { horizontalPaths, verticalPaths },
+    0,
+    0,
+    pieceSize
+  );
+
+  console.log(enclosingPath);
+
+  const enclosingPathSvg = Path.getPathSvg(enclosingPath);
+  console.log(enclosingPathSvg);
 
   // Create pieces based on paths
   for (let row = 0; row < rows; row++) {
@@ -127,12 +137,6 @@ export const cutImageIntoPieces = async ({
       // <path d="${verticalPaths[col]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
       // <path d="${verticalPaths[col + 1]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
 
-      console.log({
-        left: col * pieceSize,
-        top: row * pieceSize,
-        width: pieceSize,
-        height: pieceSize,
-      });
       // Create the piece using composite
       const pieceBuffer = await sharp(imageBuffer)
         .extract({
