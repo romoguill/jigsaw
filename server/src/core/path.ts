@@ -1,5 +1,10 @@
 import type { Coordinate } from '@jigsaw/shared/index.js';
 
+type DecomposedPath = {
+  origin: Coordinate;
+  completeSegments: string[][];
+};
+
 type SegmentDetails = {
   startPoint: Coordinate;
   endPoint: Coordinate;
@@ -193,7 +198,8 @@ export class Path {
   }
 
   // Decompose the path into segments (curves both longhand and shorthand)
-  static segmentsDecomposer(path: string): string[][] {
+  static segmentsDecomposer(path: string): DecomposedPath {
+    const [x, y] = path.split('M')[1].split(' ').map(Number);
     // Get the path segments without the M, C or S. Remove the first element because it's the MoveTo command.
     const pathArray = path.split(/[CS]/).slice(1);
 
@@ -212,47 +218,50 @@ export class Path {
       }
     });
 
-    return completeSegments;
+    return { origin: { x, y }, completeSegments };
   }
 
   // Get the details of a segment (all necesary points to create curves)
-  static segmentDetails(segments: string[][], n: number): SegmentDetails {
+  static segmentDetails(
+    decomposedPath: DecomposedPath,
+    n: number
+  ): SegmentDetails {
     if (n === 0) {
       return {
         startPoint: {
-          x: 0,
-          y: 0,
+          x: decomposedPath.origin.x,
+          y: decomposedPath.origin.y,
         },
         endPoint: {
-          x: Number(segments[n][4]),
-          y: Number(segments[n][5]),
+          x: Number(decomposedPath.completeSegments[n][4]),
+          y: Number(decomposedPath.completeSegments[n][5]),
         },
         controlPointStart: {
-          x: Number(segments[n][0]),
-          y: Number(segments[n][1]),
+          x: Number(decomposedPath.completeSegments[n][0]),
+          y: Number(decomposedPath.completeSegments[n][1]),
         },
         controlPointEnd: {
-          x: Number(segments[n][2]),
-          y: Number(segments[n][3]),
+          x: Number(decomposedPath.completeSegments[n][2]),
+          y: Number(decomposedPath.completeSegments[n][3]),
         },
       };
     } else {
       return {
         startPoint: {
-          x: Number(segments[n - 1][2]),
-          y: Number(segments[n - 1][3]),
+          x: Number(decomposedPath.completeSegments[n - 1][2]),
+          y: Number(decomposedPath.completeSegments[n - 1][3]),
         },
         endPoint: {
-          x: Number(segments[n][2]),
-          y: Number(segments[n][3]),
+          x: Number(decomposedPath.completeSegments[n][2]),
+          y: Number(decomposedPath.completeSegments[n][3]),
         },
         controlPointStart: {
-          x: Number(segments[n - 1][0]),
-          y: Number(segments[n - 1][1]),
+          x: Number(decomposedPath.completeSegments[n - 1][0]),
+          y: Number(decomposedPath.completeSegments[n - 1][1]),
         },
         controlPointEnd: {
-          x: Number(segments[n][0]),
-          y: Number(segments[n][1]),
+          x: Number(decomposedPath.completeSegments[n][0]),
+          y: Number(decomposedPath.completeSegments[n][1]),
         },
       };
     }
