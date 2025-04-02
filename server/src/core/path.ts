@@ -197,12 +197,22 @@ export class Path {
     // Get the path segments without the M, C or S. Remove the first element because it's the MoveTo command.
     const pathArray = path.split(/[CS]/).slice(1);
 
-    const segments = pathArray.map((segment) => {
+    //
+    const completeSegments: string[][] = [];
+    let partialSegments: string[] = [];
+    pathArray.forEach((segment, i) => {
       const values = segment.trim().split(' ');
-      return values;
+
+      partialSegments.push(...values);
+
+      // Every 5 segments, push the partial segments to the complete segments. 5 segments for each piece side.
+      if (i !== 0 && i % 5 === 0) {
+        completeSegments.push(partialSegments);
+        partialSegments = [];
+      }
     });
 
-    return segments;
+    return completeSegments;
   }
 
   // Get the details of a segment (all necesary points to create curves)
