@@ -1,4 +1,5 @@
 import type { Coordinate } from '@jigsaw/shared/index.js';
+import { Vector } from './vector.js';
 
 type DecomposedPath = {
   origin: Coordinate;
@@ -309,6 +310,15 @@ export class Path {
     }
   }
 
+  static reverseSegment(segment: SegmentDetails): SegmentDetails {
+    return {
+      startPoint: segment.endPoint,
+      endPoint: segment.startPoint,
+      controlPointStart: segment.controlPointEnd,
+      controlPointEnd: segment.controlPointStart,
+    };
+  }
+
   // Create an enclosing path from the segments and the row and column of the piece.
   static createEnclosingPath(
     paths: {
@@ -352,6 +362,9 @@ export class Path {
         return segmentDetail;
       });
 
+    // Must reverse bottom segment to make it clockwise and a closed path.
+    const reversedBottomSegment = this.reverseSegment(bottomSegmentDetails);
+
     const [leftSegmentDetails, rightSegmentDetails] = [
       leftSegments,
       rightSegments,
@@ -366,11 +379,57 @@ export class Path {
         return segmentDetail;
       });
 
+    // Vertical paths need to be rotated 90 degrees since all paths are created from 0, 0 along x axis.
+    // Rotate left.
+    const leftControlPointStartVector = new Vector(
+      leftSegmentDetails.startPoint,
+      leftSegmentDetails.controlPointStart
+    );
+    const leftControlPointEndVector = new Vector(
+      leftSegmentDetails.endPoint,
+      leftSegmentDetails.controlPointEnd
+    );
+
+    const leftControlPointStartVector90 =
+      leftControlPointStartVector.rotateVector90();
+    const leftControlPointEndVector90 =
+      leftControlPointEndVector.rotateVector90();
+
+    leftSegmentDetails.controlPointStart =
+      leftControlPointStartVector90.toCoordinate(leftSegmentDetails.startPoint);
+    leftSegmentDetails.controlPointEnd =
+      leftControlPointEndVector90.toCoordinate(leftSegmentDetails.endPoint);
+
+    // Rotate right.
+    const rightControlPointStartVector = new Vector(
+      rightSegmentDetails.startPoint,
+      rightSegmentDetails.controlPointStart
+    );
+    const rightControlPointEndVector = new Vector(
+      rightSegmentDetails.endPoint,
+      rightSegmentDetails.controlPointEnd
+    );
+
+    const rightControlPointStartVector90 =
+      rightControlPointStartVector.rotateVector90();
+    const rightControlPointEndVector90 =
+      rightControlPointEndVector.rotateVector90();
+
+    rightSegmentDetails.controlPointStart =
+      rightControlPointStartVector90.toCoordinate(
+        rightSegmentDetails.startPoint
+      );
+    rightSegmentDetails.controlPointEnd =
+      rightControlPointEndVector90.toCoordinate(rightSegmentDetails.endPoint);
+
+    // Must reverse left segment to make it clockwise and a closed path.
+    const reversedLeftSegment = this.reverseSegment(leftSegmentDetails);
+
     return [
       topSegmentDetails,
       rightSegmentDetails,
-      bottomSegmentDetails,
-      leftSegmentDetails,
+      reversedBottomSegment,
+      reversedLeftSegment,
     ];
   }
 
