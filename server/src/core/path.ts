@@ -212,11 +212,13 @@ export class Path {
       partialSegments.push(...values);
 
       // Every 5 segments, push the partial segments to the complete segments. 5 segments for each piece side.
-      if (i !== 0 && i % 5 === 0) {
+      if ((i + 1) % 5 === 0) {
         completeSegments.push(partialSegments);
         partialSegments = [];
       }
     });
+
+    console.log(completeSegments);
 
     return { origin: { x, y }, completeSegments };
   }
@@ -233,35 +235,75 @@ export class Path {
           y: decomposedPath.origin.y,
         },
         endPoint: {
-          x: Number(decomposedPath.completeSegments[n][4]),
-          y: Number(decomposedPath.completeSegments[n][5]),
+          x: Number(
+            decomposedPath.completeSegments[n][
+              decomposedPath.completeSegments[n].length - 2
+            ]
+          ),
+          y: Number(
+            decomposedPath.completeSegments[n][
+              decomposedPath.completeSegments[n].length - 1
+            ]
+          ),
         },
         controlPointStart: {
           x: Number(decomposedPath.completeSegments[n][0]),
           y: Number(decomposedPath.completeSegments[n][1]),
         },
         controlPointEnd: {
-          x: Number(decomposedPath.completeSegments[n][2]),
-          y: Number(decomposedPath.completeSegments[n][3]),
+          x: Number(
+            decomposedPath.completeSegments[n][
+              decomposedPath.completeSegments[n].length - 4
+            ]
+          ),
+          y: Number(
+            decomposedPath.completeSegments[n][
+              decomposedPath.completeSegments[n].length - 3
+            ]
+          ),
         },
       };
     } else {
       return {
         startPoint: {
-          x: Number(decomposedPath.completeSegments[n - 1][2]),
-          y: Number(decomposedPath.completeSegments[n - 1][3]),
+          x: Number(
+            decomposedPath.completeSegments[n - 1][
+              decomposedPath.completeSegments[n - 1].length - 2
+            ]
+          ),
+          y: Number(
+            decomposedPath.completeSegments[n - 1][
+              decomposedPath.completeSegments[n - 1].length - 1
+            ]
+          ),
         },
         endPoint: {
-          x: Number(decomposedPath.completeSegments[n][2]),
-          y: Number(decomposedPath.completeSegments[n][3]),
+          x: Number(
+            decomposedPath.completeSegments[n][
+              decomposedPath.completeSegments[n].length - 2
+            ]
+          ),
+          y: Number(
+            decomposedPath.completeSegments[n][
+              decomposedPath.completeSegments[n].length - 1
+            ]
+          ),
         },
         controlPointStart: {
           x: Number(decomposedPath.completeSegments[n - 1][0]),
           y: Number(decomposedPath.completeSegments[n - 1][1]),
         },
         controlPointEnd: {
-          x: Number(decomposedPath.completeSegments[n][0]),
-          y: Number(decomposedPath.completeSegments[n][1]),
+          x: Number(
+            decomposedPath.completeSegments[n][
+              decomposedPath.completeSegments[n].length - 4
+            ]
+          ),
+          y: Number(
+            decomposedPath.completeSegments[n][
+              decomposedPath.completeSegments[n].length - 3
+            ]
+          ),
         },
       };
     }
