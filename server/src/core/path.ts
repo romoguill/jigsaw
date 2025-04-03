@@ -360,8 +360,8 @@ export class Path {
       };
 
       const controlPointEnd = {
-        x: Number(remainingSegments[2]),
-        y: Number(remainingSegments[3]),
+        x: Number(remainingSegments[0]),
+        y: Number(remainingSegments[1]),
       };
 
       curvesDetails.push({
@@ -523,38 +523,31 @@ export class Path {
     const close = 'Z';
     const moveTo = `M ${segments.top[0].startPoint.x} ${segments.top[0].startPoint.y}`;
 
-    const topCurve = segments.top.reduce((acc, segment) => {
-      return (
-        acc +
-        ' ' +
-        `C ${segment.controlPointStart.x} ${segment.controlPointStart.y} ${segment.controlPointEnd.x} ${segment.controlPointEnd.y} ${segment.endPoint.x} ${segment.endPoint.y}`
-      );
-    }, '');
+    // Set callback for readability.
+    const firstCurve = (segment: SegmentDetails) =>
+      `C ${segment.controlPointStart.x} ${segment.controlPointStart.y} ${segment.controlPointEnd.x} ${segment.controlPointEnd.y} ${segment.endPoint.x} ${segment.endPoint.y}`;
 
-    const rightCurve = segments.right.reduce((acc, segment) => {
-      return (
-        acc +
-        ' ' +
-        `C ${segment.controlPointStart.x} ${segment.controlPointStart.y} ${segment.controlPointEnd.x} ${segment.controlPointEnd.y} ${segment.endPoint.x} ${segment.endPoint.y}`
-      );
-    }, '');
+    const otherCurves = (segment: SegmentDetails) =>
+      `S ${segment.controlPointEnd.x} ${segment.controlPointEnd.y} ${segment.endPoint.x} ${segment.endPoint.y}`;
 
-    const bottomCurve = segments.bottom.reduce((acc, segment) => {
-      return (
-        acc +
-        ' ' +
-        `C ${segment.controlPointStart.x} ${segment.controlPointStart.y} ${segment.controlPointEnd.x} ${segment.controlPointEnd.y} ${segment.endPoint.x} ${segment.endPoint.y}`
-      );
-    }, '');
+    const curves: {
+      [key in keyof EnclosedCurvesDetails]: string;
+    } = {
+      top: '',
+      right: '',
+      bottom: '',
+      left: '',
+    };
 
-    const leftCurve = segments.left.reduce((acc, segment) => {
-      return (
-        acc +
-        ' ' +
-        `C ${segment.controlPointStart.x} ${segment.controlPointStart.y} ${segment.controlPointEnd.x} ${segment.controlPointEnd.y} ${segment.endPoint.x} ${segment.endPoint.y}`
-      );
-    }, '');
+    // Reduce the segments using previous callbacks to a single path string.
+    Object.entries(segments).forEach(([key, segment]) => {
+      const curve = segment.reduce((acc, segment) => {
+        return acc + ' ' + otherCurves(segment);
+      }, firstCurve(segment[0]));
 
-    return `${moveTo} ${topCurve} ${rightCurve} ${bottomCurve} ${leftCurve} ${close}`;
+      curves[key as keyof EnclosedCurvesDetails] = curve;
+    });
+
+    return `${moveTo} ${curves.top} ${curves.right} ${curves.bottom} ${curves.left} ${close}`;
   }
 }
