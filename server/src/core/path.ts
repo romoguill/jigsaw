@@ -310,6 +310,73 @@ export class Path {
     }
   }
 
+  static getCurvesDetails(
+    decomposedPath: DecomposedPath,
+    n: number
+  ): SegmentDetails[] {
+    // First curve is different from rest.
+    const curvesDetails: SegmentDetails[] = [
+      {
+        startPoint: decomposedPath.origin,
+        endPoint: {
+          x: Number(decomposedPath.completeSegments[n][4]),
+          y: Number(decomposedPath.completeSegments[n][5]),
+        },
+        controlPointStart: {
+          x: Number(decomposedPath.completeSegments[n][0]),
+          y: Number(decomposedPath.completeSegments[n][1]),
+        },
+        controlPointEnd: {
+          x: Number(decomposedPath.completeSegments[n][2]),
+          y: Number(decomposedPath.completeSegments[n][3]),
+        },
+      },
+    ];
+
+    // Slice the segments, extract the details until there are no more segments.
+    let remainingSegments = decomposedPath.completeSegments[n].slice(6);
+    let count = 1;
+    while (remainingSegments.length > 0) {
+      const startPoint = {
+        x: curvesDetails[count - 1].endPoint.x,
+        y: curvesDetails[count - 1].endPoint.y,
+      };
+
+      const endPoint = {
+        x: Number(remainingSegments[2]),
+        y: Number(remainingSegments[3]),
+      };
+
+      const controlPointStart = {
+        x: curvesDetails[count - 1].controlPointEnd.x,
+        y: curvesDetails[count - 1].controlPointEnd.y,
+      };
+
+      const controlPointEnd = {
+        x: Number(remainingSegments[2]),
+        y: Number(remainingSegments[3]),
+      };
+
+      curvesDetails.push({
+        startPoint,
+        endPoint,
+        controlPointStart,
+        controlPointEnd,
+      });
+
+      remainingSegments = remainingSegments.slice(4);
+      count++;
+    }
+
+    return curvesDetails;
+  }
+
+  static getSegmentsDetails(decomposedPath: DecomposedPath): SegmentDetails[] {
+    return decomposedPath.completeSegments.map((segment, i) =>
+      this.segmentDetails(decomposedPath, i)
+    );
+  }
+
   static reverseSegment(segment: SegmentDetails): SegmentDetails {
     return {
       startPoint: segment.endPoint,
