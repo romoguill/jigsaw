@@ -371,12 +371,6 @@ export class Path {
     return curvesDetails;
   }
 
-  static getSegmentsDetails(decomposedPath: DecomposedPath): SegmentDetails[] {
-    return decomposedPath.completeSegments.map((segment, i) =>
-      this.segmentDetails(decomposedPath, i)
-    );
-  }
-
   static reverseSegment(segment: SegmentDetails): SegmentDetails {
     return {
       startPoint: segment.endPoint,
@@ -420,31 +414,41 @@ export class Path {
       topSegments,
       bottomSegments,
     ]
-      .map((segment) => this.segmentDetails(segment, row))
-      .map((segmentDetail, i) => {
-        Object.entries(segmentDetail).forEach(([_key, value]) => {
-          value.x += pieceSize * (row + 1);
-          value.y += pieceSize * (row + 1 + i);
+      .map((path) => this.getCurvesDetails(path, row))
+      .map((curvesDetails, i) => {
+        return curvesDetails.map((curveDetail) => {
+          Object.entries(curveDetail).forEach(([_key, value]) => {
+            value.x += pieceSize * (row + 1);
+            value.y += pieceSize * (row + 1 + i);
+          });
+          return curveDetail;
         });
-        return segmentDetail;
       });
 
     // Must reverse bottom segment to make it clockwise and a closed path.
-    const reversedBottomSegment = this.reverseSegment(bottomSegmentDetails);
+    const reversedBottomSegment = bottomSegmentDetails.map((curveDetail) => {
+      return this.reverseSegment(curveDetail);
+    });
 
     const [leftSegmentDetails, rightSegmentDetails] = [
       leftSegments,
       rightSegments,
     ]
-      .map((segment) => this.segmentDetails(segment, column))
-      .map((segmentDetail, i) => {
-        Object.entries(segmentDetail).forEach(([_key, value]) => {
-          value.x += pieceSize * (column + 1 + i);
-          value.y += pieceSize * (column + 1);
+      .map((path) => this.getCurvesDetails(path, row))
+      .map((curvesDetails, i) => {
+        return curvesDetails.map((curveDetail) => {
+          Object.entries(curveDetail).forEach(([_key, value]) => {
+            value.x += pieceSize * (column + 1 + i);
+            value.y += pieceSize * (column + 1);
+          });
+          return curveDetail;
         });
-
-        return segmentDetail;
       });
+
+    // Must reverse bottom segment to make it clockwise and a closed path.
+    const reversedLeftSegment = leftSegmentDetails.map((curveDetail) => {
+      return this.reverseSegment(curveDetail);
+    });
 
     // Vertical paths need to be rotated 90 degrees since all paths are created from 0, 0 along x axis.
     // Rotate left.
@@ -488,9 +492,6 @@ export class Path {
       );
     rightSegmentDetails.controlPointEnd =
       rightControlPointEndVector90.toCoordinate(rightSegmentDetails.endPoint);
-
-    // Must reverse left segment to make it clockwise and a closed path.
-    const reversedLeftSegment = this.reverseSegment(leftSegmentDetails);
 
     return [
       topSegmentDetails,

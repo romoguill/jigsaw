@@ -91,6 +91,13 @@ export const cutImageIntoPieces = async ({
   //     position: 'center',
   //   })
   //   .toBuffer();
+  const decomposedPath = Path.segmentsDecomposer(horizontalPaths[0]);
+  console.log('decomposed path');
+  console.log(decomposedPath);
+
+  const curvesDetails = Path.getCurvesDetails(decomposedPath, 0);
+  console.log('curves details');
+  console.log(curvesDetails);
 
   const enclosingPath = Path.createEnclosingPath(
     { horizontalPaths, verticalPaths },
@@ -98,7 +105,7 @@ export const cutImageIntoPieces = async ({
     0,
     pieceSize
   );
-
+  console.log('enclosing path');
   console.log(enclosingPath);
 
   const enclosingPathSvg = Path.getPathSvg(enclosingPath);
