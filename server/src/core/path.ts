@@ -13,6 +13,13 @@ type SegmentDetails = {
   controlPointEnd: Coordinate;
 };
 
+type EnclosedCurvesDetails = {
+  top: SegmentDetails[];
+  right: SegmentDetails[];
+  bottom: SegmentDetails[];
+  left: SegmentDetails[];
+};
+
 export class Path {
   path: string[] = [];
   // Control point refers to the point that is responsible for affecting the curvature.
@@ -389,7 +396,7 @@ export class Path {
     row: number,
     column: number,
     pieceSize: number
-  ): SegmentDetails[] {
+  ): EnclosedCurvesDetails {
     // Get the paths of the horizontal and vertical paths of the piece. Top and bottom; left and right.
     const horizontalPaths = [
       paths.horizontalPaths[row],
@@ -401,19 +408,23 @@ export class Path {
     ];
 
     // Decompose the paths into segments.
-    const [topSegments, bottomSegments] = horizontalPaths.map((path) =>
+    const horizontalDecomposedPaths = horizontalPaths.map((path) =>
       this.segmentsDecomposer(path)
     );
 
-    const [leftSegments, rightSegments] = verticalPaths.map((path) =>
+    const verticalDecomposedPaths = verticalPaths.map((path) =>
       this.segmentsDecomposer(path)
     );
 
+    // Will store the details of the segments of the enclosed curves. AKA the curves forming the puzzle piece.
+    const enclosedCurvesDetails: EnclosedCurvesDetails = {
+      top: [],
+      right: [],
+      bottom: [],
+      left: [],
+    };
     // Get the details of the segments. Add to the coordinates the piece size. All paths are created from 0, 0. In reality the first would be the border.
-    const [topSegmentDetails, bottomSegmentDetails] = [
-      topSegments,
-      bottomSegments,
-    ]
+    const [topSegmentDetails, bottomSegmentDetails] = horizontalDecomposedPaths
       .map((path) => this.getCurvesDetails(path, row))
       .map((curvesDetails, i) => {
         return curvesDetails.map((curveDetail) => {
@@ -425,15 +436,16 @@ export class Path {
         });
       });
 
+    enclosedCurvesDetails.top = topSegmentDetails;
+
     // Must reverse bottom segment to make it clockwise and a closed path.
     const reversedBottomSegment = bottomSegmentDetails.map((curveDetail) => {
       return this.reverseSegment(curveDetail);
     });
 
-    const [leftSegmentDetails, rightSegmentDetails] = [
-      leftSegments,
-      rightSegments,
-    ]
+    enclosedCurvesDetails.bottom = reversedBottomSegment;
+
+    const [leftSegmentDetails, rightSegmentDetails] = verticalDecomposedPaths
       .map((path) => this.getCurvesDetails(path, row))
       .map((curvesDetails, i) => {
         return curvesDetails.map((curveDetail) => {
@@ -445,76 +457,104 @@ export class Path {
         });
       });
 
+    enclosedCurvesDetails.right = rightSegmentDetails;
+
     // Must reverse bottom segment to make it clockwise and a closed path.
     const reversedLeftSegment = leftSegmentDetails.map((curveDetail) => {
       return this.reverseSegment(curveDetail);
     });
 
+    enclosedCurvesDetails.left = reversedLeftSegment;
+
     // Vertical paths need to be rotated 90 degrees since all paths are created from 0, 0 along x axis.
     // Rotate left.
-    const leftControlPointStartVector = new Vector(
-      leftSegmentDetails.startPoint,
-      leftSegmentDetails.controlPointStart
-    );
-    const leftControlPointEndVector = new Vector(
-      leftSegmentDetails.endPoint,
-      leftSegmentDetails.controlPointEnd
-    );
+    enclosedCurvesDetails.left.forEach((curveDetail) => {
+      const leftControlPointStartVector = new Vector(
+        curveDetail.startPoint,
+        curveDetail.controlPointStart
+      );
+      const leftControlPointEndVector = new Vector(
+        curveDetail.endPoint,
+        curveDetail.controlPointEnd
+      );
 
-    const leftControlPointStartVector90 =
-      leftControlPointStartVector.rotateVector90();
-    const leftControlPointEndVector90 =
-      leftControlPointEndVector.rotateVector90();
+      const leftControlPointStartVector90 =
+        leftControlPointStartVector.rotateVector90();
+      const leftControlPointEndVector90 =
+        leftControlPointEndVector.rotateVector90();
 
-    leftSegmentDetails.controlPointStart =
-      leftControlPointStartVector90.toCoordinate(leftSegmentDetails.startPoint);
-    leftSegmentDetails.controlPointEnd =
-      leftControlPointEndVector90.toCoordinate(leftSegmentDetails.endPoint);
+      curveDetail.controlPointStart =
+        leftControlPointStartVector90.toCoordinate(curveDetail.startPoint);
+      curveDetail.controlPointEnd = leftControlPointEndVector90.toCoordinate(
+        curveDetail.endPoint
+      );
+    });
 
     // Rotate right.
-    const rightControlPointStartVector = new Vector(
-      rightSegmentDetails.startPoint,
-      rightSegmentDetails.controlPointStart
-    );
-    const rightControlPointEndVector = new Vector(
-      rightSegmentDetails.endPoint,
-      rightSegmentDetails.controlPointEnd
-    );
-
-    const rightControlPointStartVector90 =
-      rightControlPointStartVector.rotateVector90();
-    const rightControlPointEndVector90 =
-      rightControlPointEndVector.rotateVector90();
-
-    rightSegmentDetails.controlPointStart =
-      rightControlPointStartVector90.toCoordinate(
-        rightSegmentDetails.startPoint
+    enclosedCurvesDetails.right.forEach((curveDetail) => {
+      const rightControlPointStartVector = new Vector(
+        curveDetail.startPoint,
+        curveDetail.controlPointStart
       );
-    rightSegmentDetails.controlPointEnd =
-      rightControlPointEndVector90.toCoordinate(rightSegmentDetails.endPoint);
+      const rightControlPointEndVector = new Vector(
+        curveDetail.endPoint,
+        curveDetail.controlPointEnd
+      );
 
-    return [
-      topSegmentDetails,
-      rightSegmentDetails,
-      reversedBottomSegment,
-      reversedLeftSegment,
-    ];
+      const rightControlPointStartVector90 =
+        rightControlPointStartVector.rotateVector90();
+      const rightControlPointEndVector90 =
+        rightControlPointEndVector.rotateVector90();
+
+      curveDetail.controlPointStart =
+        rightControlPointStartVector90.toCoordinate(curveDetail.startPoint);
+      curveDetail.controlPointEnd = rightControlPointEndVector90.toCoordinate(
+        curveDetail.endPoint
+      );
+    });
+
+    console.log(JSON.stringify(enclosedCurvesDetails, null, 2));
+
+    return enclosedCurvesDetails;
   }
 
   // Get the path svg from the closed path
-  static getPathSvg(segmentDetails: SegmentDetails[]): string {
+  static getPathSvg(segments: EnclosedCurvesDetails): string {
     const close = 'Z';
+    const moveTo = `M ${segments.top[0].startPoint.x} ${segments.top[0].startPoint.y}`;
 
-    return segmentDetails
-      .map((segmentDetail, i) => {
-        const moveTo = `M ${segmentDetail.startPoint.x} ${segmentDetail.startPoint.y}`;
-        const curve = `C ${segmentDetail.controlPointStart.x} ${segmentDetail.controlPointStart.y} ${segmentDetail.controlPointEnd.x} ${segmentDetail.controlPointEnd.y} ${segmentDetail.endPoint.x} ${segmentDetail.endPoint.y}`;
+    const topCurve = segments.top.reduce((acc, segment) => {
+      return (
+        acc +
+        ' ' +
+        `C ${segment.controlPointStart.x} ${segment.controlPointStart.y} ${segment.controlPointEnd.x} ${segment.controlPointEnd.y} ${segment.endPoint.x} ${segment.endPoint.y}`
+      );
+    }, '');
 
-        if (i === 0) return `${moveTo} ${curve}`;
+    const rightCurve = segments.right.reduce((acc, segment) => {
+      return (
+        acc +
+        ' ' +
+        `C ${segment.controlPointStart.x} ${segment.controlPointStart.y} ${segment.controlPointEnd.x} ${segment.controlPointEnd.y} ${segment.endPoint.x} ${segment.endPoint.y}`
+      );
+    }, '');
 
-        return curve;
-      })
-      .join(' ')
-      .concat(' ', close);
+    const bottomCurve = segments.bottom.reduce((acc, segment) => {
+      return (
+        acc +
+        ' ' +
+        `C ${segment.controlPointStart.x} ${segment.controlPointStart.y} ${segment.controlPointEnd.x} ${segment.controlPointEnd.y} ${segment.endPoint.x} ${segment.endPoint.y}`
+      );
+    }, '');
+
+    const leftCurve = segments.left.reduce((acc, segment) => {
+      return (
+        acc +
+        ' ' +
+        `C ${segment.controlPointStart.x} ${segment.controlPointStart.y} ${segment.controlPointEnd.x} ${segment.controlPointEnd.y} ${segment.endPoint.x} ${segment.endPoint.y}`
+      );
+    }, '');
+
+    return `${moveTo} ${topCurve} ${rightCurve} ${bottomCurve} ${leftCurve} ${close}`;
   }
 }
