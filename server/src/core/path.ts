@@ -387,6 +387,44 @@ export class Path {
     };
   }
 
+  // Used to rotate 90deg the vertical paths
+  static rotateSegment90(curveDetails: SegmentDetails[]): SegmentDetails[] {
+    const rotatedCurveDetails = curveDetails.map((segment) => {
+      const relativeVectors: {
+        toStartControlPoint: Vector;
+        toEndPoint: Vector;
+        toEndControlPoint: Vector;
+      } = {
+        toStartControlPoint: new Vector(
+          segment.controlPointStart,
+          segment.startPoint
+        ),
+        toEndPoint: new Vector(segment.endPoint, segment.startPoint),
+        toEndControlPoint: new Vector(
+          segment.controlPointEnd,
+          segment.startPoint
+        ),
+      };
+
+      for (const vector of Object.values(relativeVectors)) {
+        vector.rotateVector90();
+      }
+
+      return {
+        startPoint: segment.startPoint,
+        endPoint: relativeVectors.toEndPoint.toCoordinate(segment.startPoint),
+        controlPointStart: relativeVectors.toStartControlPoint.toCoordinate(
+          segment.startPoint
+        ),
+        controlPointEnd: relativeVectors.toEndControlPoint.toCoordinate(
+          segment.endPoint
+        ),
+      };
+    });
+
+    return rotatedCurveDetails;
+  }
+
   // Create an enclosing path from the segments and the row and column of the piece.
   static createEnclosingPath(
     paths: {
