@@ -27,8 +27,15 @@ export class Vector {
 
   rotateVector90(): Vector {
     const x = this.x;
-    this.x = this.y;
-    this.y = -x;
+    this.x = -this.y;
+    this.y = x;
+
+    return this;
+  }
+
+  rotateVector180(): Vector {
+    this.x = -this.x;
+    this.y = -this.y;
 
     return this;
   }

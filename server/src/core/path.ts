@@ -376,26 +376,31 @@ export class Path {
     return curvesDetails;
   }
 
-  static reverseSegment(segment: SegmentDetails): SegmentDetails {
+  static reverseCurve(curve: SegmentDetails): SegmentDetails {
     return {
-      startPoint: segment.endPoint,
-      endPoint: segment.startPoint,
-      controlPointStart: segment.controlPointEnd,
-      controlPointEnd: segment.controlPointStart,
+      startPoint: curve.endPoint,
+      endPoint: curve.startPoint,
+      controlPointStart: curve.controlPointEnd,
+      controlPointEnd: curve.controlPointStart,
     };
+  }
+
+  static reverseSegment(segment: SegmentDetails[]): SegmentDetails[] {
+    // First reverse each curve individually. Points and control points are swaped
+    const reversedIndividually = segment.map((curve) =>
+      this.reverseCurve(curve)
+    );
+
+    // Then reverse the order of the curves.
+    return reversedIndividually.reverse();
   }
 
   // Used to rotate 90deg the vertical paths
   static rotateSegment90(curveDetails: SegmentDetails[]): SegmentDetails[] {
     // Use the first segment's start point as the rotation origin.
     const rotationOrigin = curveDetails[0].startPoint;
-    console.log({ rotationOrigin });
 
     const rotatedCurveDetails = curveDetails.map((segment) => {
-      console.log('segment start point');
-      console.log(segment.startPoint);
-      console.log({ rotationOrigin });
-      console.log(new Vector(segment.startPoint, rotationOrigin));
       const relativeVectors: {
         toStartPoint: Vector;
         toEndPoint: Vector;
@@ -416,22 +421,18 @@ export class Path {
         vector.rotateVector90();
       }
 
-      console.log({
-        relativeVectors,
-      });
-
       return {
         startPoint: relativeVectors.toStartPoint
-          .translateOrigin(segment.startPoint)
+          .translateOrigin(rotationOrigin)
           .toCoordinate(),
         endPoint: relativeVectors.toEndPoint
-          .translateOrigin(segment.endPoint)
+          .translateOrigin(rotationOrigin)
           .toCoordinate(),
         controlPointStart: relativeVectors.toControlPointStart
-          .translateOrigin(segment.controlPointStart)
+          .translateOrigin(rotationOrigin)
           .toCoordinate(),
         controlPointEnd: relativeVectors.toControlPointEnd
-          .translateOrigin(segment.controlPointEnd)
+          .translateOrigin(rotationOrigin)
           .toCoordinate(),
       };
     });
@@ -459,9 +460,6 @@ export class Path {
       paths.verticalPaths[column + 1],
     ];
 
-    console.log('vertical right path');
-    console.log(verticalPaths[0]);
-
     // Decompose the paths into segments.
     const horizontalDecomposedPaths = horizontalPaths.map((path) =>
       this.segmentsDecomposer(path)
@@ -470,9 +468,6 @@ export class Path {
     const verticalDecomposedPaths = verticalPaths.map((path) =>
       this.segmentsDecomposer(path)
     );
-
-    console.log('vertical right decomposed path');
-    console.log(verticalDecomposedPaths[0]);
 
     // Will store the details of the segments of the enclosed curves. AKA the curves forming the puzzle piece.
     const enclosedCurvesDetails: EnclosedCurvesDetails = {
@@ -498,9 +493,7 @@ export class Path {
     enclosedCurvesDetails.top = topSegmentDetails;
 
     // Must reverse bottom segment to make it clockwise and a closed path.
-    const reversedBottomSegment = bottomSegmentDetails.map((curveDetail) => {
-      return this.reverseSegment(curveDetail);
-    });
+    const reversedBottomSegment = this.reverseSegment(bottomSegmentDetails);
 
     enclosedCurvesDetails.bottom = reversedBottomSegment;
 
@@ -518,13 +511,13 @@ export class Path {
 
     enclosedCurvesDetails.right = rightSegmentDetails;
 
-    console.log('right segment details');
-    console.log(enclosedCurvesDetails.right);
-
     // Must reverse bottom segment to make it clockwise and a closed path.
-    const reversedLeftSegment = leftSegmentDetails.map((curveDetail) => {
-      return this.reverseSegment(curveDetail);
-    });
+    const reversedLeftSegment = this.reverseSegment(leftSegmentDetails);
+
+    console.log('original left segment details');
+    console.log(leftSegmentDetails);
+    console.log('reversed');
+    console.log(reversedLeftSegment);
 
     enclosedCurvesDetails.left = reversedLeftSegment;
 
@@ -535,9 +528,6 @@ export class Path {
     enclosedCurvesDetails.right = this.rotateSegment90(
       enclosedCurvesDetails.right
     );
-
-    console.log('right segment detail rotated');
-    console.log(enclosedCurvesDetails.right);
 
     return enclosedCurvesDetails;
   }
