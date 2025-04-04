@@ -395,22 +395,34 @@ export class Path {
     reversedIndividually.reverse();
 
     // Control points need to be rotated 180 degrees.
-    reversedIndividually.forEach((curve) => {
-      const controlPointStart = new Vector(
-        curve.controlPointStart,
-        curve.startPoint
-      );
-      const controlPointEnd = new Vector(curve.controlPointEnd, curve.endPoint);
+    reversedIndividually.forEach((curve, i) => {
+      // Segment start control point not rotated because it's generated to match the contiguous curves.
+      if (i !== 0) {
+        const controlPointStartVector = new Vector(
+          curve.controlPointStart,
+          curve.startPoint
+        );
 
-      controlPointStart.rotateVector180();
-      controlPointEnd.rotateVector180();
+        controlPointStartVector.rotateVector180();
 
-      curve.controlPointStart = controlPointStart
-        .translateOrigin(curve.startPoint)
-        .toCoordinate();
-      curve.controlPointEnd = controlPointEnd
-        .translateOrigin(curve.endPoint)
-        .toCoordinate();
+        curve.controlPointStart = controlPointStartVector
+          .translateOrigin(curve.startPoint)
+          .toCoordinate();
+      }
+
+      // Segment end control point not rotated because it's generated to match the contiguous curves.
+      if (i !== reversedIndividually.length - 1) {
+        const controlPointEndVector = new Vector(
+          curve.controlPointEnd,
+          curve.endPoint
+        );
+
+        controlPointEndVector.rotateVector180();
+
+        curve.controlPointEnd = controlPointEndVector
+          .translateOrigin(curve.endPoint)
+          .toCoordinate();
+      }
     });
 
     return reversedIndividually;
@@ -530,25 +542,23 @@ export class Path {
         });
       });
 
-    enclosedCurvesDetails.right = rightSegmentDetails;
-
-    // Must reverse bottom segment to make it clockwise and a closed path.
-    const reversedLeftSegment = this.reverseSegment(leftSegmentDetails);
-
     console.log('original left segment details');
     console.log(leftSegmentDetails);
-    console.log('reversed');
-    console.log(reversedLeftSegment);
-
-    enclosedCurvesDetails.left = reversedLeftSegment;
 
     // Vertical paths need to be rotated 90 degrees since all paths are created from 0, 0 along x axis.
-    enclosedCurvesDetails.left = this.rotateSegment90(
+    enclosedCurvesDetails.left = this.rotateSegment90(leftSegmentDetails);
+    console.log('rotated left');
+    console.log(enclosedCurvesDetails.left);
+
+    enclosedCurvesDetails.right = this.rotateSegment90(rightSegmentDetails);
+
+    // Must reverse bottom segment to make it clockwise and a closed path.
+    enclosedCurvesDetails.left = this.reverseSegment(
       enclosedCurvesDetails.left
     );
-    enclosedCurvesDetails.right = this.rotateSegment90(
-      enclosedCurvesDetails.right
-    );
+
+    console.log('reversed');
+    console.log(enclosedCurvesDetails.left);
 
     return enclosedCurvesDetails;
   }
@@ -576,7 +586,8 @@ export class Path {
 
     // Reduce the segments using previous callbacks to a single path string.
     Object.entries(segments).forEach(([key, segment]) => {
-      const curve = segment.reduce((acc, segment) => {
+      const curve = segment.reduce((acc, segment, i) => {
+        if (i === 0) return acc;
         return acc + ' ' + otherCurves(segment);
       }, firstCurve(segment[0]));
 
