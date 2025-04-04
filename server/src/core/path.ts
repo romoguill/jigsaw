@@ -392,7 +392,28 @@ export class Path {
     );
 
     // Then reverse the order of the curves.
-    return reversedIndividually.reverse();
+    reversedIndividually.reverse();
+
+    // Control points need to be rotated 180 degrees.
+    reversedIndividually.forEach((curve) => {
+      const controlPointStart = new Vector(
+        curve.controlPointStart,
+        curve.startPoint
+      );
+      const controlPointEnd = new Vector(curve.controlPointEnd, curve.endPoint);
+
+      controlPointStart.rotateVector180();
+      controlPointEnd.rotateVector180();
+
+      curve.controlPointStart = controlPointStart
+        .translateOrigin(curve.startPoint)
+        .toCoordinate();
+      curve.controlPointEnd = controlPointEnd
+        .translateOrigin(curve.endPoint)
+        .toCoordinate();
+    });
+
+    return reversedIndividually;
   }
 
   // Used to rotate 90deg the vertical paths
