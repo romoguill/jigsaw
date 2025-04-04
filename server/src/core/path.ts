@@ -226,8 +226,6 @@ export class Path {
       }
     });
 
-    console.log(completeSegments);
-
     return { origin: { x, y }, completeSegments };
   }
 
@@ -389,29 +387,34 @@ export class Path {
 
   // Used to rotate 90deg the vertical paths
   static rotateSegment90(curveDetails: SegmentDetails[]): SegmentDetails[] {
+    // Use the first segment's start point as the rotation origin.
+    const rotationOrigin = curveDetails[0].startPoint;
+
     const rotatedCurveDetails = curveDetails.map((segment) => {
       const relativeVectors: {
+        toStartPoint: Vector;
         toStartControlPoint: Vector;
         toEndPoint: Vector;
         toEndControlPoint: Vector;
       } = {
+        toStartPoint: new Vector(segment.startPoint, rotationOrigin),
         toStartControlPoint: new Vector(
           segment.controlPointStart,
-          segment.startPoint
+          rotationOrigin
         ),
-        toEndPoint: new Vector(segment.endPoint, segment.startPoint),
-        toEndControlPoint: new Vector(
-          segment.controlPointEnd,
-          segment.startPoint
-        ),
+        toEndPoint: new Vector(segment.endPoint, rotationOrigin),
+        toEndControlPoint: new Vector(segment.controlPointEnd, rotationOrigin),
       };
 
+      // Apply the rotation to all vectors.
       for (const vector of Object.values(relativeVectors)) {
         vector.rotateVector90();
       }
 
       return {
-        startPoint: segment.startPoint,
+        startPoint: relativeVectors.toStartPoint.toCoordinate(
+          segment.startPoint
+        ),
         endPoint: relativeVectors.toEndPoint.toCoordinate(segment.startPoint),
         controlPointStart: relativeVectors.toStartControlPoint.toCoordinate(
           segment.startPoint
@@ -505,53 +508,12 @@ export class Path {
     enclosedCurvesDetails.left = reversedLeftSegment;
 
     // Vertical paths need to be rotated 90 degrees since all paths are created from 0, 0 along x axis.
-    // Rotate left.
-    enclosedCurvesDetails.left.forEach((curveDetail) => {
-      const leftControlPointStartVector = new Vector(
-        curveDetail.startPoint,
-        curveDetail.controlPointStart
-      );
-      const leftControlPointEndVector = new Vector(
-        curveDetail.endPoint,
-        curveDetail.controlPointEnd
-      );
-
-      const leftControlPointStartVector90 =
-        leftControlPointStartVector.rotateVector90();
-      const leftControlPointEndVector90 =
-        leftControlPointEndVector.rotateVector90();
-
-      curveDetail.controlPointStart =
-        leftControlPointStartVector90.toCoordinate(curveDetail.startPoint);
-      curveDetail.controlPointEnd = leftControlPointEndVector90.toCoordinate(
-        curveDetail.endPoint
-      );
-    });
-
-    // Rotate right.
-    enclosedCurvesDetails.right.forEach((curveDetail) => {
-      const rightControlPointStartVector = new Vector(
-        curveDetail.startPoint,
-        curveDetail.controlPointStart
-      );
-      const rightControlPointEndVector = new Vector(
-        curveDetail.endPoint,
-        curveDetail.controlPointEnd
-      );
-
-      const rightControlPointStartVector90 =
-        rightControlPointStartVector.rotateVector90();
-      const rightControlPointEndVector90 =
-        rightControlPointEndVector.rotateVector90();
-
-      curveDetail.controlPointStart =
-        rightControlPointStartVector90.toCoordinate(curveDetail.startPoint);
-      curveDetail.controlPointEnd = rightControlPointEndVector90.toCoordinate(
-        curveDetail.endPoint
-      );
-    });
-
-    console.log(JSON.stringify(enclosedCurvesDetails, null, 2));
+    enclosedCurvesDetails.left = this.rotateSegment90(
+      enclosedCurvesDetails.left
+    );
+    enclosedCurvesDetails.right = this.rotateSegment90(
+      enclosedCurvesDetails.right
+    );
 
     return enclosedCurvesDetails;
   }
