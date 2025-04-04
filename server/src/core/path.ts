@@ -389,21 +389,26 @@ export class Path {
   static rotateSegment90(curveDetails: SegmentDetails[]): SegmentDetails[] {
     // Use the first segment's start point as the rotation origin.
     const rotationOrigin = curveDetails[0].startPoint;
+    console.log({ rotationOrigin });
 
     const rotatedCurveDetails = curveDetails.map((segment) => {
+      console.log('segment start point');
+      console.log(segment.startPoint);
+      console.log({ rotationOrigin });
+      console.log(new Vector(segment.startPoint, rotationOrigin));
       const relativeVectors: {
         toStartPoint: Vector;
-        toStartControlPoint: Vector;
         toEndPoint: Vector;
-        toEndControlPoint: Vector;
+        toControlPointStart: Vector;
+        toControlPointEnd: Vector;
       } = {
         toStartPoint: new Vector(segment.startPoint, rotationOrigin),
-        toStartControlPoint: new Vector(
+        toControlPointStart: new Vector(
           segment.controlPointStart,
           rotationOrigin
         ),
         toEndPoint: new Vector(segment.endPoint, rotationOrigin),
-        toEndControlPoint: new Vector(segment.controlPointEnd, rotationOrigin),
+        toControlPointEnd: new Vector(segment.controlPointEnd, rotationOrigin),
       };
 
       // Apply the rotation to all vectors.
@@ -411,17 +416,23 @@ export class Path {
         vector.rotateVector90();
       }
 
+      console.log({
+        relativeVectors,
+      });
+
       return {
-        startPoint: relativeVectors.toStartPoint.toCoordinate(
-          segment.startPoint
-        ),
-        endPoint: relativeVectors.toEndPoint.toCoordinate(segment.startPoint),
-        controlPointStart: relativeVectors.toStartControlPoint.toCoordinate(
-          segment.startPoint
-        ),
-        controlPointEnd: relativeVectors.toEndControlPoint.toCoordinate(
-          segment.endPoint
-        ),
+        startPoint: relativeVectors.toStartPoint
+          .translateOrigin(segment.startPoint)
+          .toCoordinate(),
+        endPoint: relativeVectors.toEndPoint
+          .translateOrigin(segment.endPoint)
+          .toCoordinate(),
+        controlPointStart: relativeVectors.toControlPointStart
+          .translateOrigin(segment.controlPointStart)
+          .toCoordinate(),
+        controlPointEnd: relativeVectors.toControlPointEnd
+          .translateOrigin(segment.controlPointEnd)
+          .toCoordinate(),
       };
     });
 
@@ -448,6 +459,9 @@ export class Path {
       paths.verticalPaths[column + 1],
     ];
 
+    console.log('vertical right path');
+    console.log(verticalPaths[0]);
+
     // Decompose the paths into segments.
     const horizontalDecomposedPaths = horizontalPaths.map((path) =>
       this.segmentsDecomposer(path)
@@ -457,6 +471,9 @@ export class Path {
       this.segmentsDecomposer(path)
     );
 
+    console.log('vertical right decomposed path');
+    console.log(verticalDecomposedPaths[0]);
+
     // Will store the details of the segments of the enclosed curves. AKA the curves forming the puzzle piece.
     const enclosedCurvesDetails: EnclosedCurvesDetails = {
       top: [],
@@ -464,6 +481,7 @@ export class Path {
       bottom: [],
       left: [],
     };
+
     // Get the details of the segments. Add to the coordinates the piece size. All paths are created from 0, 0. In reality the first would be the border.
     const [topSegmentDetails, bottomSegmentDetails] = horizontalDecomposedPaths
       .map((path) => this.getCurvesDetails(path, row))
@@ -500,6 +518,9 @@ export class Path {
 
     enclosedCurvesDetails.right = rightSegmentDetails;
 
+    console.log('right segment details');
+    console.log(enclosedCurvesDetails.right);
+
     // Must reverse bottom segment to make it clockwise and a closed path.
     const reversedLeftSegment = leftSegmentDetails.map((curveDetail) => {
       return this.reverseSegment(curveDetail);
@@ -514,6 +535,9 @@ export class Path {
     enclosedCurvesDetails.right = this.rotateSegment90(
       enclosedCurvesDetails.right
     );
+
+    console.log('right segment detail rotated');
+    console.log(enclosedCurvesDetails.right);
 
     return enclosedCurvesDetails;
   }

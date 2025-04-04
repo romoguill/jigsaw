@@ -8,7 +8,7 @@ export class Vector {
     public start: Coordinate = { x: 0, y: 0 }
   ) {
     this.x = end.x - start.x;
-    this.y = end.y = start.y;
+    this.y = end.y - start.y;
   }
 
   get magnitude(): number {
@@ -27,13 +27,20 @@ export class Vector {
 
   rotateVector90(): Vector {
     const x = this.x;
-    this.x = -this.y;
-    this.y = x;
+    this.x = this.y;
+    this.y = -x;
 
     return this;
   }
 
-  toCoordinate(start: Coordinate): Coordinate {
-    return { x: this.x + start.x, y: this.y + start.y };
+  translateOrigin(origin: Coordinate): Vector {
+    this.x = this.x + origin.x;
+    this.y = this.y + origin.y;
+
+    return this;
+  }
+
+  toCoordinate(): Coordinate {
+    return { x: this.x, y: this.y };
   }
 }
