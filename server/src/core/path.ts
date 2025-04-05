@@ -83,7 +83,7 @@ export class Path {
 
       // Return a path string using bezier curve with start control point.
 
-      this.path.push(`C ${path.map((n) => n.toFixed(2)).join(' ')}`);
+      this.path.push(`C ${path.map((n) => n).join(' ')}`);
 
       return;
     }
@@ -91,7 +91,7 @@ export class Path {
     const path = [endControlPoint.x, endControlPoint.y, endPoint.x, endPoint.y];
 
     // Return a path string using bezier curve without start control point (previous endControlPoint = new startControlPoint).
-    this.path.push(`S ${path.map((n) => n.toFixed(2)).join(' ')}`);
+    this.path.push(`S ${path.map((n) => n).join(' ')}`);
   }
 
   toString(): string {
@@ -135,8 +135,8 @@ export class Path {
     const angle = this.randomAngle(angleRange);
 
     const controlPoint: Coordinate = {
-      x: from.x + magnitud * Math.cos(angle),
-      y: from.y + magnitud * Math.sin(angle),
+      x: Math.round(from.x + magnitud * Math.cos(angle)),
+      y: Math.round(from.y + magnitud * Math.sin(angle)),
     };
 
     return controlPoint;
@@ -152,27 +152,27 @@ export class Path {
     ) => [
       // First flat edge
       {
-        x: this.pieceSize / 2 - this.pinSize / 2,
+        x: Math.round(this.pieceSize / 2 - this.pinSize / 2),
         y: 0,
       },
       // First side pin
       {
         x: 0,
-        y: this.pinSize * pinDirection,
+        y: Math.round(this.pinSize * pinDirection),
       },
       // Top side pin
       {
-        x: this.pinSize,
+        x: Math.round(this.pinSize),
         y: 0,
       },
       // Second side pin
       {
         x: 0,
-        y: this.pinSize * -pinDirection,
+        y: Math.round(this.pinSize * -pinDirection),
       },
       // Second flat edge
       {
-        x: this.pieceSize / 2 - this.pinSize / 2,
+        x: Math.round(this.pieceSize / 2 - this.pinSize / 2),
         y: 0,
       },
     ];
@@ -207,7 +207,6 @@ export class Path {
 
   // Decompose the path into segments (curves both longhand and shorthand)
   static segmentsDecomposer(path: string): DecomposedPath {
-    console.log(path);
     const [x, y] = path.split('M')[1].split(' ').map(Number);
     // Get the path segments without the M, C or S. Remove the first element because it's the MoveTo command.
     const pathArray = path.split(/[CS]/).slice(1);
@@ -484,6 +483,7 @@ export class Path {
     column: number,
     pieceSize: number
   ): EnclosedCurvesDetails {
+    console.log({ row, column });
     // Get the paths of the horizontal and vertical paths of the piece. Top and bottom; left and right.
     const horizontalPaths = [
       paths.horizontalPaths[row],
@@ -493,8 +493,6 @@ export class Path {
       paths.verticalPaths[column],
       paths.verticalPaths[column + 1],
     ];
-
-    console.log({ horizontalPaths, verticalPaths });
 
     // Decompose the paths into segments.
     const horizontalDecomposedPaths = horizontalPaths.map((path) =>
@@ -545,23 +543,14 @@ export class Path {
         });
       });
 
-    console.log('original left segment details');
-    console.log(leftSegmentDetails);
-
     // Vertical paths need to be rotated 90 degrees since all paths are created from 0, 0 along x axis.
     enclosedCurvesDetails.left = this.rotateSegment90(leftSegmentDetails);
-    console.log('rotated left');
-    console.log(enclosedCurvesDetails.left);
-
     enclosedCurvesDetails.right = this.rotateSegment90(rightSegmentDetails);
 
     // Must reverse bottom segment to make it clockwise and a closed path.
     enclosedCurvesDetails.left = this.reverseSegment(
       enclosedCurvesDetails.left
     );
-
-    console.log('reversed');
-    console.log(enclosedCurvesDetails.left);
 
     return enclosedCurvesDetails;
   }

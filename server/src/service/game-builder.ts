@@ -117,8 +117,6 @@ export const cutImageIntoPieces = async ({
               <path d="${enclosingPathSvg}" fill="white"/>
             </svg>`;
 
-          console.log('svg mask');
-          console.log(svgMask);
           // Create the piece using composite
           const pieceBuffer = await sharp(imageBuffer)
             .extract({
