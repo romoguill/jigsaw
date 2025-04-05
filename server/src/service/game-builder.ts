@@ -95,78 +95,64 @@ export const cutImageIntoPieces = async ({
 
   const curvesDetails = Path.getCurvesDetails(decomposedPath, 0);
 
-  const enclosingPath = Path.createEnclosingPath(
-    { horizontalPaths, verticalPaths },
-    0,
-    0,
-    pieceSize
-  );
+  for (let i = 0; i < rows - 1; i++) {
+    for (let j = 0; j < cols - 1; j++) {
+      const enclosingPath = Path.createEnclosingPath(
+        { horizontalPaths, verticalPaths },
+        i,
+        j,
+        pieceSize
+      );
 
-  const enclosingPathSvg = Path.getPathSvg(enclosingPath);
-  console.log('enclosing path svg');
-  console.log(enclosingPathSvg);
+      const enclosingPathSvg = Path.getPathSvg(enclosingPath);
+      console.log('enclosing path svg');
+      console.log(enclosingPathSvg);
 
-  // Create pieces based on paths
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      // Create SVG mask for this piece
-      const svgMask = `
-        <svg width="${pieceSize}" height="${pieceSize}">
-          <defs>
-            <clipPath id="pieceClip">
-              <rect width="${pieceSize}" height="${pieceSize}" x="20" y="20" fill="black"/>
-            </clipPath>
-          </defs>
-          <g clip-path="url(#pieceClip)">
-            <path d="${horizontalPaths[row]}" transform="translate(0 ${(row + 1) * pieceSize})" fill="black"/>
-            <path d="${horizontalPaths[row + 1]}" transform="translate(0 ${(row + 1) * pieceSize})" fill="black"/>
-            <path d="${verticalPaths[col]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
-            <path d="${verticalPaths[col + 1]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
-          </g>
-        </svg>`;
+      // Create pieces based on paths
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          // Create SVG mask for this piece
+          const svgMask = `
+            <svg width="${pieceSize}" height="${pieceSize}" viewBox="400 400 ${400 + pieceSize} ${400 + pieceSize}">
+              <path d="${enclosingPathSvg}" fill="white"/>
+            </svg>`;
 
-      // <path fill-rule="evenodd" fill="white" d="
-      //     M0,0 L${pieceSize},0 L${pieceSize},${pieceSize} L0,${pieceSize} Z
-      //     ${horizontalPaths[row].replace(/M/g, `M${-col * pieceSize},${-row * pieceSize}`)}
-      //     ${horizontalPaths[row + 1].replace(/M/g, `M${-col * pieceSize},${-row * pieceSize}`)}
-      //     ${verticalPaths[col].replace(/M/g, `M${-col * pieceSize},${-row * pieceSize}`)}
-      //     ${verticalPaths[col + 1].replace(/M/g, `M${-col * pieceSize},${-row * pieceSize}`)}
-      //   "/>
+          console.log('svg mask');
+          console.log(svgMask);
+          // Create the piece using composite
+          const pieceBuffer = await sharp(imageBuffer)
+            .extract({
+              // left: Math.max(0, col * pieceSize - 10),
+              // top: Math.max(0, row * pieceSize - 10),
+              // width: Math.min(pieceSize + 20, metadata.width),
+              // height: Math.min(pieceSize + 20, metadata.height),
+              left: 0,
+              top: 0,
+              width: metadata.width,
+              height: metadata.height,
+            })
+            .composite([
+              {
+                input: Buffer.from(svgMask),
+                blend: 'dest-in',
+                gravity: 'northwest',
+              },
+            ])
+            .png()
+            .toBuffer();
 
-      // Simple but doens't work
-      // <path d="${horizontalPaths[row]}" transform="translate(0 ${(row + 1) * pieceSize})" fill="black"/>
-      // <path d="${horizontalPaths[row + 1]}" transform="translate(0 ${(row + 1) * pieceSize})" fill="black"/>
-      // <path d="${verticalPaths[col]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
-      // <path d="${verticalPaths[col + 1]}" transform="translate(0 ${-col * pieceSize}) rotate(90)" fill="black"/>
+          const piecePath = path.join(piecesDir, `piece_${row}_${col}.png`);
+          await sharp(pieceBuffer).toFile(piecePath);
 
-      // Create the piece using composite
-      const pieceBuffer = await sharp(imageBuffer)
-        .extract({
-          left: Math.max(0, col * pieceSize - 10),
-          top: Math.max(0, row * pieceSize - 10),
-          width: Math.min(pieceSize + 20, metadata.width),
-          height: Math.min(pieceSize + 20, metadata.height),
-        })
-        .composite([
-          {
-            input: Buffer.from(svgMask),
-            blend: 'dest-out',
-            gravity: 'northwest',
-          },
-        ])
-        .png()
-        .toBuffer();
-
-      const piecePath = path.join(piecesDir, `piece_${row}_${col}.png`);
-      await sharp(pieceBuffer).toFile(piecePath);
-
-      pieces.push({
-        x: col * pieceSize,
-        y: row * pieceSize,
-        width: pieceSize,
-        height: pieceSize,
-        path: piecePath,
-      });
+          pieces.push({
+            x: col * pieceSize,
+            y: row * pieceSize,
+            width: pieceSize,
+            height: pieceSize,
+            path: piecePath,
+          });
+        }
+      }
     }
   }
 

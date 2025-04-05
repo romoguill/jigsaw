@@ -207,6 +207,7 @@ export class Path {
 
   // Decompose the path into segments (curves both longhand and shorthand)
   static segmentsDecomposer(path: string): DecomposedPath {
+    console.log(path);
     const [x, y] = path.split('M')[1].split(' ').map(Number);
     // Get the path segments without the M, C or S. Remove the first element because it's the MoveTo command.
     const pathArray = path.split(/[CS]/).slice(1);
@@ -492,6 +493,8 @@ export class Path {
       paths.verticalPaths[column],
       paths.verticalPaths[column + 1],
     ];
+
+    console.log({ horizontalPaths, verticalPaths });
 
     // Decompose the paths into segments.
     const horizontalDecomposedPaths = horizontalPaths.map((path) =>
