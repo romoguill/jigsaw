@@ -104,21 +104,31 @@ export const gameRoute = new Hono()
   )
   .post(
     '/builder/:gameId/pieces',
-    zValidator(
-      'json',
-      z.object({
-        imageKey: z.string(),
-        pieceSize: z.number(),
-        cols: z.number(),
-        rows: z.number(),
-      })
-    ),
+    // zValidator(
+    //   'json',
+    //   z.object({
+    //     imageKey: z.string(),
+    //     pieceSize: z.number(),
+    //     cols: z.number(),
+    //     rows: z.number(),
+    //   })
+    // ),
     async (c) => {
       const gameId = c.req.param('gameId');
-      const { imageKey, pieceSize, cols, rows } = c.req.valid('json');
+      // const { imageKey, pieceSize, cols, rows } = c.req.valid('json');
+
+      // Get the game from the database
+      const [game] = await db
+        .select()
+        .from(games)
+        .where(eq(games.id, Number(gameId)));
+
+      if (!game) {
+        throw new HTTPException(404, { message: 'Game not found' });
+      }
 
       // Get the image from uploadthing
-      const { ufsUrl } = await utapi.generateSignedURL(imageKey);
+      const { ufsUrl } = await utapi.generateSignedURL(game.imageKey);
 
       // Fetch the image
       const imageResponse = await fetch(ufsUrl);
@@ -131,20 +141,10 @@ export const gameRoute = new Hono()
       // Convert the image to a buffer
       const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
-      // Get the game from the database
-      const [game] = await db
-        .select()
-        .from(games)
-        .where(eq(games.id, Number(gameId)));
-
-      if (!game) {
-        throw new HTTPException(404, { message: 'Game not found' });
-      }
-
       // Cut the image into pieces
       const pieces = gameBuilderService.cutImageIntoPieces({
         imageBuffer: Buffer.from(imageBuffer),
-        pieceSize,
+        pieceSize: game.pieceSize,
         horizontalPaths: game.horizontalPaths,
         verticalPaths: game.verticalPaths,
       });

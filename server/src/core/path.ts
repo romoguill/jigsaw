@@ -319,27 +319,54 @@ export class Path {
     decomposedPath: DecomposedPath,
     n: number
   ): SegmentDetails[] {
+    console.log('decomposedPath', decomposedPath);
+    let remainingSegments: string[] = [];
     // First curve is different from rest.
-    const curvesDetails: SegmentDetails[] = [
-      {
-        startPoint: decomposedPath.origin,
-        endPoint: {
-          x: Number(decomposedPath.completeSegments[n][4]),
-          y: Number(decomposedPath.completeSegments[n][5]),
+    let curvesDetails: SegmentDetails[] = [];
+    if (n === 0) {
+      curvesDetails = [
+        {
+          startPoint: decomposedPath.origin,
+          endPoint: {
+            x: Number(decomposedPath.completeSegments[n][4]),
+            y: Number(decomposedPath.completeSegments[n][5]),
+          },
+          controlPointStart: {
+            x: Number(decomposedPath.completeSegments[n][0]),
+            y: Number(decomposedPath.completeSegments[n][1]),
+          },
+          controlPointEnd: {
+            x: Number(decomposedPath.completeSegments[n][2]),
+            y: Number(decomposedPath.completeSegments[n][3]),
+          },
         },
-        controlPointStart: {
-          x: Number(decomposedPath.completeSegments[n][0]),
-          y: Number(decomposedPath.completeSegments[n][1]),
+      ];
+      remainingSegments = decomposedPath.completeSegments[n].slice(6);
+    } else {
+      curvesDetails = [
+        {
+          startPoint: {
+            x: Number(decomposedPath.completeSegments[n - 1][4]),
+            y: Number(decomposedPath.completeSegments[n - 1][5]),
+          },
+          endPoint: {
+            x: Number(decomposedPath.completeSegments[n][4]),
+            y: Number(decomposedPath.completeSegments[n][5]),
+          },
+          controlPointStart: {
+            x: Number(decomposedPath.completeSegments[n][0]),
+            y: Number(decomposedPath.completeSegments[n][1]),
+          },
+          controlPointEnd: {
+            x: Number(decomposedPath.completeSegments[n][2]),
+            y: Number(decomposedPath.completeSegments[n][3]),
+          },
         },
-        controlPointEnd: {
-          x: Number(decomposedPath.completeSegments[n][2]),
-          y: Number(decomposedPath.completeSegments[n][3]),
-        },
-      },
-    ];
+      ];
+      remainingSegments = decomposedPath.completeSegments[n].slice(4);
+    }
 
     // Slice the segments, extract the details until there are no more segments.
-    let remainingSegments = decomposedPath.completeSegments[n].slice(6);
     let count = 1;
     while (remainingSegments.length > 0) {
       const startPoint = {
@@ -368,6 +395,11 @@ export class Path {
         controlPointStart,
         controlPointEnd,
       });
+
+      console.log(remainingSegments);
+      console.log(
+        JSON.stringify(curvesDetails[curvesDetails.length - 1], null, 2)
+      );
 
       remainingSegments = remainingSegments.slice(4);
       count++;
@@ -483,7 +515,6 @@ export class Path {
     column: number,
     pieceSize: number
   ): EnclosedCurvesDetails {
-    console.log({ row, column });
     // Get the paths of the horizontal and vertical paths of the piece. Top and bottom; left and right.
     const horizontalPaths = [
       paths.horizontalPaths[row],
@@ -551,6 +582,11 @@ export class Path {
     enclosedCurvesDetails.left = this.reverseSegment(
       enclosedCurvesDetails.left
     );
+
+    console.log('top segment details');
+    console.log(topSegmentDetails);
+    console.log('enclosedCurvesDetails');
+    console.log(JSON.stringify(enclosedCurvesDetails.top, null, 2));
 
     return enclosedCurvesDetails;
   }
