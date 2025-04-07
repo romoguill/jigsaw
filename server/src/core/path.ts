@@ -343,11 +343,15 @@ export class Path {
       ];
       remainingSegments = decomposedPath.completeSegments[n].slice(6);
     } else {
+      console.log(
+        'decomposedPath.completeSegments[n]',
+        decomposedPath.completeSegments[n - 1]
+      );
       curvesDetails = [
         {
           startPoint: {
-            x: Number(decomposedPath.completeSegments[n - 1][4]),
-            y: Number(decomposedPath.completeSegments[n - 1][5]),
+            x: Number(decomposedPath.completeSegments[n - 1][20]),
+            y: Number(decomposedPath.completeSegments[n - 1][21]),
           },
           endPoint: {
             x: Number(decomposedPath.completeSegments[n][4]),
@@ -395,11 +399,6 @@ export class Path {
         controlPointStart,
         controlPointEnd,
       });
-
-      console.log(remainingSegments);
-      console.log(
-        JSON.stringify(curvesDetails[curvesDetails.length - 1], null, 2)
-      );
 
       remainingSegments = remainingSegments.slice(4);
       count++;
@@ -546,12 +545,17 @@ export class Path {
     const [topSegmentDetails, bottomSegmentDetails] = horizontalDecomposedPaths
       .map((path) => this.getCurvesDetails(path, row))
       .map((curvesDetails, i) => {
+        console.log('curvesDetails Pre');
+        console.log(JSON.stringify(curvesDetails, null, 2));
         return curvesDetails.map((curveDetail) => {
-          Object.entries(curveDetail).forEach(([_key, value]) => {
-            value.x += pieceSize * (row + 1);
+          const newCurveDetail = { ...curveDetail };
+          Object.entries(newCurveDetail).forEach(([_key, value]) => {
+            console.log('value', value);
+            console.log('row', row + 1);
+            value.x += pieceSize;
             value.y += pieceSize * (row + 1 + i);
           });
-          return curveDetail;
+          return newCurveDetail;
         });
       });
 
@@ -568,7 +572,7 @@ export class Path {
         return curvesDetails.map((curveDetail) => {
           Object.entries(curveDetail).forEach(([_key, value]) => {
             value.x += pieceSize * (column + 1 + i);
-            value.y += pieceSize * (column + 1);
+            value.y += pieceSize;
           });
           return curveDetail;
         });
