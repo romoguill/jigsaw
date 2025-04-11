@@ -1,4 +1,5 @@
 import type { Coordinate } from '@jigsaw/shared/index.js';
+import { normilize0 } from '../lib/utils.js';
 
 export class Vector {
   x: number;
@@ -53,5 +54,12 @@ export class Vector {
 
   toCoordinate(): Coordinate {
     return { x: this.x, y: this.y };
+  }
+
+  normalize(): Vector {
+    this.x = normilize0(this.x);
+    this.y = normilize0(this.y);
+
+    return this;
   }
 }

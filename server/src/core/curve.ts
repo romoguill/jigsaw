@@ -15,10 +15,10 @@ export class Curve {
   protected controlEnd: Coordinate;
 
   constructor({ start, end, controlStart, controlEnd }: CurvePoints) {
-    this.start = start;
-    this.end = end;
-    this.controlStart = controlStart;
-    this.controlEnd = controlEnd;
+    this.start = { ...start };
+    this.end = { ...end };
+    this.controlStart = { ...controlStart };
+    this.controlEnd = { ...controlEnd };
   }
 
   getPoints(): CurvePoints {
@@ -32,10 +32,12 @@ export class Curve {
 
   // Reverses the curve by swapping the start and end points and control points.
   reverse(): void {
-    this.start = this.end;
-    this.end = this.start;
-    this.controlStart = this.controlEnd;
-    this.controlEnd = this.controlStart;
+    const { start, end, controlStart, controlEnd } = this.getPoints();
+
+    this.start = end;
+    this.end = start;
+    this.controlStart = controlEnd;
+    this.controlEnd = controlStart;
   }
 
   // Move the curve by x and y amount. Can set a
@@ -62,10 +64,10 @@ export class Curve {
     controlStartVector.rotateVector90();
     controlEndVector.rotateVector90();
 
-    this.start = startVector.toCoordinate();
-    this.end = endVector.toCoordinate();
-    this.controlStart = controlStartVector.toCoordinate();
-    this.controlEnd = controlEndVector.toCoordinate();
+    this.start = startVector.normalize().toCoordinate();
+    this.end = endVector.normalize().toCoordinate();
+    this.controlStart = controlStartVector.normalize().toCoordinate();
+    this.controlEnd = controlEndVector.normalize().toCoordinate();
   }
 
   toSvgLonghand(): string {
