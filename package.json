@@ -25,7 +25,11 @@
     "format:frontend": "npm run format --workspace=@jigsaw/frontend",
     "format:server": "npm run format --workspace=@jigsaw/server",
     "db:push": "npm run db:push --workspace=@jigsaw/server",
-    "db:studio": "npm run db:studio --workspace=@jigsaw/server"
+    "db:studio": "npm run db:studio --workspace=@jigsaw/server",
+    "test": "npm run test:server",
+    "test:server": "npm run test --workspace=@jigsaw/server",
+    "test:server:watch": "npm run test:watch --workspace=@jigsaw/server",
+    "test:server:coverage": "npm run test:coverage --workspace=@jigsaw/server"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
