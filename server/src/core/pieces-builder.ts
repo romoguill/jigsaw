@@ -9,7 +9,6 @@ export class PiecesBuilder {
     this.paths = paths;
   }
 
-  //
   parsePath(path: string): string[][] {
     if (path.slice(0, 5) !== 'M 0 0') {
       throw new Error('Invalid path');
@@ -32,6 +31,7 @@ export class PiecesBuilder {
       }
     });
 
+    // If there are any partial segments left, the path is invalid.
     if (partialSegments.length > 0) {
       throw new Error('Invalid path');
     }

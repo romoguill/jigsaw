@@ -207,26 +207,22 @@ export class Path {
 
   // Decompose the path into segments (curves both longhand and shorthand)
   static segmentsDecomposer(path: string): DecomposedPath {
-    const [x, y] = path.split('M')[1].split(' ').map(Number);
-    // Get the path segments without the M, C or S. Remove the first element because it's the MoveTo command.
-    const pathArray = path.split(/[CS]/).slice(1);
-
-    //
-    const completeSegments: string[][] = [];
-    let partialSegments: string[] = [];
-    pathArray.forEach((segment, i) => {
-      const values = segment.trim().split(' ');
-
-      partialSegments.push(...values);
-
-      // Every 5 segments, push the partial segments to the complete segments. 5 segments for each piece side.
-      if ((i + 1) % 5 === 0) {
-        completeSegments.push(partialSegments);
-        partialSegments = [];
-      }
-    });
-
-    return { origin: { x, y }, completeSegments };
+    // const [x, y] = path.split('M')[1].split(' ').map(Number);
+    // // Get the path segments without the M, C or S. Remove the first element because it's the MoveTo command.
+    // const pathArray = path.split(/[CS]/).slice(1);
+    // //
+    // const completeSegments: string[][] = [];
+    // let partialSegments: string[] = [];
+    // pathArray.forEach((segment, i) => {
+    //   const values = segment.trim().split(' ');
+    //   partialSegments.push(...values);
+    //   // Every 5 segments, push the partial segments to the complete segments. 5 segments for each piece side.
+    //   if ((i + 1) % 5 === 0) {
+    //     completeSegments.push(partialSegments);
+    //     partialSegments = [];
+    //   }
+    // });
+    // return { origin: { x, y }, completeSegments };
   }
 
   // Get the details of a segment (all necesary points to create curves)
@@ -408,12 +404,12 @@ export class Path {
   }
 
   static reverseCurve(curve: SegmentDetails): SegmentDetails {
-    return {
-      startPoint: curve.endPoint,
-      endPoint: curve.startPoint,
-      controlPointStart: curve.controlPointEnd,
-      controlPointEnd: curve.controlPointStart,
-    };
+    // return {
+    //   startPoint: curve.endPoint,
+    //   endPoint: curve.startPoint,
+    //   controlPointStart: curve.controlPointEnd,
+    //   controlPointEnd: curve.controlPointStart,
+    // };
   }
 
   static reverseSegment(segment: SegmentDetails[]): SegmentDetails[] {
