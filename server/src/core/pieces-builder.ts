@@ -11,6 +11,10 @@ export class PiecesBuilder {
 
   //
   parsePath(path: string): string[][] {
+    if (path.slice(0, 5) !== 'M 0 0') {
+      throw new Error('Invalid path');
+    }
+
     // Get the path segments without the M, C or S. Remove the first element because it's the MoveTo command.
     const pathArray = path.split(/[CS]/).slice(1);
 
@@ -27,6 +31,10 @@ export class PiecesBuilder {
         partialSegments = [];
       }
     });
+
+    if (partialSegments.length > 0) {
+      throw new Error('Invalid path');
+    }
 
     return completeSegments;
   }
