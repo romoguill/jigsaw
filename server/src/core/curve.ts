@@ -1,4 +1,5 @@
 import type { Coordinate } from '@jigsaw/shared';
+import { Vector } from './vector.js';
 
 type CurvePoints = {
   start: Coordinate;
@@ -20,13 +21,6 @@ export class Curve {
     this.controlEnd = controlEnd;
   }
 
-  reverseCurve(): void {
-    this.start = this.end;
-    this.end = this.start;
-    this.controlStart = this.controlEnd;
-    this.controlEnd = this.controlStart;
-  }
-
   getPoints(): CurvePoints {
     return {
       start: this.start,
@@ -34,6 +28,52 @@ export class Curve {
       controlStart: this.controlStart,
       controlEnd: this.controlEnd,
     };
+  }
+
+  // Reverses the curve by swapping the start and end points and control points.
+  reverse(): void {
+    this.start = this.end;
+    this.end = this.start;
+    this.controlStart = this.controlEnd;
+    this.controlEnd = this.controlStart;
+  }
+
+  // Move the curve by x and y amount. Can set a
+  translate(x: number, y: number) {
+    this.start.x += x;
+    this.start.y += y;
+    this.end.x += x;
+    this.end.y += y;
+    this.controlStart.x += x;
+    this.controlStart.y += y;
+    this.controlEnd.x += x;
+    this.controlEnd.y += y;
+  }
+
+  // Rotate the curve clockwise by a given angle. If no origin is provided, the rotation will be around the start point.
+  rotate90Clockwise(origin: Coordinate = this.start) {
+    const startVector = new Vector(this.start, origin);
+    const endVector = new Vector(this.end, origin);
+    const controlStartVector = new Vector(this.controlStart, origin);
+    const controlEndVector = new Vector(this.controlEnd, origin);
+
+    startVector.rotateVector90();
+    endVector.rotateVector90();
+    controlStartVector.rotateVector90();
+    controlEndVector.rotateVector90();
+
+    this.start = startVector.toCoordinate();
+    this.end = endVector.toCoordinate();
+    this.controlStart = controlStartVector.toCoordinate();
+    this.controlEnd = controlEndVector.toCoordinate();
+  }
+
+  toSvgLonghand(): string {
+    return `C ${this.controlStart.x} ${this.controlStart.y} ${this.controlEnd.x} ${this.controlEnd.y} ${this.end.x} ${this.end.y}`;
+  }
+
+  toSvgShorthand(): string {
+    return `S ${this.controlEnd.x} ${this.controlEnd.y} ${this.end.x} ${this.end.y}`;
   }
 
   // Getters
