@@ -22,6 +22,10 @@ export class Vector {
   unit(): Vector {
     const magnitude = this.magnitude;
 
+    if (magnitude === 0) {
+      throw new Error('Magnitude cannot be 0');
+    }
+
     return new Vector({ x: this.x / magnitude, y: this.y / magnitude });
   }
 

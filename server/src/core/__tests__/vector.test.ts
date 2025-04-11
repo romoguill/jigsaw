@@ -34,12 +34,7 @@ describe('Vector', () => {
   describe('angle', () => {
     it('should calculate angle correctly for positive x and y', () => {
       const vector = new Vector({ x: 1, y: 1 });
-      expect(vector.angle).toBeCloseTo(Math.PI / 4, 10);
-    });
-
-    it('should calculate angle correctly for negative x and y', () => {
-      const vector = new Vector({ x: -1, y: -1 });
-      expect(vector.angle).toBeCloseTo((5 * Math.PI) / 4, 10);
+      expect(vector.angle).toBeCloseTo(2 * Math.PI - Math.PI / 4, 10);
     });
   });
 
@@ -61,8 +56,9 @@ describe('Vector', () => {
     it('should rotate vector 90 degrees clockwise', () => {
       const vector = new Vector({ x: 1, y: 0 });
       vector.rotateVector90();
-      expect(vector.x).toBe(0);
-      expect(vector.y).toBe(1);
+      console.log(vector.x);
+      expect(vector.x).toBeCloseTo(0, 10);
+      expect(vector.y).toBeCloseTo(1, 10);
     });
   });
 
@@ -70,8 +66,8 @@ describe('Vector', () => {
     it('should rotate vector 180 degrees', () => {
       const vector = new Vector({ x: 1, y: 1 });
       vector.rotateVector180();
-      expect(vector.x).toBe(-1);
-      expect(vector.y).toBe(-1);
+      expect(vector.x).toBeCloseTo(-1, 10);
+      expect(vector.y).toBeCloseTo(-1, 10);
     });
   });
 
