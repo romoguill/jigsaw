@@ -9,7 +9,7 @@ export class PiecesBuilder {
     this.paths = paths;
   }
 
-  parsePath(path: string): string[][] {
+  private parsePath(path: string): string[][] {
     if (path.slice(0, 5) !== 'M 0 0') {
       throw new Error('Invalid path');
     }
@@ -37,5 +37,17 @@ export class PiecesBuilder {
     }
 
     return completeSegments;
+  }
+
+  parsePaths() {
+    const parsedHorizontalPaths = this.paths.horizontalPaths.map((path) =>
+      this.parsePath(path)
+    );
+
+    const parsedVerticalPaths = this.paths.verticalPaths.map((path) =>
+      this.parsePath(path)
+    );
+
+    return { parsedHorizontalPaths, parsedVerticalPaths };
   }
 }
