@@ -1,3 +1,5 @@
+import { Curve } from './curve.js';
+
 export class PiecesBuilder {
   // Horizontal and vertical paths
   private paths: {
@@ -49,5 +51,53 @@ export class PiecesBuilder {
     );
 
     return { parsedHorizontalPaths, parsedVerticalPaths };
+  }
+
+  toCurves(paths: string[][]): Curve[] {
+    const curves: Curve[] = [];
+    const origin = { x: 0, y: 0 };
+
+    paths.forEach((path) => {
+      // If the path has 6 elements, it's a longhand cubic curve.
+      if (path.length === 6) {
+        const curve = new Curve({
+          start: origin,
+          end: {
+            x: Number(path[4]),
+            y: Number(path[5]),
+          },
+          controlStart: {
+            x: Number(path[0]),
+            y: Number(path[1]),
+          },
+          controlEnd: {
+            x: Number(path[2]),
+            y: Number(path[3]),
+          },
+        });
+
+        curves.push(curve);
+      } else {
+        const curve = new Curve({
+          start: curves[curves.length - 1].endPoint, // The start point is the end point of the previous curve.
+          end: {
+            x: Number(path[2]),
+            y: Number(path[3]),
+          },
+          controlStart: {
+            x: curves[curves.length - 1].controlEndPoint.x, // The control start point is the control end point of the previous curve.
+            y: curves[curves.length - 1].controlEndPoint.y,
+          },
+          controlEnd: {
+            x: Number(path[2]),
+            y: Number(path[3]),
+          },
+        });
+
+        curves.push(curve);
+      }
+    });
+
+    return curves;
   }
 }
