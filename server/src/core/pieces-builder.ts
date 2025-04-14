@@ -56,10 +56,12 @@ export class PiecesBuilder {
   toCurves(paths: string[][]): Curve[][] {
     const allCurves: Curve[][] = [];
     const origin = { x: 0, y: 0 };
-    let remainingSegments: string[] = [];
+    console.log(paths);
 
     paths.forEach((path, i) => {
+      let remainingSegments: string[] = path;
       const curves: Curve[] = [];
+
       if (i === 0) {
         if (path.length === 22) {
           const curve = new Curve({
@@ -79,7 +81,6 @@ export class PiecesBuilder {
           });
 
           curves.push(curve);
-          console.log('curves', curves);
         } else {
           const lastSegment = allCurves[allCurves.length - 1];
           const lastCurve = lastSegment[lastSegment.length - 1];
@@ -108,24 +109,33 @@ export class PiecesBuilder {
       }
 
       while (remainingSegments.length > 0) {
-        console.log('remainingSegments', remainingSegments);
+        const lastSegment = allCurves[allCurves.length - 1];
+        // Default just to please the type checker. Should never happen.
+        const lastCurve = lastSegment
+          ? lastSegment[lastSegment.length - 1]
+          : {
+              startPoint: origin,
+              endPoint: origin,
+              controlStartPoint: origin,
+              controlEndPoint: origin,
+            };
+
         const curve = new Curve({
-          start: curves[curves.length - 1].endPoint, // The start point is the end point of the previous curve.
+          start: curves[curves.length - 1]
+            ? curves[curves.length - 1].endPoint
+            : lastCurve.endPoint, // The start point is the end point of the previous curve.
           end: {
             x: Number(remainingSegments[2]),
             y: Number(remainingSegments[3]),
           },
-          controlStart: {
-            x: curves[curves.length - 1].controlEndPoint.x, // The control start point is the control end point of the previous curve.
-            y: curves[curves.length - 1].controlEndPoint.y,
-          },
+          controlStart: curves[curves.length - 1]
+            ? curves[curves.length - 1].controlEndPoint
+            : lastCurve.controlEndPoint,
           controlEnd: {
             x: Number(remainingSegments[0]),
             y: Number(remainingSegments[1]),
           },
         });
-
-        console.log('curve', curve);
 
         curves.push(curve);
         remainingSegments = remainingSegments.slice(4);
@@ -135,5 +145,17 @@ export class PiecesBuilder {
     });
 
     return allCurves;
+  }
+
+  getAllCurves() {
+    const { parsedHorizontalPaths, parsedVerticalPaths } = this.parsePaths();
+    const horizontalCurves = parsedHorizontalPaths.map((path) =>
+      this.toCurves(path)
+    );
+    const verticalCurves = parsedVerticalPaths.map((path) =>
+      this.toCurves(path)
+    );
+
+    return { horizontalCurves, verticalCurves };
   }
 }

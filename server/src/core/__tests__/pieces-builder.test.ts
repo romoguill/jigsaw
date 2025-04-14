@@ -355,4 +355,71 @@ describe('PiecesBuilder', () => {
       expect(curves.length).toBe(0);
     });
   });
+
+  describe('getAllCurves', () => {
+    it('should return both horizontal and vertical curves', () => {
+      const builder = new PiecesBuilder(paths);
+      const result = builder.getAllCurves();
+
+      // Check that we have the expected number of paths
+      expect(result.horizontalCurves.length).toBe(2);
+      expect(result.verticalCurves.length).toBe(2);
+
+      // Check the first horizontal path
+      expect(result.horizontalCurves[0].length).toBe(1);
+      expect(result.horizontalCurves[0][0].length).toBe(5);
+
+      // Check the first vertical path
+      expect(result.verticalCurves[0].length).toBe(2);
+      expect(result.verticalCurves[0][0].length).toBe(5);
+
+      // Verify the first curve of the first horizontal path
+      expect(result.horizontalCurves[1][0][0].startPoint).toEqual({
+        x: 0,
+        y: 0,
+      });
+      expect(result.horizontalCurves[1][0][0].endPoint).toEqual({
+        x: 256,
+        y: 0,
+      });
+      expect(result.horizontalCurves[1][0][0].controlStartPoint).toEqual({
+        x: 79,
+        y: -51,
+      });
+      expect(result.horizontalCurves[1][0][0].controlEndPoint).toEqual({
+        x: 198,
+        y: 31,
+      });
+
+      // Verify the first curve of the first vertical path
+      expect(result.verticalCurves[1][1][1].startPoint).toEqual({
+        x: 896,
+        y: 0,
+      });
+      expect(result.verticalCurves[1][1][1].endPoint).toEqual({
+        x: 896,
+        y: -128,
+      });
+      expect(result.verticalCurves[1][1][1].controlStartPoint).toEqual({
+        x: 843,
+        y: -1,
+      });
+      expect(result.verticalCurves[1][1][1].controlEndPoint).toEqual({
+        x: 888,
+        y: -109,
+      });
+    });
+
+    it('should handle empty paths', () => {
+      const emptyPaths = {
+        horizontalPaths: [],
+        verticalPaths: [],
+      };
+      const builder = new PiecesBuilder(emptyPaths);
+      const result = builder.getAllCurves();
+
+      expect(result.horizontalCurves.length).toBe(0);
+      expect(result.verticalCurves.length).toBe(0);
+    });
+  });
 });
