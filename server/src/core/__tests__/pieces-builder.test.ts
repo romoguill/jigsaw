@@ -225,4 +225,134 @@ describe('PiecesBuilder', () => {
       expect(() => builder.parsePaths()).toThrow();
     });
   });
+
+  describe('toCurves', () => {
+    it('should convert path segments to curves', () => {
+      const builder = new PiecesBuilder(paths);
+      const { parsedHorizontalPaths } = builder.parsePaths();
+
+      const horizontalCurves = builder.toCurves(parsedHorizontalPaths[0]);
+
+      expect(horizontalCurves[0][0].startPoint).toEqual({ x: 0, y: 0 });
+      expect(horizontalCurves[0][0].endPoint).toEqual({ x: 256, y: 0 });
+      expect(horizontalCurves[0][0].controlStartPoint).toEqual({
+        x: 76,
+        y: -33,
+      });
+      expect(horizontalCurves[0][0].controlEndPoint).toEqual({ x: 181, y: 13 });
+
+      expect(horizontalCurves[0][1].startPoint).toEqual({ x: 256, y: 0 });
+      expect(horizontalCurves[0][1].endPoint).toEqual({ x: 256, y: 128 });
+      expect(horizontalCurves[0][1].controlStartPoint).toEqual({
+        x: 181,
+        y: 13,
+      });
+      expect(horizontalCurves[0][1].controlEndPoint).toEqual({
+        x: 255,
+        y: 109,
+      });
+
+      expect(horizontalCurves[0][2].startPoint).toEqual({ x: 256, y: 128 });
+      expect(horizontalCurves[0][2].endPoint).toEqual({ x: 384, y: 128 });
+      expect(horizontalCurves[0][2].controlStartPoint).toEqual({
+        x: 255,
+        y: 109,
+      });
+      expect(horizontalCurves[0][2].controlEndPoint).toEqual({
+        x: 371,
+        y: 145,
+      });
+
+      expect(horizontalCurves[0][3].startPoint).toEqual({ x: 384, y: 128 });
+      expect(horizontalCurves[0][3].endPoint).toEqual({ x: 384, y: 0 });
+      expect(horizontalCurves[0][3].controlStartPoint).toEqual({
+        x: 371,
+        y: 145,
+      });
+      expect(horizontalCurves[0][3].controlEndPoint).toEqual({
+        x: 322,
+        y: 15,
+      });
+
+      expect(horizontalCurves[0][4].startPoint).toEqual({ x: 384, y: 0 });
+      expect(horizontalCurves[0][4].endPoint).toEqual({ x: 640, y: 0 });
+      expect(horizontalCurves[0][4].controlStartPoint).toEqual({
+        x: 322,
+        y: 15,
+      });
+      expect(horizontalCurves[0][4].controlEndPoint).toEqual({
+        x: 556,
+        y: 69,
+      });
+    });
+
+    it('should handle multiple path segments', () => {
+      const builder = new PiecesBuilder(paths);
+      const { parsedVerticalPaths } = builder.parsePaths();
+
+      const verticalCurves = builder.toCurves(parsedVerticalPaths[0]);
+
+      // First segment
+      expect(verticalCurves[0][0].startPoint).toEqual({ x: 0, y: 0 });
+      expect(verticalCurves[0][0].endPoint).toEqual({ x: 256, y: 0 });
+      expect(verticalCurves[0][0].controlStartPoint).toEqual({
+        x: 73,
+        y: 57,
+      });
+      expect(verticalCurves[0][0].controlEndPoint).toEqual({ x: 204, y: 5 });
+
+      expect(verticalCurves[0][1].startPoint).toEqual({ x: 256, y: 0 });
+      expect(verticalCurves[0][1].endPoint).toEqual({ x: 256, y: 128 });
+      expect(verticalCurves[0][1].controlStartPoint).toEqual({
+        x: 204,
+        y: 5,
+      });
+      expect(verticalCurves[0][1].controlEndPoint).toEqual({
+        x: 258,
+        y: 111,
+      });
+
+      expect(verticalCurves[0][2].startPoint).toEqual({ x: 256, y: 128 });
+      expect(verticalCurves[0][2].endPoint).toEqual({ x: 384, y: 128 });
+      expect(verticalCurves[0][2].controlStartPoint).toEqual({
+        x: 258,
+        y: 111,
+      });
+      expect(verticalCurves[0][2].controlEndPoint).toEqual({
+        x: 363,
+        y: 136,
+      });
+
+      expect(verticalCurves[0][3].startPoint).toEqual({ x: 384, y: 128 });
+      expect(verticalCurves[0][3].endPoint).toEqual({ x: 384, y: 0 });
+      expect(verticalCurves[0][3].controlStartPoint).toEqual({
+        x: 363,
+        y: 136,
+      });
+      expect(verticalCurves[0][3].controlEndPoint).toEqual({
+        x: 332,
+        y: -4,
+      });
+
+      expect(verticalCurves[0][4].startPoint).toEqual({ x: 384, y: 0 });
+      expect(verticalCurves[0][4].endPoint).toEqual({ x: 640, y: 0 });
+      expect(verticalCurves[0][4].controlStartPoint).toEqual({
+        x: 332,
+        y: -4,
+      });
+      expect(verticalCurves[0][4].controlEndPoint).toEqual({
+        x: 568,
+        y: 58,
+      });
+    });
+
+    it('should handle empty path segments', () => {
+      const builder = new PiecesBuilder(paths);
+      const pathSegments: string[][] = [];
+
+      const curves = builder.toCurves(pathSegments);
+
+      expect(curves.length).toBe(0);
+    });
+  });
 });

@@ -53,51 +53,87 @@ export class PiecesBuilder {
     return { parsedHorizontalPaths, parsedVerticalPaths };
   }
 
-  toCurves(paths: string[][]): Curve[] {
-    const curves: Curve[] = [];
+  toCurves(paths: string[][]): Curve[][] {
+    const allCurves: Curve[][] = [];
     const origin = { x: 0, y: 0 };
+    let remainingSegments: string[] = [];
 
-    paths.forEach((path) => {
-      // If the path has 6 elements, it's a longhand cubic curve.
-      if (path.length === 6) {
-        const curve = new Curve({
-          start: origin,
-          end: {
-            x: Number(path[4]),
-            y: Number(path[5]),
-          },
-          controlStart: {
-            x: Number(path[0]),
-            y: Number(path[1]),
-          },
-          controlEnd: {
-            x: Number(path[2]),
-            y: Number(path[3]),
-          },
-        });
+    paths.forEach((path, i) => {
+      const curves: Curve[] = [];
+      if (i === 0) {
+        if (path.length === 22) {
+          const curve = new Curve({
+            start: origin,
+            end: {
+              x: Number(path[4]),
+              y: Number(path[5]),
+            },
+            controlStart: {
+              x: Number(path[0]),
+              y: Number(path[1]),
+            },
+            controlEnd: {
+              x: Number(path[2]),
+              y: Number(path[3]),
+            },
+          });
 
-        curves.push(curve);
-      } else {
+          curves.push(curve);
+          console.log('curves', curves);
+        } else {
+          const lastSegment = allCurves[allCurves.length - 1];
+          const lastCurve = lastSegment[lastSegment.length - 1];
+
+          const curve = new Curve({
+            start: lastCurve.endPoint,
+            end: {
+              x: Number(path[2]),
+              y: Number(path[3]),
+            },
+            controlStart: {
+              x: lastCurve.controlEndPoint.x,
+              y: lastCurve.controlEndPoint.y,
+            },
+            controlEnd: {
+              x: Number(path[0]),
+              y: Number(path[1]),
+            },
+          });
+
+          curves.push(curve);
+        }
+
+        // Get the remaining segments from the path without the first curve
+        remainingSegments = path.slice(6);
+      }
+
+      while (remainingSegments.length > 0) {
+        console.log('remainingSegments', remainingSegments);
         const curve = new Curve({
           start: curves[curves.length - 1].endPoint, // The start point is the end point of the previous curve.
           end: {
-            x: Number(path[2]),
-            y: Number(path[3]),
+            x: Number(remainingSegments[2]),
+            y: Number(remainingSegments[3]),
           },
           controlStart: {
             x: curves[curves.length - 1].controlEndPoint.x, // The control start point is the control end point of the previous curve.
             y: curves[curves.length - 1].controlEndPoint.y,
           },
           controlEnd: {
-            x: Number(path[2]),
-            y: Number(path[3]),
+            x: Number(remainingSegments[0]),
+            y: Number(remainingSegments[1]),
           },
         });
 
+        console.log('curve', curve);
+
         curves.push(curve);
+        remainingSegments = remainingSegments.slice(4);
       }
+
+      allCurves.push(curves);
     });
 
-    return curves;
+    return allCurves;
   }
 }
