@@ -191,4 +191,19 @@ export class PiecesBuilder {
         horizontalCurves[0][0][4].endPoint.x
     );
   }
+
+  // Get from the puzzle grid the curves around a piece.
+  // It's important to note that border must be taken into account. If the piece is on the border, some segments will be null.
+  getEncolisingCurves(row: number, column: number) {
+    const topSegment: Curve[] | null =
+      row === 0 ? null : this.horizontalCurves[row - 1][column];
+    const bottomSegment: Curve[] | null =
+      this.horizontalCurves[row][column] ?? null;
+    const leftSegment: Curve[] | null =
+      column === 0 ? null : this.verticalCurves[column - 1][row];
+    const rightSegment: Curve[] | null =
+      this.verticalCurves[column][row] ?? null;
+
+    return { topSegment, bottomSegment, leftSegment, rightSegment };
+  }
 }

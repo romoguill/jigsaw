@@ -3,6 +3,7 @@ import { PiecesBuilder } from '../pieces-builder.js';
 const horizontalPaths = [
   'M 0 0 C 76 -33 181 13 256 0 S 255 109 256 128 S 371 145 384 128 S 322 15 384 0 S 556 69 640 0',
   'M 0 0 C 79 -51 198 31 256 0 S 270 -119 256 -128 S 369 -133 384 -128 S 329 -10 384 0 S 560 19 640 0',
+  'M 0 0 C 76 -33 181 13 256 0 S 255 109 256 128 S 371 145 384 128 S 322 15 384 0 S 556 69 640 0',
 ];
 
 const verticalPaths = [
@@ -32,7 +33,7 @@ describe('PiecesBuilder', () => {
       const result = builder.parsePaths();
 
       // The path has one segment, so we expect one array in the result
-      expect(result.parsedHorizontalPaths.length).toBe(2);
+      expect(result.parsedHorizontalPaths.length).toBe(3);
       expect(result.parsedVerticalPaths.length).toBe(2);
 
       expect(result.parsedHorizontalPaths).toEqual([
@@ -88,6 +89,32 @@ describe('PiecesBuilder', () => {
             '0',
           ],
         ],
+        [
+          [
+            '76',
+            '-33',
+            '181',
+            '13',
+            '256',
+            '0',
+            '255',
+            '109',
+            '256',
+            '128',
+            '371',
+            '145',
+            '384',
+            '128',
+            '322',
+            '15',
+            '384',
+            '0',
+            '556',
+            '69',
+            '640',
+            '0',
+          ],
+        ],
       ]);
     });
 
@@ -96,7 +123,7 @@ describe('PiecesBuilder', () => {
 
       const result = builder.parsePaths();
 
-      expect(result.parsedHorizontalPaths.length).toBe(2);
+      expect(result.parsedHorizontalPaths.length).toBe(3);
       expect(result.parsedVerticalPaths.length).toBe(2);
 
       expect(result.parsedVerticalPaths).toEqual([
@@ -362,7 +389,7 @@ describe('PiecesBuilder', () => {
       const result = builder.generateAllCurves();
 
       // Check that we have the expected number of paths
-      expect(result.horizontalCurves.length).toBe(2);
+      expect(result.horizontalCurves.length).toBe(3);
       expect(result.verticalCurves.length).toBe(2);
 
       // Check the first horizontal path
@@ -428,6 +455,36 @@ describe('PiecesBuilder', () => {
       const builder = new PiecesBuilder(paths);
       const result = builder.getPieceSize();
       expect(result).toBe(640);
+    });
+  });
+
+  describe('getEncolisingCurves', () => {
+    it('should return the correct curves for a piece in the second row and first column', () => {
+      const builder = new PiecesBuilder(paths);
+      builder.generateAllCurves();
+
+      const result = builder.getEncolisingCurves(1, 0);
+
+      // Verify the segments are the correct ones
+      expect(result.topSegment).toBe(builder.horizontalCurves[0][0]);
+      expect(result.bottomSegment).toBe(builder.horizontalCurves[1][0]);
+      expect(result.leftSegment).toBe(null);
+      expect(result.rightSegment).toBe(builder.verticalCurves[0][1]);
+    });
+
+    it('should handle corner pieces', () => {
+      const builder = new PiecesBuilder(paths);
+      builder.generateAllCurves();
+
+      // We need to check for the last column
+      const resultLastColumn = builder.getEncolisingCurves(0, 0);
+
+      expect(resultLastColumn.topSegment).toBeNull();
+      expect(resultLastColumn.bottomSegment).toBe(
+        builder.horizontalCurves[0][0]
+      );
+      expect(resultLastColumn.leftSegment).toBeNull();
+      expect(resultLastColumn.rightSegment).toBe(builder.verticalCurves[0][0]);
     });
   });
 });
