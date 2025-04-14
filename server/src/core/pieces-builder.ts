@@ -6,6 +6,8 @@ export class PiecesBuilder {
     horizontalPaths: string[];
     verticalPaths: string[];
   };
+  private _horizontalCurves: Curve[][][] = [];
+  private _verticalCurves: Curve[][][] = [];
 
   constructor(paths: { horizontalPaths: string[]; verticalPaths: string[] }) {
     this.paths = paths;
@@ -56,7 +58,6 @@ export class PiecesBuilder {
   toCurves(paths: string[][]): Curve[][] {
     const allCurves: Curve[][] = [];
     const origin = { x: 0, y: 0 };
-    console.log(paths);
 
     paths.forEach((path, i) => {
       let remainingSegments: string[] = path;
@@ -147,15 +148,36 @@ export class PiecesBuilder {
     return allCurves;
   }
 
-  getAllCurves() {
+  generateAllCurves() {
     const { parsedHorizontalPaths, parsedVerticalPaths } = this.parsePaths();
-    const horizontalCurves = parsedHorizontalPaths.map((path) =>
+    this._horizontalCurves = parsedHorizontalPaths.map((path) =>
       this.toCurves(path)
     );
-    const verticalCurves = parsedVerticalPaths.map((path) =>
+    this._verticalCurves = parsedVerticalPaths.map((path) =>
       this.toCurves(path)
     );
 
-    return { horizontalCurves, verticalCurves };
+    return {
+      horizontalCurves: this._horizontalCurves,
+      verticalCurves: this._verticalCurves,
+    };
+  }
+
+  get horizontalCurves() {
+    // Memoize all curves
+    if (this._horizontalCurves.length === 0) {
+      this.generateAllCurves();
+    }
+
+    return this._horizontalCurves;
+  }
+
+  get verticalCurves() {
+    // Memoize all curves
+    if (this._verticalCurves.length === 0) {
+      this.generateAllCurves();
+    }
+
+    return this._verticalCurves;
   }
 }

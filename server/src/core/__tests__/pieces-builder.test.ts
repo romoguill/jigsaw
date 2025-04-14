@@ -359,7 +359,7 @@ describe('PiecesBuilder', () => {
   describe('getAllCurves', () => {
     it('should return both horizontal and vertical curves', () => {
       const builder = new PiecesBuilder(paths);
-      const result = builder.getAllCurves();
+      const result = builder.generateAllCurves();
 
       // Check that we have the expected number of paths
       expect(result.horizontalCurves.length).toBe(2);
@@ -416,7 +416,7 @@ describe('PiecesBuilder', () => {
         verticalPaths: [],
       };
       const builder = new PiecesBuilder(emptyPaths);
-      const result = builder.getAllCurves();
+      const result = builder.generateAllCurves();
 
       expect(result.horizontalCurves.length).toBe(0);
       expect(result.verticalCurves.length).toBe(0);
