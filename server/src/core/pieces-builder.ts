@@ -180,4 +180,15 @@ export class PiecesBuilder {
 
     return this._verticalCurves;
   }
+
+  // Kind of messy but I want to keep this class separated from game logic.
+  getPieceSize(): number {
+    const horizontalCurves = this.horizontalCurves;
+
+    // Use the first horizontal curve to infer the piece size.
+    return Math.abs(
+      horizontalCurves[0][0][0].startPoint.x -
+        horizontalCurves[0][0][4].endPoint.x
+    );
+  }
 }

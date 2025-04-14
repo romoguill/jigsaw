@@ -422,4 +422,12 @@ describe('PiecesBuilder', () => {
       expect(result.verticalCurves.length).toBe(0);
     });
   });
+
+  describe('getPieceSize', () => {
+    it('should return the correct piece size', () => {
+      const builder = new PiecesBuilder(paths);
+      const result = builder.getPieceSize();
+      expect(result).toBe(640);
+    });
+  });
 });
