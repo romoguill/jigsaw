@@ -499,10 +499,10 @@ describe('PiecesBuilder', () => {
       // Apply rotation
       builder.applyRotationToVerticalCurves();
 
-      // console.log('original');
-      // console.log(JSON.stringify(originalCoordinates[0][1], null, 2));
-      // console.log('rotated');
-      // console.log(JSON.stringify(builder.verticalCurves[0][1], null, 2));
+      console.log('original');
+      console.log(JSON.stringify(originalCoordinates[0][1][0], null, 2));
+      console.log('rotated');
+      console.log(JSON.stringify(builder.verticalCurves[0][1][0], null, 2));
 
       // Check that each curve has been rotated 90 degrees clockwise
       builder.verticalCurves.forEach((segments, segmentIndex) => {

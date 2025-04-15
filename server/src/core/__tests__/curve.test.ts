@@ -91,10 +91,10 @@ describe('Curve', () => {
 
       curve.rotate90Clockwise(origin);
 
-      expect(curve.startPoint).toEqual({ x: 5, y: -5 });
-      expect(curve.endPoint).toEqual({ x: -5, y: 5 });
-      expect(curve.controlStartPoint).toEqual({ x: 5, y: 0 });
-      expect(curve.controlEndPoint).toEqual({ x: 0, y: -5 });
+      expect(curve.startPoint).toEqual({ x: 10, y: 0 });
+      expect(curve.endPoint).toEqual({ x: 0, y: 10 });
+      expect(curve.controlStartPoint).toEqual({ x: 10, y: 5 });
+      expect(curve.controlEndPoint).toEqual({ x: 5, y: 0 });
     });
   });
 

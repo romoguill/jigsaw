@@ -232,7 +232,6 @@ export class PiecesBuilder {
       segments.forEach((segment) => {
         segment.forEach((curve) => {
           curve.rotate90Clockwise(rotationOrigin);
-          console.log(curve);
         });
       });
     });

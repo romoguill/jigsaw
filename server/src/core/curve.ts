@@ -59,16 +59,10 @@ export class Curve {
     const controlStartVector = new Vector(this.controlStart, origin);
     const controlEndVector = new Vector(this.controlEnd, origin);
 
-    console.log('original');
-    console.log(startVector);
-
     startVector.rotateVector90().translateOrigin(origin);
     endVector.rotateVector90().translateOrigin(origin);
     controlStartVector.rotateVector90().translateOrigin(origin);
     controlEndVector.rotateVector90().translateOrigin(origin);
-
-    console.log('rotated');
-    console.log(startVector);
 
     this.start = startVector.normalize().toCoordinate();
     this.end = endVector.normalize().toCoordinate();
