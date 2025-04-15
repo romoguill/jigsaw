@@ -8,6 +8,7 @@ export class PiecesBuilder {
   };
   private _horizontalCurves: Curve[][][] = [];
   private _verticalCurves: Curve[][][] = [];
+  private _pieceSize: number = 0;
 
   constructor(paths: { horizontalPaths: string[]; verticalPaths: string[] }) {
     this.paths = paths;
@@ -15,6 +16,7 @@ export class PiecesBuilder {
 
   private parsePath(path: string): string[][] {
     if (path.slice(0, 5) !== 'M 0 0') {
+      console.log('error');
       throw new Error('Invalid path');
     }
 
@@ -52,7 +54,14 @@ export class PiecesBuilder {
       this.parsePath(path)
     );
 
+    // Use the first horizontal curve to infer the piece size.
+    this._pieceSize = Number(parsedHorizontalPaths[0][0][20]);
+
     return { parsedHorizontalPaths, parsedVerticalPaths };
+  }
+
+  get pieceSize() {
+    return this._pieceSize;
   }
 
   toCurves(paths: string[][]): Curve[][] {
@@ -150,12 +159,31 @@ export class PiecesBuilder {
 
   generateAllCurves() {
     const { parsedHorizontalPaths, parsedVerticalPaths } = this.parsePaths();
-    this._horizontalCurves = parsedHorizontalPaths.map((path) =>
-      this.toCurves(path)
-    );
-    this._verticalCurves = parsedVerticalPaths.map((path) =>
-      this.toCurves(path)
-    );
+    this._horizontalCurves = parsedHorizontalPaths.map((path, i) => {
+      const segments = this.toCurves(path);
+
+      // Move each segment to the bottom of the previous one by the piece size.
+      segments.forEach((segment) => {
+        segment.forEach((curve) => {
+          curve.translate(0, this._pieceSize * (i + 1));
+        });
+      });
+
+      return segments;
+    });
+
+    this._verticalCurves = parsedVerticalPaths.map((path, i) => {
+      const segments = this.toCurves(path);
+
+      // Move each segment to the right of the previous one by the piece size.
+      segments.forEach((segment) => {
+        segment.forEach((curve) => {
+          curve.translate(this._pieceSize * (i + 1), 0);
+        });
+      });
+
+      return segments;
+    });
 
     return {
       horizontalCurves: this._horizontalCurves,
@@ -179,17 +207,6 @@ export class PiecesBuilder {
     }
 
     return this._verticalCurves;
-  }
-
-  // Kind of messy but I want to keep this class separated from game logic.
-  getPieceSize(): number {
-    const horizontalCurves = this.horizontalCurves;
-
-    // Use the first horizontal curve to infer the piece size.
-    return Math.abs(
-      horizontalCurves[0][0][0].startPoint.x -
-        horizontalCurves[0][0][4].endPoint.x
-    );
   }
 
   // Get from the puzzle grid the curves around a piece.

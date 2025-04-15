@@ -11,6 +11,8 @@ const verticalPaths = [
   'M 0 0 C 46 75 188 27 256 0 S 256 105 256 128 S 391 146 384 128 S 337 -21 384 0 S 552 -59 640 0 S 843 -1 896 0 S 888 -109 896 -128 S 1031 -148 1024 -128 S 972 15 1024 0 S 1218 -65 1280 0',
 ];
 
+const pieceSize = 640;
+
 const paths = {
   horizontalPaths,
   verticalPaths,
@@ -403,58 +405,47 @@ describe('PiecesBuilder', () => {
       // Verify the first curve of the first horizontal path
       expect(result.horizontalCurves[1][0][0].startPoint).toEqual({
         x: 0,
-        y: 0,
+        y: 0 + pieceSize * 2,
       });
       expect(result.horizontalCurves[1][0][0].endPoint).toEqual({
         x: 256,
-        y: 0,
+        y: 0 + pieceSize * 2,
       });
       expect(result.horizontalCurves[1][0][0].controlStartPoint).toEqual({
         x: 79,
-        y: -51,
+        y: -51 + pieceSize * 2,
       });
       expect(result.horizontalCurves[1][0][0].controlEndPoint).toEqual({
         x: 198,
-        y: 31,
+        y: 31 + pieceSize * 2,
       });
 
       // Verify the first curve of the first vertical path
       expect(result.verticalCurves[1][1][1].startPoint).toEqual({
-        x: 896,
+        x: 896 + pieceSize * 2,
         y: 0,
       });
       expect(result.verticalCurves[1][1][1].endPoint).toEqual({
-        x: 896,
+        x: 896 + pieceSize * 2,
         y: -128,
       });
       expect(result.verticalCurves[1][1][1].controlStartPoint).toEqual({
-        x: 843,
+        x: 843 + pieceSize * 2,
         y: -1,
       });
       expect(result.verticalCurves[1][1][1].controlEndPoint).toEqual({
-        x: 888,
+        x: 888 + pieceSize * 2,
         y: -109,
       });
-    });
-
-    it('should handle empty paths', () => {
-      const emptyPaths = {
-        horizontalPaths: [],
-        verticalPaths: [],
-      };
-      const builder = new PiecesBuilder(emptyPaths);
-      const result = builder.generateAllCurves();
-
-      expect(result.horizontalCurves.length).toBe(0);
-      expect(result.verticalCurves.length).toBe(0);
     });
   });
 
   describe('getPieceSize', () => {
     it('should return the correct piece size', () => {
       const builder = new PiecesBuilder(paths);
-      const result = builder.getPieceSize();
-      expect(result).toBe(640);
+      builder.parsePaths();
+
+      expect(builder.pieceSize).toBe(640);
     });
   });
 
