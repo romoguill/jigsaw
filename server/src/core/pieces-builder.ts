@@ -223,4 +223,18 @@ export class PiecesBuilder {
 
     return { topSegment, bottomSegment, leftSegment, rightSegment };
   }
+
+  applyRotationToVerticalCurves(): void {
+    // Rotate the curves 90 degrees clockwise. Use the first curve of the first segment of each vertical curve as the rotation origin.
+    this._verticalCurves.forEach((segments) => {
+      const rotationOrigin = segments[0][0].startPoint;
+      console.log(rotationOrigin);
+      segments.forEach((segment) => {
+        segment.forEach((curve) => {
+          curve.rotate90Clockwise(rotationOrigin);
+          console.log(curve);
+        });
+      });
+    });
+  }
 }

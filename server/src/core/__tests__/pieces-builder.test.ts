@@ -478,4 +478,95 @@ describe('PiecesBuilder', () => {
       expect(resultLastColumn.rightSegment).toBe(builder.verticalCurves[0][0]);
     });
   });
+
+  describe('applyRotationToVerticalCurves', () => {
+    it('should rotate all vertical curves 90 degrees clockwise', () => {
+      const builder = new PiecesBuilder(paths);
+      builder.generateAllCurves();
+
+      // Store original coordinates for comparison
+      const originalCoordinates = builder.verticalCurves.map((segments) =>
+        segments.map((segment) =>
+          segment.map((curve) => ({
+            start: { ...curve.startPoint },
+            end: { ...curve.endPoint },
+            controlStart: { ...curve.controlStartPoint },
+            controlEnd: { ...curve.controlEndPoint },
+          }))
+        )
+      );
+
+      // Apply rotation
+      builder.applyRotationToVerticalCurves();
+
+      // console.log('original');
+      // console.log(JSON.stringify(originalCoordinates[0][1], null, 2));
+      // console.log('rotated');
+      // console.log(JSON.stringify(builder.verticalCurves[0][1], null, 2));
+
+      // Check that each curve has been rotated 90 degrees clockwise
+      builder.verticalCurves.forEach((segments, segmentIndex) => {
+        segments.forEach((segment, curveIndex) => {
+          segment.forEach((curve, i) => {
+            const original = originalCoordinates[segmentIndex][curveIndex][i];
+
+            // For a 90-degree clockwise rotation:
+            // x_new = y_old
+            // y_new = -x_old
+            expect(curve.startPoint.x).toBeCloseTo(original.start.y, 1);
+            expect(curve.startPoint.y).toBeCloseTo(-original.start.x, 1);
+
+            expect(curve.endPoint.x).toBeCloseTo(original.end.y, 1);
+            expect(curve.endPoint.y).toBeCloseTo(-original.end.x, 1);
+
+            expect(curve.controlStartPoint.x).toBeCloseTo(
+              original.controlStart.y,
+              1
+            );
+            expect(curve.controlStartPoint.y).toBeCloseTo(
+              -original.controlStart.x,
+              1
+            );
+
+            expect(curve.controlEndPoint.x).toBeCloseTo(
+              original.controlEnd.y,
+              1
+            );
+            expect(curve.controlEndPoint.y).toBeCloseTo(
+              -original.controlEnd.x,
+              1
+            );
+          });
+        });
+      });
+    });
+
+    it('should rotate curves around their starting point', () => {
+      const builder = new PiecesBuilder(paths);
+      builder.generateAllCurves();
+
+      // Get the first curve of the first segment of the first vertical path
+      const firstCurve = builder.verticalCurves[0][0][0];
+      const startPoint = { ...firstCurve.startPoint };
+
+      // Apply rotation
+      builder.applyRotationToVerticalCurves();
+
+      // The start point should remain the same after rotation
+      expect(builder.verticalCurves[0][0][0].startPoint.x).toBe(startPoint.x);
+      expect(builder.verticalCurves[0][0][0].startPoint.y).toBe(startPoint.y);
+    });
+
+    it('should handle empty vertical curves', () => {
+      const emptyPaths = {
+        horizontalPaths: [...horizontalPaths],
+        verticalPaths: [],
+      };
+      const builder = new PiecesBuilder(emptyPaths);
+      builder.generateAllCurves();
+
+      // This should not throw an error
+      expect(() => builder.applyRotationToVerticalCurves()).not.toThrow();
+    });
+  });
 });
