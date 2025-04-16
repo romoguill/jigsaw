@@ -305,7 +305,7 @@ export class PiecesBuilder {
 
   // Final output of the enclosed shape. Pure SVG string.
   enclosedShapeToSvg(
-    segments: (Curve[] | null)[],
+    svgPaths: (string[] | null)[],
     row: number,
     column: number
   ) {
@@ -313,7 +313,7 @@ export class PiecesBuilder {
     const moveToCommand = `M ${origin.x} ${origin.y}`;
     const closePathCommand = 'Z';
 
-    const svgPaths = segments.map((segment, i) => {
+    const svgPath = svgPaths.map((segment, i) => {
       // If the segment is null, it means that the piece is on the border.
       // So if the top segment (first element of the segment array) is null, the svg must be a horizontal border, with the endpoint located at the right of the piece. Same for all others.
       if (!segment) {
@@ -360,14 +360,14 @@ export class PiecesBuilder {
         // Should never happen. If segment is null, it means that the piece is on the border.
         return [];
       } else {
-        return segment.map((segment) => segment.toSvgLonghand());
+        return segment;
       }
     });
 
     // Join the initial moveToCommand with the svg paths and the closePathCommand.
     return [
       moveToCommand,
-      ...svgPaths.map((path) => path.join(' ')),
+      ...svgPath.map((path) => path.join(' ')),
       closePathCommand,
     ].join(' ');
   }

@@ -32,12 +32,22 @@ export class Curve {
 
   // Reverses the curve by swapping the start and end points and control points.
   reverse(): void {
-    const { start, end, controlStart, controlEnd } = this.getPoints();
+    // Points can be swapped, but control points cannot.
+    [this.start, this.end] = [this.end, this.start];
 
-    this.start = end;
-    this.end = start;
-    this.controlStart = controlEnd;
-    this.controlEnd = controlStart;
+    console.log(this.start, this.end);
+
+    // To reverse the control points, we need to swap the start and end control points, but also rotate them 180 degrees.
+    [this.controlStart, this.controlEnd] = [this.controlEnd, this.controlStart];
+
+    const controlStartVector = new Vector(this.controlStart, this.start);
+    const controlEndVector = new Vector(this.controlEnd, this.end);
+
+    controlStartVector.rotateVector180().translateOrigin(this.start);
+    controlEndVector.rotateVector180().translateOrigin(this.end);
+
+    this.controlStart = controlStartVector.normalize().toCoordinate();
+    this.controlEnd = controlEndVector.normalize().toCoordinate();
   }
 
   // Move the curve by x and y amount. Can set a

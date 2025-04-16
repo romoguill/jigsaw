@@ -108,8 +108,10 @@ export const cutImageIntoPieces = async ({
   // Generate the enclosing shape for each piece
   const enclosingShape = piecesBuilder.generateEnclosingShape(0, 0);
 
+  const svgPaths = piecesBuilder.enclosedShapeToSvgPaths(enclosingShape);
+
   // Convert the enclosing shape to SVG
-  const enclosingShapeSvg = piecesBuilder.enclosedShapeToSvg(enclosingShape);
+  const enclosingShapeSvg = piecesBuilder.enclosedShapeToSvg(svgPaths, 0, 0);
 
   console.log('enclosing shape svg');
   console.log(enclosingShapeSvg);
