@@ -1,3 +1,4 @@
+import type { Coordinate } from '@jigsaw/shared/schemas';
 import { Curve } from './curve.js';
 
 export class PiecesBuilder {
@@ -282,14 +283,31 @@ export class PiecesBuilder {
     return shape;
   }
 
-  enclosedShapeToSvg(segments: (Curve[] | null)[]) {
+  // Convert the enclosed shape curves to an array of SVG paths.
+  enclosedShapeToSvgPaths(segments: (Curve[] | null)[]) {
     const svg = segments.map((segment) => {
       if (!segment) return null;
-      return segment.map((segment) => {
-        return segment.toSvgLonghand();
+      return segment.map((segment, i) => {
+        if (i === 0) {
+          return segment.toSvgLonghand();
+        }
+        return segment.toSvgShorthand();
       });
     });
 
     return svg;
+  }
+
+  // Generate the SVG path for the border of a piece. Basically a straight line from the start point to the end point.
+  static borderSvgPath(endPoint: Coordinate) {
+    return `L ${endPoint.x} ${endPoint.y}`;
+  }
+
+  // Final output of the enclosed shape. Pure SVG string.
+  enclosedShapeToSvg(segments: (Curve[] | null)[]) {
+    const moveTo = `M ${segments[0][0].startPoint.x} ${segments[0][0].startPoint.y}`;
+    const svgPaths = this.enclosedShapeToSvgPaths(segments);
+
+    return svgPaths.map((path) => path.join(' ')).join(' ');
   }
 }
