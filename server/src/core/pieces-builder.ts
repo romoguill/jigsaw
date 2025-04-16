@@ -282,8 +282,9 @@ export class PiecesBuilder {
     return shape;
   }
 
-  enclosedShapeToSvg(segments: Curve[][]) {
+  enclosedShapeToSvg(segments: (Curve[] | null)[]) {
     const svg = segments.map((segment) => {
+      if (!segment) return null;
       return segment.map((segment) => {
         return segment.toSvgLonghand();
       });
