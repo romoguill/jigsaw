@@ -31,23 +31,27 @@ export class Curve {
   }
 
   // Reverses the curve by swapping the start and end points and control points.
-  reverse(): void {
+  // Index is the position of the curve in the segment.
+  reverse(index: number): void {
     // Points can be swapped, but control points cannot.
     [this.start, this.end] = [this.end, this.start];
-
-    console.log(this.start, this.end);
 
     // To reverse the control points, we need to swap the start and end control points, but also rotate them 180 degrees.
     [this.controlStart, this.controlEnd] = [this.controlEnd, this.controlStart];
 
-    const controlStartVector = new Vector(this.controlStart, this.start);
-    const controlEndVector = new Vector(this.controlEnd, this.end);
+    // The first curve start control point can be left as is because it's generated to match the contiguous curves.
+    if (index !== 0) {
+      const controlStartVector = new Vector(this.controlStart, this.start);
+      controlStartVector.rotateVector180().translateOrigin(this.start);
+      this.controlStart = controlStartVector.normalize().toCoordinate();
+    }
 
-    controlStartVector.rotateVector180().translateOrigin(this.start);
-    controlEndVector.rotateVector180().translateOrigin(this.end);
-
-    this.controlStart = controlStartVector.normalize().toCoordinate();
-    this.controlEnd = controlEndVector.normalize().toCoordinate();
+    // The last curve end control point can be left as is because it's generated to match the contiguous curves.
+    if (index !== 4) {
+      const controlEndVector = new Vector(this.controlEnd, this.end);
+      controlEndVector.rotateVector180().translateOrigin(this.end);
+      this.controlEnd = controlEndVector.normalize().toCoordinate();
+    }
   }
 
   // Move the curve by x and y amount. Can set a

@@ -257,8 +257,9 @@ export class PiecesBuilder {
       // Reverse order of curves
       reversedBottomSegment = bottomSegment.reverse();
       // Reverse the direction of the curves
-      bottomSegment.forEach((curve) => {
-        curve.reverse();
+      bottomSegment.forEach((curve, i) => {
+        console.log(i);
+        curve.reverse(i);
       });
     }
 
@@ -267,8 +268,8 @@ export class PiecesBuilder {
       // Reverse order of curves
       reversedLeftSegment = leftSegment.reverse();
       // Reverse the direction of the curves
-      leftSegment.forEach((curve) => {
-        curve.reverse();
+      leftSegment.forEach((curve, i) => {
+        curve.reverse(i);
       });
     }
 
