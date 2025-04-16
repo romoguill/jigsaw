@@ -298,16 +298,77 @@ export class PiecesBuilder {
     return svg;
   }
 
-  // Generate the SVG path for the border of a piece. Basically a straight line from the start point to the end point.
+  // Generate the SVG path for the border of a piece. Basically a straight line to the end point.
   static borderSvgPath(endPoint: Coordinate) {
     return `L ${endPoint.x} ${endPoint.y}`;
   }
 
   // Final output of the enclosed shape. Pure SVG string.
-  enclosedShapeToSvg(segments: (Curve[] | null)[]) {
-    const moveTo = `M ${segments[0][0].startPoint.x} ${segments[0][0].startPoint.y}`;
-    const svgPaths = this.enclosedShapeToSvgPaths(segments);
+  enclosedShapeToSvg(
+    segments: (Curve[] | null)[],
+    row: number,
+    column: number
+  ) {
+    const origin = { x: row * this._pieceSize, y: column * this._pieceSize };
+    const moveToCommand = `M ${origin.x} ${origin.y}`;
+    const closePathCommand = 'Z';
 
-    return svgPaths.map((path) => path.join(' ')).join(' ');
+    const svgPaths = segments.map((segment, i) => {
+      // If the segment is null, it means that the piece is on the border.
+      // So if the top segment (first element of the segment array) is null, the svg must be a horizontal border, with the endpoint located at the right of the piece. Same for all others.
+      if (!segment) {
+        // Top border
+        if (row === 0 && i === 0) {
+          return [
+            PiecesBuilder.borderSvgPath({
+              x: origin.x + this._pieceSize,
+              y: origin.y,
+            }),
+          ];
+        }
+
+        // Bottom border
+        if (row === this._horizontalCurves.length && i === 2) {
+          return [
+            PiecesBuilder.borderSvgPath({
+              x: origin.x - this._pieceSize,
+              y: origin.y,
+            }),
+          ];
+        }
+
+        // Left border
+        if (column === 0 && i === 1) {
+          return [
+            PiecesBuilder.borderSvgPath({
+              x: origin.x,
+              y: origin.y + this._pieceSize,
+            }),
+          ];
+        }
+
+        // Right border
+        if (column === this._verticalCurves.length && i === 3) {
+          return [
+            PiecesBuilder.borderSvgPath({
+              x: origin.x,
+              y: origin.y - this._pieceSize,
+            }),
+          ];
+        }
+
+        // Should never happen. If segment is null, it means that the piece is on the border.
+        return [];
+      } else {
+        return segment.map((segment) => segment.toSvgLonghand());
+      }
+    });
+
+    // Join the initial moveToCommand with the svg paths and the closePathCommand.
+    return [
+      moveToCommand,
+      ...svgPaths.map((path) => path.join(' ')),
+      closePathCommand,
+    ].join(' ');
   }
 }
