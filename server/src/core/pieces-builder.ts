@@ -211,7 +211,15 @@ export class PiecesBuilder {
 
   // Get from the puzzle grid the curves around a piece.
   // It's important to note that border must be taken into account. If the piece is on the border, some segments will be null.
-  getEncolisingCurves(row: number, column: number) {
+  getEncolisingCurves(
+    row: number,
+    column: number
+  ): {
+    topSegment: Curve[] | null;
+    bottomSegment: Curve[] | null;
+    leftSegment: Curve[] | null;
+    rightSegment: Curve[] | null;
+  } {
     const topSegment: Curve[] | null =
       row === 0 ? null : this.horizontalCurves[row - 1][column];
     const bottomSegment: Curve[] | null =
@@ -235,5 +243,52 @@ export class PiecesBuilder {
         });
       });
     });
+  }
+
+  // Generate the piece shape by using the enclosing curves to build the shape.
+  generateEnclosingShape(row: number, column: number) {
+    const { topSegment, bottomSegment, leftSegment, rightSegment } =
+      this.getEncolisingCurves(row, column);
+
+    let reversedBottomSegment: Curve[] | null = null;
+    // Have to invert the bottom and left segment for a closed clockwise shape.
+    if (bottomSegment) {
+      // Reverse order of curves
+      reversedBottomSegment = bottomSegment.reverse();
+      // Reverse the direction of the curves
+      bottomSegment.forEach((curve) => {
+        curve.reverse();
+      });
+    }
+
+    let reversedLeftSegment: Curve[] | null = null;
+    if (leftSegment) {
+      // Reverse order of curves
+      reversedLeftSegment = leftSegment.reverse();
+      // Reverse the direction of the curves
+      leftSegment.forEach((curve) => {
+        curve.reverse();
+      });
+    }
+
+    // Join the segments
+    const shape = [
+      topSegment,
+      rightSegment,
+      reversedBottomSegment,
+      reversedLeftSegment,
+    ];
+
+    return shape;
+  }
+
+  enclosedShapeToSvg(segments: Curve[][]) {
+    const svg = segments.map((segment) => {
+      return segment.map((segment) => {
+        return segment.toSvgLonghand();
+      });
+    });
+
+    return svg;
   }
 }
