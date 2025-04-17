@@ -47,11 +47,11 @@ export class Curve {
     }
 
     // The last curve end control point can be left as is because it's generated to match the contiguous curves.
-    if (index !== 4) {
-      const controlEndVector = new Vector(this.controlEnd, this.end);
-      controlEndVector.rotateVector180().translateOrigin(this.end);
-      this.controlEnd = controlEndVector.normalize().toCoordinate();
-    }
+    // if (index !== 4) {
+    // }
+    const controlEndVector = new Vector(this.controlEnd, this.end);
+    controlEndVector.rotateVector180().translateOrigin(this.end);
+    this.controlEnd = controlEndVector.normalize().toCoordinate();
   }
 
   // Move the curve by x and y amount. Can set a

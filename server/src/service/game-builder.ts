@@ -123,6 +123,8 @@ export const cutImageIntoPieces = async ({
   console.log('enclosing shape svg');
   console.log(enclosedShapesSvg);
 
+  return enclosedShapesSvg;
+
   // for (let i = 0; i < rows - 1; i++) {
   //   for (let j = 0; j < cols - 1; j++) {
   //     const enclosingPath = Path.createEnclosingPath(
@@ -182,5 +184,5 @@ export const cutImageIntoPieces = async ({
   //   }
   // }
 
-  return pieces;
+  // return pieces;
 };

@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import type { InferRequestType } from "hono/client";
 import { pathKeys } from "./keys";
 
-const route = apiClient.api.game.builder.path.$post;
+const routePaths = apiClient.api.game.builder.path.$post;
 
-type RequestType = InferRequestType<typeof route>;
+type RequestType = InferRequestType<typeof routePaths>;
 type Options = {
   enabled?: boolean;
 };
@@ -17,7 +17,7 @@ export const usePaths = (
   useQuery({
     queryKey: pathKeys.all,
     queryFn: async () => {
-      const res = await route({ json });
+      const res = await routePaths({ json });
       const { data } = await res.json();
 
       return data;
@@ -37,7 +37,7 @@ export const usePath = (
       rows: json.rows,
     }),
     queryFn: async () => {
-      const res = await route({ json });
+      const res = await routePaths({ json });
       const { data } = await res.json();
 
       return data;

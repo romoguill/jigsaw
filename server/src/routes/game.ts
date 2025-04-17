@@ -142,13 +142,13 @@ export const gameRoute = new Hono()
       const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
       // Cut the image into pieces
-      const pieces = gameBuilderService.cutImageIntoPieces({
+      const pieces = await gameBuilderService.cutImageIntoPieces({
         imageBuffer: Buffer.from(imageBuffer),
         pieceSize: game.pieceSize,
         horizontalPaths: game.horizontalPaths,
         verticalPaths: game.verticalPaths,
       });
 
-      return c.json({ success: true });
+      return c.json({ success: true, pieces });
     }
   );
