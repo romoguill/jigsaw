@@ -255,13 +255,7 @@ export class PiecesBuilder {
     if (bottomSegment) {
       // Create a deep copy of the bottom segment by creating new Curve instances
       const bottomSegmentCopy = bottomSegment.map((curve) => {
-        const points = curve.getPoints();
-        return new Curve({
-          start: { ...points.start },
-          end: { ...points.end },
-          controlStart: { ...points.controlStart },
-          controlEnd: { ...points.controlEnd },
-        });
+        return curve.clone();
       });
       // Reverse order of curves
       reversedBottomSegment = bottomSegmentCopy.reverse();
@@ -275,13 +269,7 @@ export class PiecesBuilder {
     if (leftSegment) {
       // Create a deep copy of the left segment by creating new Curve instances
       const leftSegmentCopy = leftSegment.map((curve) => {
-        const points = curve.getPoints();
-        return new Curve({
-          start: { ...points.start },
-          end: { ...points.end },
-          controlStart: { ...points.controlStart },
-          controlEnd: { ...points.controlEnd },
-        });
+        return curve.clone();
       });
       // Reverse order of curves
       reversedLeftSegment = leftSegmentCopy.reverse();

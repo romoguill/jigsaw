@@ -92,6 +92,15 @@ export class Curve {
     return `S ${this.controlEnd.x} ${this.controlEnd.y} ${this.end.x} ${this.end.y}`;
   }
 
+  clone(): Curve {
+    return new Curve({
+      start: { ...this.start },
+      end: { ...this.end },
+      controlStart: { ...this.controlStart },
+      controlEnd: { ...this.controlEnd },
+    });
+  }
+
   // Getters
   get startPoint(): Coordinate {
     return this.start;
