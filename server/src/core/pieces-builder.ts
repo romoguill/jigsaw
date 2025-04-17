@@ -222,13 +222,13 @@ export class PiecesBuilder {
     rightSegment: Curve[] | null;
   } {
     const topSegment: Curve[] | null =
-      row === 0 ? null : this.horizontalCurves[row - 1][column];
+      row === 0 ? null : this.horizontalCurves[row - 1]?.[column];
     const bottomSegment: Curve[] | null =
-      this.horizontalCurves[row][column] ?? null;
+      this.horizontalCurves[row]?.[column] ?? null;
     const leftSegment: Curve[] | null =
-      column === 0 ? null : this.verticalCurves[column - 1][row];
+      column === 0 ? null : this.verticalCurves[column - 1]?.[row];
     const rightSegment: Curve[] | null =
-      this.verticalCurves[column][row] ?? null;
+      this.verticalCurves[column]?.[row] ?? null;
 
     return { topSegment, bottomSegment, leftSegment, rightSegment };
   }
@@ -237,7 +237,6 @@ export class PiecesBuilder {
     // Rotate the curves 90 degrees clockwise. Use the first curve of the first segment of each vertical curve as the rotation origin.
     this._verticalCurves.forEach((segments) => {
       const rotationOrigin = segments[0][0].startPoint;
-      console.log(rotationOrigin);
       segments.forEach((segment) => {
         segment.forEach((curve) => {
           curve.rotate90Clockwise(rotationOrigin);
@@ -258,7 +257,6 @@ export class PiecesBuilder {
       reversedBottomSegment = bottomSegment.reverse();
       // Reverse the direction of the curves
       bottomSegment.forEach((curve, i) => {
-        console.log(i);
         curve.reverse(i);
       });
     }
@@ -310,7 +308,7 @@ export class PiecesBuilder {
     row: number,
     column: number
   ) {
-    const origin = { x: row * this._pieceSize, y: column * this._pieceSize };
+    const origin = { x: column * this._pieceSize, y: row * this._pieceSize };
     const moveToCommand = `M ${origin.x} ${origin.y}`;
     const closePathCommand = 'Z';
 

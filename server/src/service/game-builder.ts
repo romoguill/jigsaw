@@ -5,6 +5,7 @@ import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
 import { PiecesBuilder } from 'src/core/pieces-builder.js';
+import type { Curve } from 'src/core/curve.js';
 
 export const pathGenerator = ({
   origin,
@@ -106,15 +107,21 @@ export const cutImageIntoPieces = async ({
   piecesBuilder.applyRotationToVerticalCurves();
 
   // Generate the enclosing shape for each piece
-  const enclosingShape = piecesBuilder.generateEnclosingShape(0, 0);
+  let enclosedShapesSvg: string[] = [];
+  for (let i = 0; i <= rows; i++) {
+    for (let j = 0; j <= cols; j++) {
+      const enclosedShape = piecesBuilder.generateEnclosingShape(i, j);
+      const svgPaths = piecesBuilder.enclosedShapeToSvgPaths(enclosedShape);
+      const enclosedShapeSvg = piecesBuilder.enclosedShapeToSvg(svgPaths, i, j);
 
-  const svgPaths = piecesBuilder.enclosedShapeToSvgPaths(enclosingShape);
+      enclosedShapesSvg.push(enclosedShapeSvg);
+    }
+  }
 
   // Convert the enclosing shape to SVG
-  const enclosingShapeSvg = piecesBuilder.enclosedShapeToSvg(svgPaths, 0, 0);
 
   console.log('enclosing shape svg');
-  console.log(enclosingShapeSvg);
+  console.log(enclosedShapesSvg);
 
   // for (let i = 0; i < rows - 1; i++) {
   //   for (let j = 0; j < cols - 1; j++) {
