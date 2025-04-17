@@ -253,20 +253,40 @@ export class PiecesBuilder {
     let reversedBottomSegment: Curve[] | null = null;
     // Have to invert the bottom and left segment for a closed clockwise shape.
     if (bottomSegment) {
+      // Create a deep copy of the bottom segment by creating new Curve instances
+      const bottomSegmentCopy = bottomSegment.map((curve) => {
+        const points = curve.getPoints();
+        return new Curve({
+          start: { ...points.start },
+          end: { ...points.end },
+          controlStart: { ...points.controlStart },
+          controlEnd: { ...points.controlEnd },
+        });
+      });
       // Reverse order of curves
-      reversedBottomSegment = bottomSegment.reverse();
+      reversedBottomSegment = bottomSegmentCopy.reverse();
       // Reverse the direction of the curves
-      bottomSegment.forEach((curve, i) => {
+      reversedBottomSegment.forEach((curve, i) => {
         curve.reverse(i);
       });
     }
 
     let reversedLeftSegment: Curve[] | null = null;
     if (leftSegment) {
+      // Create a deep copy of the left segment by creating new Curve instances
+      const leftSegmentCopy = leftSegment.map((curve) => {
+        const points = curve.getPoints();
+        return new Curve({
+          start: { ...points.start },
+          end: { ...points.end },
+          controlStart: { ...points.controlStart },
+          controlEnd: { ...points.controlEnd },
+        });
+      });
       // Reverse order of curves
-      reversedLeftSegment = leftSegment.reverse();
+      reversedLeftSegment = leftSegmentCopy.reverse();
       // Reverse the direction of the curves
-      leftSegment.forEach((curve, i) => {
+      reversedLeftSegment.forEach((curve, i) => {
         curve.reverse(i);
       });
     }
