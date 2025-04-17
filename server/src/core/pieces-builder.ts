@@ -338,28 +338,28 @@ export class PiecesBuilder {
         if (row === this._horizontalCurves.length && i === 2) {
           return [
             PiecesBuilder.borderSvgPath({
-              x: origin.x - this._pieceSize,
-              y: origin.y,
-            }),
-          ];
-        }
-
-        // Left border
-        if (column === 0 && i === 1) {
-          return [
-            PiecesBuilder.borderSvgPath({
               x: origin.x,
               y: origin.y + this._pieceSize,
             }),
           ];
         }
 
-        // Right border
-        if (column === this._verticalCurves.length && i === 3) {
+        // Left border
+        if (column === 0 && i === 4) {
           return [
             PiecesBuilder.borderSvgPath({
               x: origin.x,
-              y: origin.y - this._pieceSize,
+              y: origin.y,
+            }),
+          ];
+        }
+
+        // Right border
+        if (column === this._verticalCurves.length && i === 1) {
+          return [
+            PiecesBuilder.borderSvgPath({
+              x: origin.x + this._pieceSize,
+              y: origin.y + this._pieceSize,
             }),
           ];
         }
