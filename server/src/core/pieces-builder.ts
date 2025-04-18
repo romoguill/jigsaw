@@ -250,6 +250,11 @@ export class PiecesBuilder {
     const { topSegment, bottomSegment, leftSegment, rightSegment } =
       this.getEncolisingCurves(row, column);
 
+    if (row === 0 && column === 1) {
+      console.log('top segment');
+      console.log(JSON.stringify(topSegment, null, 2));
+    }
+
     let reversedBottomSegment: Curve[] | null = null;
     // Have to invert the bottom and left segment for a closed clockwise shape.
     if (bottomSegment) {

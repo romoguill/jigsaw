@@ -111,6 +111,10 @@ export const cutImageIntoPieces = async ({
   for (let i = 0; i <= rows; i++) {
     for (let j = 0; j <= cols; j++) {
       const enclosedShape = piecesBuilder.generateEnclosingShape(i, j);
+      if (i === 0 && j === 1) {
+        console.log(`enclosed shape ${i} ${j}`);
+        console.log(JSON.stringify(enclosedShape, null, 2));
+      }
       const svgPaths = piecesBuilder.enclosedShapeToSvgPaths(enclosedShape);
       const enclosedShapeSvg = piecesBuilder.enclosedShapeToSvg(svgPaths, i, j);
 
