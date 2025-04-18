@@ -31,9 +31,12 @@ export class Curve {
   }
 
   // Constrol Start points will be calculated from the end point of the previous curve, by rotating its vector 180 degrees and then translating it to the end point.
-  calculateControlStart(previousCurve: Curve): Coordinate {
-    const controlStartVector = new Vector(previousCurve.controlEnd, this.start);
-    controlStartVector.rotateVector180().translateOrigin(this.start);
+  static calculateControlStart(
+    previousCurve: Curve,
+    start: Coordinate
+  ): Coordinate {
+    const controlStartVector = new Vector(previousCurve.controlEnd, start);
+    controlStartVector.rotateVector180().translateOrigin(start);
     return controlStartVector.normalize().toCoordinate();
   }
 
@@ -47,18 +50,18 @@ export class Curve {
     [this.controlStart, this.controlEnd] = [this.controlEnd, this.controlStart];
 
     // The first curve start control point can be left as is because it's generated to match the contiguous curves.
-    if (index !== 0) {
-      const controlStartVector = new Vector(this.controlStart, this.start);
-      controlStartVector.rotateVector180().translateOrigin(this.start);
-      this.controlStart = controlStartVector.normalize().toCoordinate();
-    }
+    // if (index !== 0) {
+    //   const controlStartVector = new Vector(this.controlStart, this.start);
+    //   controlStartVector.rotateVector180().translateOrigin(this.start);
+    //   this.controlStart = controlStartVector.normalize().toCoordinate();
+    // }
 
-    // The last curve end control point can be left as is because it's generated to match the contiguous curves.
-    if (index !== 4) {
-      const controlEndVector = new Vector(this.controlEnd, this.end);
-      controlEndVector.rotateVector180().translateOrigin(this.end);
-      this.controlEnd = controlEndVector.normalize().toCoordinate();
-    }
+    // // The last curve end control point can be left as is because it's generated to match the contiguous curves.
+    // if (index !== 4) {
+    //   const controlEndVector = new Vector(this.controlEnd, this.end);
+    //   controlEndVector.rotateVector180().translateOrigin(this.end);
+    //   this.controlEnd = controlEndVector.normalize().toCoordinate();
+    // }
   }
 
   // Move the curve by x and y amount. Can set a

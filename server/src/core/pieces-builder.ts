@@ -102,10 +102,10 @@ export class PiecesBuilder {
               x: Number(path[2]),
               y: Number(path[3]),
             },
-            controlStart: {
-              x: lastCurve.controlEndPoint.x,
-              y: lastCurve.controlEndPoint.y,
-            },
+            controlStart: Curve.calculateControlStart(
+              lastCurve,
+              lastCurve.endPoint
+            ),
             controlEnd: {
               x: Number(path[0]),
               y: Number(path[1]),
@@ -124,12 +124,12 @@ export class PiecesBuilder {
         // Default just to please the type checker. Should never happen.
         const lastCurve = lastSegment
           ? lastSegment[lastSegment.length - 1]
-          : {
-              startPoint: origin,
-              endPoint: origin,
-              controlStartPoint: origin,
-              controlEndPoint: origin,
-            };
+          : new Curve({
+              start: origin,
+              end: origin,
+              controlStart: origin,
+              controlEnd: origin,
+            });
 
         const curve = new Curve({
           start: curves[curves.length - 1]
@@ -140,8 +140,11 @@ export class PiecesBuilder {
             y: Number(remainingSegments[3]),
           },
           controlStart: curves[curves.length - 1]
-            ? curves[curves.length - 1].controlEndPoint
-            : lastCurve.controlEndPoint,
+            ? Curve.calculateControlStart(
+                curves[curves.length - 1],
+                curves[curves.length - 1].endPoint
+              )
+            : Curve.calculateControlStart(lastCurve, lastCurve.endPoint),
           controlEnd: {
             x: Number(remainingSegments[0]),
             y: Number(remainingSegments[1]),
