@@ -19,6 +19,19 @@ const paths = {
   verticalPaths,
 };
 
+// Visually checked game that works.
+const completeGamePaths = {
+  horizontalPaths: [
+    'M 0 0 C 53 5 130 -20 171 0 S 161 -86 171 -85 S 253 -98 256 -85 S 210 12 256 0 S 390 -57 427 0 S 555 16 598 0 S 611 77 598 85 S 692 96 683 85 S 643 5 683 0 S 795 -31 854 0 S 992 11 1025 0 S 1018 -75 1025 -85 S 1117 -95 1110 -85 S 1061 8 1110 0 S 1242 -58 1281 0 S 1408 -22 1452 0 S 1448 74 1452 85 S 1543 93 1537 85 S 1492 -7 1537 0 S 1659 -46 1708 0',
+    'M 0 0 C 50 -20 127 3 171 0 S 166 73 171 85 S 245 85 256 85 S 218 22 256 0 S 365 -5 427 0 S 559 -8 598 0 S 601 70 598 85 S 681 97 683 85 S 647 11 683 0 S 781 -6 854 0 S 978 -7 1025 0 S 1013 -77 1025 -85 S 1115 -100 1110 -85 S 1075 19 1110 0 S 1231 28 1281 0 S 1403 0 1452 0 S 1438 81 1452 85 S 1538 97 1537 85 S 1487 5 1537 0 S 1666 62 1708 0',
+  ],
+  verticalPaths: [
+    'M 0 0 C 44 -37 128 0 171 0 S 156 84 171 85 S 245 88 256 85 S 223 -17 256 0 S 374 14 427 0 S 564 -12 598 0 S 591 -73 598 -85 S 670 -93 683 -85 S 638 1 683 0 S 792 -9 854 0 S 975 6 1025 0 S 1015 73 1025 85 S 1099 83 1110 85 S 1077 15 1110 0 S 1208 16 1281 0',
+    'M 0 0 C 54 -5 131 10 171 0 S 175 74 171 85 S 244 86 256 85 S 210 -14 256 0 S 373 -28 427 0 S 555 23 598 0 S 604 -76 598 -85 S 685 -99 683 -85 S 638 5 683 0 S 795 -38 854 0 S 977 18 1025 0 S 1023 74 1025 85 S 1111 96 1110 85 S 1072 12 1110 0 S 1228 -5 1281 0',
+    'M 0 0 C 54 -2 127 1 171 0 S 161 -84 171 -85 S 242 -88 256 -85 S 215 -5 256 0 S 374 -20 427 0 S 557 8 598 0 S 606 78 598 85 S 690 97 683 85 S 637 5 683 0 S 818 51 854 0 S 989 9 1025 0 S 1010 -88 1025 -85 S 1119 -93 1110 -85 S 1075 -2 1110 0 S 1226 21 1281 0',
+  ],
+};
+
 describe('PiecesBuilder', () => {
   describe('constructor', () => {
     it('should initialize with provided paths', () => {
@@ -505,7 +518,7 @@ describe('PiecesBuilder', () => {
     });
   });
 
-  describe('getEncolisingCurves', () => {
+  describe('getEnclosedCurves', () => {
     it('should return the correct curves for a piece in the second row and first column', () => {
       const builder = new PiecesBuilder(paths);
 
@@ -513,7 +526,7 @@ describe('PiecesBuilder', () => {
 
       builder.applyRotationToVerticalCurves();
 
-      const result = builder.getEncolisingCurves(1, 0);
+      const result = builder.getEnclosedCurves(1, 0);
 
       // Verify the segments are the correct ones
       expect(result.topSegment).toBe(builder.horizontalCurves[0][0]);
@@ -527,7 +540,7 @@ describe('PiecesBuilder', () => {
       builder.generateAllCurves();
 
       // We need to check for the last column
-      const resultLastColumn = builder.getEncolisingCurves(0, 0);
+      const resultLastColumn = builder.getEnclosedCurves(0, 0);
 
       expect(resultLastColumn.topSegment).toBeNull();
       expect(resultLastColumn.bottomSegment).toBe(
@@ -624,6 +637,184 @@ describe('PiecesBuilder', () => {
 
       // This should not throw an error
       expect(() => builder.applyRotationToVerticalCurves()).not.toThrow();
+    });
+  });
+
+  describe('generateEnclosedShape', () => {
+    it('should generate enclosed shape for a piece in the middle of the grid', () => {
+      const builder = new PiecesBuilder(paths);
+      builder.generateAllCurves();
+      builder.applyRotationToVerticalCurves();
+
+      const shape = builder.generateEnclosedShape(1, 1);
+
+      expect(shape).toHaveLength(4); // Check that all 4 sides are present
+      expect(shape[0]).toBe(builder.horizontalCurves[0][1]); // top segment
+      expect(shape[1]).toBe(builder.verticalCurves[1][1]); // right segment
+      expect(shape[2]).not.toBe(builder.horizontalCurves[1][1]); // bottom segment should be reversed
+      expect(shape[3]).not.toBe(builder.verticalCurves[0][1]); // left segment should be reversed
+
+      // Check that bottom and left segments are reversed
+      const bottomSegment = shape[2];
+      const leftSegment = shape[3];
+
+      if (bottomSegment && leftSegment) {
+        // Check that the curves are in reverse order
+        expect(bottomSegment[0].startPoint).toEqual(
+          builder.horizontalCurves[1][1][
+            builder.horizontalCurves[1][1].length - 1
+          ].endPoint
+        );
+        expect(leftSegment[0].startPoint).toEqual(
+          builder.verticalCurves[0][1][builder.verticalCurves[0][1].length - 1]
+            .endPoint
+        );
+      }
+    });
+
+    it('should handle border pieces correctly', () => {
+      // Manually checked result
+      const bottomSegment = [
+        new Curve({
+          start: { x: 427, y: 427 },
+          end: { x: 256, y: 427 },
+          controlStart: { x: 390, y: 370 },
+          controlEnd: { x: 302, y: 415 },
+        }),
+        new Curve({
+          start: { x: 256, y: 427 },
+          end: { x: 256, y: 342 },
+          controlStart: { x: 210, y: 439 },
+          controlEnd: { x: 259, y: 355 },
+        }),
+        new Curve({
+          start: { x: 256, y: 342 },
+          end: { x: 171, y: 342 },
+          controlStart: { x: 253, y: 329 },
+          controlEnd: { x: 181, y: 343 },
+        }),
+        new Curve({
+          start: { x: 171, y: 342 },
+          end: { x: 171, y: 427 },
+          controlStart: { x: 161, y: 341 },
+          controlEnd: { x: 212, y: 447 },
+        }),
+        new Curve({
+          start: { x: 171, y: 427 },
+          end: { x: 0, y: 427 },
+          controlStart: { x: 130, y: 407 },
+          controlEnd: { x: 53, y: 432 },
+        }),
+      ];
+
+      const builder = new PiecesBuilder(completeGamePaths);
+      builder.generateAllCurves();
+      builder.applyRotationToVerticalCurves();
+
+      // Test top-left corner piece
+      const topLeftShape = builder.generateEnclosedShape(0, 0);
+
+      expect(topLeftShape[0]).toBeNull(); // top segment should be null
+      expect(topLeftShape[1]).toBe(builder.verticalCurves[0][0]); // right segment
+      expect(topLeftShape[2]).toStrictEqual(bottomSegment); // bottom segment
+      expect(topLeftShape[3]).toBeNull(); // left segment should be null
+    });
+  });
+
+  describe('enclosedShapeToSvgPaths', () => {
+    it('should convert enclosed shape to SVG paths', () => {
+      const builder = new PiecesBuilder(completeGamePaths);
+      builder.generateAllCurves();
+      builder.applyRotationToVerticalCurves();
+
+      const shape = builder.generateEnclosedShape(1, 1);
+      const svgPaths = builder.enclosedShapeToSvgPaths(shape);
+
+      // Check correct number of segments
+      expect(svgPaths).toHaveLength(4);
+
+      // Check that the first curve of each segment uses longhand notation
+      svgPaths.forEach((segment) => {
+        if (segment) {
+          expect(segment[0]).toMatch(/^C /);
+        }
+      });
+
+      // Check that subsequent curves use shorthand notation
+      svgPaths.forEach((segment) => {
+        if (segment && segment.length > 1) {
+          expect(segment[1]).toMatch(/^S /);
+        }
+      });
+    });
+
+    it('should handle null segments', () => {
+      const builder = new PiecesBuilder(completeGamePaths);
+      builder.generateAllCurves();
+      builder.applyRotationToVerticalCurves();
+
+      const shape = builder.generateEnclosedShape(0, 0); // Corner piece with null segments
+      const svgPaths = builder.enclosedShapeToSvgPaths(shape);
+
+      expect(svgPaths).toHaveLength(4);
+      expect(svgPaths[0]).toBeNull(); // Top segment should be null
+      expect(svgPaths[3]).toBeNull(); // Left segment should be null
+    });
+  });
+
+  describe('borderSvgPath', () => {
+    it('should generate correct SVG path for border', () => {
+      const endPoint = { x: 100, y: 200 };
+      const svgPath = PiecesBuilder.borderSvgPath(endPoint);
+      expect(svgPath).toBe('L 100 200');
+    });
+  });
+
+  describe('enclosedShapeToSvg', () => {
+    it('should generate complete SVG path for a piece', () => {
+      const builder = new PiecesBuilder(completeGamePaths);
+      builder.generateAllCurves();
+      builder.applyRotationToVerticalCurves();
+
+      const shape = builder.generateEnclosedShape(1, 1);
+      const svgPaths = builder.enclosedShapeToSvgPaths(shape);
+      const svg = builder.enclosedShapeToSvg(svgPaths, 1, 1);
+
+      // Check that the SVG path starts with a move command
+      expect(svg).toMatch(/^M \d+ \d+/);
+
+      // Check that the SVG path ends with a close path command
+      expect(svg).toMatch(/Z$/);
+
+      // Check that the path contains curve commands (S with 4 numbers or C with 6 numbers)
+      expect(svg).toMatch(/(?:S \d+ \d+ \d+ \d+|C \d+ \d+ \d+ \d+ \d+ \d+)/);
+    });
+
+    it('should handle border pieces correctly', () => {
+      const builder = new PiecesBuilder(paths);
+      builder.generateAllCurves();
+      builder.applyRotationToVerticalCurves();
+
+      // Test top-left corner piece
+      const topLeftShape = builder.generateEnclosedShape(0, 0);
+      const topLeftSvgPaths = builder.enclosedShapeToSvgPaths(topLeftShape);
+      const topLeftSvg = builder.enclosedShapeToSvg(topLeftSvgPaths, 0, 0);
+
+      // Check that the path includes straight lines for the borders
+      expect(topLeftSvg).toMatch(/L \d+ \d+/);
+
+      // Test bottom-right corner piece
+      const bottomRightShape = builder.generateEnclosedShape(3, 4);
+      const bottomRightSvgPaths =
+        builder.enclosedShapeToSvgPaths(bottomRightShape);
+      const bottomRightSvg = builder.enclosedShapeToSvg(
+        bottomRightSvgPaths,
+        3,
+        4
+      );
+
+      // Check that the path includes straight lines for the borders
+      expect(bottomRightSvg).toMatch(/L \d+ \d+/);
     });
   });
 });

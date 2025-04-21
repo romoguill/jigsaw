@@ -215,7 +215,7 @@ export class PiecesBuilder {
 
   // Get from the puzzle grid the curves around a piece.
   // It's important to note that border must be taken into account. If the piece is on the border, some segments will be null.
-  getEncolisingCurves(
+  getEnclosedCurves(
     row: number,
     column: number
   ): {
@@ -249,9 +249,9 @@ export class PiecesBuilder {
   }
 
   // Generate the piece shape by using the enclosing curves to build the shape.
-  generateEnclosingShape(row: number, column: number) {
+  generateEnclosedShape(row: number, column: number) {
     const { topSegment, bottomSegment, leftSegment, rightSegment } =
-      this.getEncolisingCurves(row, column);
+      this.getEnclosedCurves(row, column);
 
     let reversedBottomSegment: Curve[] | null = null;
     // Have to invert the bottom and left segment for a closed clockwise shape.
