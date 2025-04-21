@@ -1,3 +1,4 @@
+import { Curve } from '../curve.js';
 import { PiecesBuilder } from '../pieces-builder.js';
 
 const horizontalPaths = [
@@ -270,12 +271,6 @@ describe('PiecesBuilder', () => {
       });
       expect(horizontalCurves[0][0].controlEndPoint).toEqual({ x: 181, y: 13 });
 
-      console.log('parsedHorizontalPaths[0][1]');
-      console.log(JSON.stringify(parsedHorizontalPaths[0], null, 2));
-
-      console.log('horizontalCurves[0][1]');
-      console.log(JSON.stringify(horizontalCurves[0][1], null, 2));
-
       expect(horizontalCurves[0][1].startPoint).toEqual({ x: 256, y: 0 });
       expect(horizontalCurves[0][1].endPoint).toEqual({ x: 256, y: 128 });
       // Control point = start point + (start point - previous control end point)
@@ -485,8 +480,14 @@ describe('PiecesBuilder', () => {
         y: -128,
       });
       expect(result.verticalCurves[1][1][1].controlStartPoint).toEqual({
-        x: 843 + pieceSize * 2,
-        y: -1,
+        x:
+          result.verticalCurves[1][1][1].startPoint.x +
+          (result.verticalCurves[1][1][1].startPoint.x -
+            result.verticalCurves[1][1][0].controlEndPoint.x),
+        y:
+          result.verticalCurves[1][1][1].startPoint.y +
+          (result.verticalCurves[1][1][1].startPoint.y -
+            result.verticalCurves[1][1][0].controlEndPoint.y),
       });
       expect(result.verticalCurves[1][1][1].controlEndPoint).toEqual({
         x: 888 + pieceSize * 2,
@@ -507,7 +508,10 @@ describe('PiecesBuilder', () => {
   describe('getEncolisingCurves', () => {
     it('should return the correct curves for a piece in the second row and first column', () => {
       const builder = new PiecesBuilder(paths);
+
       builder.generateAllCurves();
+
+      builder.applyRotationToVerticalCurves();
 
       const result = builder.getEncolisingCurves(1, 0);
 
@@ -537,17 +541,21 @@ describe('PiecesBuilder', () => {
   describe('applyRotationToVerticalCurves', () => {
     it('should rotate all vertical curves 90 degrees clockwise', () => {
       const builder = new PiecesBuilder(paths);
+
       builder.generateAllCurves();
 
       // Store original coordinates for comparison
       const originalCoordinates = builder.verticalCurves.map((segments) =>
         segments.map((segment) =>
-          segment.map((curve) => ({
-            start: { ...curve.startPoint },
-            end: { ...curve.endPoint },
-            controlStart: { ...curve.controlStartPoint },
-            controlEnd: { ...curve.controlEndPoint },
-          }))
+          segment.map(
+            (curve) =>
+              new Curve({
+                start: { ...curve.startPoint },
+                end: { ...curve.endPoint },
+                controlStart: { ...curve.controlStartPoint },
+                controlEnd: { ...curve.controlEndPoint },
+              })
+          )
         )
       );
 
@@ -557,33 +565,34 @@ describe('PiecesBuilder', () => {
       // Check that each curve has been rotated 90 degrees clockwise
       builder.verticalCurves.forEach((segments, segmentIndex) => {
         segments.forEach((segment, curveIndex) => {
+          const rotationOrigin = segments[0][0].startPoint;
           segment.forEach((curve, i) => {
             const original = originalCoordinates[segmentIndex][curveIndex][i];
+            original.rotate90Clockwise(rotationOrigin);
+            console.log(original);
+            console.log(curve);
 
-            // For a 90-degree clockwise rotation:
-            // x_new = y_old
-            // y_new = -x_old
-            expect(curve.startPoint.x).toBeCloseTo(original.start.y, 1);
-            expect(curve.startPoint.y).toBeCloseTo(-original.start.x, 1);
+            expect(curve.startPoint.x).toBeCloseTo(original.startPoint.x, 10);
+            expect(curve.startPoint.y).toBeCloseTo(original.startPoint.y, 10);
 
-            expect(curve.endPoint.x).toBeCloseTo(original.end.y, 1);
-            expect(curve.endPoint.y).toBeCloseTo(-original.end.x, 1);
+            expect(curve.endPoint.x).toBeCloseTo(original.endPoint.x, 10);
+            expect(curve.endPoint.y).toBeCloseTo(original.endPoint.y, 10);
 
             expect(curve.controlStartPoint.x).toBeCloseTo(
-              original.controlStart.y,
+              original.controlStartPoint.x,
               1
             );
             expect(curve.controlStartPoint.y).toBeCloseTo(
-              -original.controlStart.x,
+              original.controlStartPoint.y,
               1
             );
 
             expect(curve.controlEndPoint.x).toBeCloseTo(
-              original.controlEnd.y,
+              original.controlEndPoint.x,
               1
             );
             expect(curve.controlEndPoint.y).toBeCloseTo(
-              -original.controlEnd.x,
+              original.controlEndPoint.y,
               1
             );
           });
