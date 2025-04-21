@@ -270,11 +270,24 @@ describe('PiecesBuilder', () => {
       });
       expect(horizontalCurves[0][0].controlEndPoint).toEqual({ x: 181, y: 13 });
 
+      console.log('parsedHorizontalPaths[0][1]');
+      console.log(JSON.stringify(parsedHorizontalPaths[0], null, 2));
+
+      console.log('horizontalCurves[0][1]');
+      console.log(JSON.stringify(horizontalCurves[0][1], null, 2));
+
       expect(horizontalCurves[0][1].startPoint).toEqual({ x: 256, y: 0 });
       expect(horizontalCurves[0][1].endPoint).toEqual({ x: 256, y: 128 });
+      // Control point = start point + (start point - previous control end point)
       expect(horizontalCurves[0][1].controlStartPoint).toEqual({
-        x: 181,
-        y: 13,
+        x:
+          horizontalCurves[0][1].startPoint.x +
+          (horizontalCurves[0][1].startPoint.x -
+            horizontalCurves[0][0].controlEndPoint.x),
+        y:
+          horizontalCurves[0][1].startPoint.y +
+          (horizontalCurves[0][1].startPoint.y -
+            horizontalCurves[0][0].controlEndPoint.y),
       });
       expect(horizontalCurves[0][1].controlEndPoint).toEqual({
         x: 255,
@@ -284,8 +297,14 @@ describe('PiecesBuilder', () => {
       expect(horizontalCurves[0][2].startPoint).toEqual({ x: 256, y: 128 });
       expect(horizontalCurves[0][2].endPoint).toEqual({ x: 384, y: 128 });
       expect(horizontalCurves[0][2].controlStartPoint).toEqual({
-        x: 255,
-        y: 109,
+        x:
+          horizontalCurves[0][2].startPoint.x +
+          (horizontalCurves[0][2].startPoint.x -
+            horizontalCurves[0][1].controlEndPoint.x),
+        y:
+          horizontalCurves[0][2].startPoint.y +
+          (horizontalCurves[0][2].startPoint.y -
+            horizontalCurves[0][1].controlEndPoint.y),
       });
       expect(horizontalCurves[0][2].controlEndPoint).toEqual({
         x: 371,
@@ -295,8 +314,14 @@ describe('PiecesBuilder', () => {
       expect(horizontalCurves[0][3].startPoint).toEqual({ x: 384, y: 128 });
       expect(horizontalCurves[0][3].endPoint).toEqual({ x: 384, y: 0 });
       expect(horizontalCurves[0][3].controlStartPoint).toEqual({
-        x: 371,
-        y: 145,
+        x:
+          horizontalCurves[0][3].startPoint.x +
+          (horizontalCurves[0][3].startPoint.x -
+            horizontalCurves[0][2].controlEndPoint.x),
+        y:
+          horizontalCurves[0][3].startPoint.y +
+          (horizontalCurves[0][3].startPoint.y -
+            horizontalCurves[0][2].controlEndPoint.y),
       });
       expect(horizontalCurves[0][3].controlEndPoint).toEqual({
         x: 322,
@@ -306,8 +331,14 @@ describe('PiecesBuilder', () => {
       expect(horizontalCurves[0][4].startPoint).toEqual({ x: 384, y: 0 });
       expect(horizontalCurves[0][4].endPoint).toEqual({ x: 640, y: 0 });
       expect(horizontalCurves[0][4].controlStartPoint).toEqual({
-        x: 322,
-        y: 15,
+        x:
+          horizontalCurves[0][4].startPoint.x +
+          (horizontalCurves[0][4].startPoint.x -
+            horizontalCurves[0][3].controlEndPoint.x),
+        y:
+          horizontalCurves[0][4].startPoint.y +
+          (horizontalCurves[0][4].startPoint.y -
+            horizontalCurves[0][3].controlEndPoint.y),
       });
       expect(horizontalCurves[0][4].controlEndPoint).toEqual({
         x: 556,
@@ -333,8 +364,14 @@ describe('PiecesBuilder', () => {
       expect(verticalCurves[0][1].startPoint).toEqual({ x: 256, y: 0 });
       expect(verticalCurves[0][1].endPoint).toEqual({ x: 256, y: 128 });
       expect(verticalCurves[0][1].controlStartPoint).toEqual({
-        x: 204,
-        y: 5,
+        x:
+          verticalCurves[0][1].startPoint.x +
+          (verticalCurves[0][1].startPoint.x -
+            verticalCurves[0][0].controlEndPoint.x),
+        y:
+          verticalCurves[0][1].startPoint.y +
+          (verticalCurves[0][1].startPoint.y -
+            verticalCurves[0][0].controlEndPoint.y),
       });
       expect(verticalCurves[0][1].controlEndPoint).toEqual({
         x: 258,
@@ -344,8 +381,14 @@ describe('PiecesBuilder', () => {
       expect(verticalCurves[0][2].startPoint).toEqual({ x: 256, y: 128 });
       expect(verticalCurves[0][2].endPoint).toEqual({ x: 384, y: 128 });
       expect(verticalCurves[0][2].controlStartPoint).toEqual({
-        x: 258,
-        y: 111,
+        x:
+          verticalCurves[0][2].startPoint.x +
+          (verticalCurves[0][2].startPoint.x -
+            verticalCurves[0][1].controlEndPoint.x),
+        y:
+          verticalCurves[0][2].startPoint.y +
+          (verticalCurves[0][2].startPoint.y -
+            verticalCurves[0][1].controlEndPoint.y),
       });
       expect(verticalCurves[0][2].controlEndPoint).toEqual({
         x: 363,
@@ -355,8 +398,14 @@ describe('PiecesBuilder', () => {
       expect(verticalCurves[0][3].startPoint).toEqual({ x: 384, y: 128 });
       expect(verticalCurves[0][3].endPoint).toEqual({ x: 384, y: 0 });
       expect(verticalCurves[0][3].controlStartPoint).toEqual({
-        x: 363,
-        y: 136,
+        x:
+          verticalCurves[0][3].startPoint.x +
+          (verticalCurves[0][3].startPoint.x -
+            verticalCurves[0][2].controlEndPoint.x),
+        y:
+          verticalCurves[0][3].startPoint.y +
+          (verticalCurves[0][3].startPoint.y -
+            verticalCurves[0][2].controlEndPoint.y),
       });
       expect(verticalCurves[0][3].controlEndPoint).toEqual({
         x: 332,
@@ -366,8 +415,14 @@ describe('PiecesBuilder', () => {
       expect(verticalCurves[0][4].startPoint).toEqual({ x: 384, y: 0 });
       expect(verticalCurves[0][4].endPoint).toEqual({ x: 640, y: 0 });
       expect(verticalCurves[0][4].controlStartPoint).toEqual({
-        x: 332,
-        y: -4,
+        x:
+          verticalCurves[0][4].startPoint.x +
+          (verticalCurves[0][4].startPoint.x -
+            verticalCurves[0][3].controlEndPoint.x),
+        y:
+          verticalCurves[0][4].startPoint.y +
+          (verticalCurves[0][4].startPoint.y -
+            verticalCurves[0][3].controlEndPoint.y),
       });
       expect(verticalCurves[0][4].controlEndPoint).toEqual({
         x: 568,
@@ -498,11 +553,6 @@ describe('PiecesBuilder', () => {
 
       // Apply rotation
       builder.applyRotationToVerticalCurves();
-
-      console.log('original');
-      console.log(JSON.stringify(originalCoordinates[0][1][0], null, 2));
-      console.log('rotated');
-      console.log(JSON.stringify(builder.verticalCurves[0][1][0], null, 2));
 
       // Check that each curve has been rotated 90 degrees clockwise
       builder.verticalCurves.forEach((segments, segmentIndex) => {

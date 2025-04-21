@@ -37,7 +37,7 @@ describe('Curve', () => {
     it('should swap start and end points', () => {
       const curve = new Curve({ start, end, controlStart, controlEnd });
 
-      curve.reverse(0);
+      curve.reverse();
 
       expect(curve.startPoint).toEqual(end);
       expect(curve.endPoint).toEqual(start);
@@ -45,7 +45,7 @@ describe('Curve', () => {
 
     it('should swap and rotate control points', () => {
       const curve = new Curve({ start, end, controlStart, controlEnd });
-      curve.reverse(1);
+      curve.reverse();
 
       expect(curve.controlStartPoint).toEqual({ x: 20, y: 15 });
       expect(curve.controlEndPoint).toEqual({ x: -5, y: 0 });
@@ -53,7 +53,7 @@ describe('Curve', () => {
 
     it('should swap but not rotate control points in the edges', () => {
       const curve = new Curve({ start, end, controlStart, controlEnd });
-      curve.reverse(0);
+      curve.reverse();
 
       // Don't rotate
       expect(curve.controlStartPoint).toEqual(controlEnd);
