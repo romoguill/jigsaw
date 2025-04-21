@@ -239,7 +239,7 @@ describe('PiecesBuilder', () => {
       };
       const builder = new PiecesBuilder(pathsModified);
 
-      expect(() => builder.parsePaths()).toThrow();
+      expect(() => builder.parsePaths()).toThrowError('Invalid path');
     });
 
     it('should handle paths with incorrect length', () => {
@@ -569,8 +569,6 @@ describe('PiecesBuilder', () => {
           segment.forEach((curve, i) => {
             const original = originalCoordinates[segmentIndex][curveIndex][i];
             original.rotate90Clockwise(rotationOrigin);
-            console.log(original);
-            console.log(curve);
 
             expect(curve.startPoint.x).toBeCloseTo(original.startPoint.x, 10);
             expect(curve.startPoint.y).toBeCloseTo(original.startPoint.y, 10);
