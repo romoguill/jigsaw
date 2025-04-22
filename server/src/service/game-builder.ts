@@ -126,18 +126,6 @@ export const cutImageIntoPieces = async ({
     throw new Error('Invalid image dimensions');
   }
 
-  // // Calculate the total width and height of the puzzle
-  // const totalWidth = cols * pieceSize;
-  // const totalHeight = rows * pieceSize;
-
-  // // Resize the image to match the puzzle dimensions
-  // const resizedImage = await image
-  //   .resize(totalWidth, totalHeight, {
-  //     fit: 'cover',
-  //     position: 'center',
-  //   })
-  //   .toBuffer();
-
   // Create pieces based on paths
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
