@@ -1,11 +1,10 @@
 import type { Coordinate } from '@jigsaw/shared/index.js';
-import { Path } from 'src/core/path.js';
-import { calculatePinSize } from 'src/lib/utils.js';
-import sharp from 'sharp';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+import sharp from 'sharp';
+import { Path } from 'src/core/path.js';
 import { PiecesBuilder } from 'src/core/pieces-builder.js';
-import type { Curve } from 'src/core/curve.js';
+import { calculatePinSize } from 'src/lib/utils.js';
 
 export const pathGenerator = ({
   origin,
@@ -71,16 +70,21 @@ export const createPieces = ({
   piecesBuilder.applyRotationToVerticalCurves();
 
   // Generate the enclosing shape as svg for each piece
-  const enclosedShapesSvg: string[] = [];
+  const enclosedShapesSvg: string[][] = [];
   for (let i = 0; i <= rows; i++) {
+    const column: string[] = [];
     for (let j = 0; j <= cols; j++) {
       const enclosedShape = piecesBuilder.generateEnclosedShape(i, j);
       const svgPaths = piecesBuilder.enclosedShapeToSvgPaths(enclosedShape);
       const enclosedShapeSvg = piecesBuilder.enclosedShapeToSvg(svgPaths, i, j);
 
-      enclosedShapesSvg.push(enclosedShapeSvg);
+      column.push(enclosedShapeSvg);
     }
+    enclosedShapesSvg.push(column);
   }
+
+  console.log('enclosedShapesSvg');
+  console.log(enclosedShapesSvg);
 
   return { enclosedShapesSvg, rows, cols, pieceSize };
 };
@@ -98,13 +102,16 @@ export const cutImageIntoPieces = async ({
   rows,
   cols,
   pieceSize,
+  enclosedShapesSvg,
 }: {
   imageBuffer: Buffer;
   pieceSize: number;
   rows: number;
   cols: number;
+  enclosedShapesSvg: string[][];
 }) => {
   const pieces: ImagePiece[] = [];
+  console.log({ pieceSize });
 
   // Create pieces_cut directory if it doesn't exist
   const piecesDir = path.join(process.cwd(), 'pieces_cut');
@@ -131,20 +138,16 @@ export const cutImageIntoPieces = async ({
   //   })
   //   .toBuffer();
 
-  // Create the pieces builder
-
-  const enclosingPathSvg = Path.getPathSvg(enclosingPath);
-  console.log('enclosing path svg');
-  console.log(enclosingPathSvg);
-
   // Create pieces based on paths
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       // Create SVG mask for this piece
       const svgMask = `
-            <svg width="${pieceSize}" height="${pieceSize}" viewBox="400 400 ${400 + pieceSize} ${400 + pieceSize}">
-              <path d="${enclosingPathSvg}" fill="white"/>
+            <svg width="${pieceSize + 180}" height="${pieceSize + 180}" viewBox="${pieceSize * col - 90} ${pieceSize * row - 90} ${pieceSize + 20} ${pieceSize + 20}">
+              <path d="${enclosedShapesSvg[row][col]}" fill="white"/>
             </svg>`;
+
+      console.log(svgMask);
 
       // Create the piece using composite
       const pieceBuffer = await sharp(imageBuffer)

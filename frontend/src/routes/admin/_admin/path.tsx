@@ -15,7 +15,7 @@ function RouteComponent() {
         param: { gameId: "4" },
       });
       const data = await res.json();
-      setPath(data.pieces);
+      setPath(data.svg.flat());
     };
     fetchPath();
   }, []);

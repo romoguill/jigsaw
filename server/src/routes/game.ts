@@ -102,56 +102,47 @@ export const gameRoute = new Hono()
       return c.json({ success: true, data: paths });
     }
   )
-  .post(
-    '/builder/:gameId/pieces',
-    // zValidator(
-    //   'json',
-    //   z.object({
-    //     imageKey: z.string(),
-    //     pieceSize: z.number(),
-    //     cols: z.number(),
-    //     rows: z.number(),
-    //   })
-    // ),
-    async (c) => {
-      const gameId = c.req.param('gameId');
-      // const { imageKey, pieceSize, cols, rows } = c.req.valid('json');
+  .post('/builder/:gameId/pieces', async (c) => {
+    const gameId = c.req.param('gameId');
 
-      // Get the game from the database
-      const [game] = await db
-        .select()
-        .from(games)
-        .where(eq(games.id, Number(gameId)));
+    // Get the game from the database
+    const [game] = await db
+      .select()
+      .from(games)
+      .where(eq(games.id, Number(gameId)));
 
-      if (!game) {
-        throw new HTTPException(404, { message: 'Game not found' });
-      }
-
-      // Get the image from uploadthing
-      const { ufsUrl } = await utapi.generateSignedURL(game.imageKey);
-
-      // Fetch the image
-      const imageResponse = await fetch(ufsUrl);
-
-      // If the image is not found, throw an error
-      if (!imageResponse.ok) {
-        throw new HTTPException(404, { message: 'Image not found' });
-      }
-
-      // Convert the image to a buffer
-      const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
-
-      const piecesData = gameBuilderService.createPieces({
-        horizontalPaths: game.horizontalPaths,
-        verticalPaths: game.verticalPaths,
-      });
-
-      // Cut the image into pieces
-      const pieces = await gameBuilderService.cutImageIntoPieces({
-        imageBuffer: Buffer.from(imageBuffer),
-        ...piecesData,
-      });
-
-      return c.json({ success: true, pieces });
+    if (!game) {
+      throw new HTTPException(404, { message: 'Game not found' });
     }
-  );
+
+    // Get the image from uploadthing
+    const { ufsUrl } = await utapi.generateSignedURL(game.imageKey);
+
+    // Fetch the image
+    const imageResponse = await fetch(ufsUrl);
+
+    // If the image is not found, throw an error
+    if (!imageResponse.ok) {
+      throw new HTTPException(404, { message: 'Image not found' });
+    }
+
+    // Convert the image to a buffer
+    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+
+    const piecesData = gameBuilderService.createPieces({
+      horizontalPaths: game.horizontalPaths,
+      verticalPaths: game.verticalPaths,
+    });
+
+    // Cut the image into pieces
+    const pieces = await gameBuilderService.cutImageIntoPieces({
+      imageBuffer: Buffer.from(imageBuffer),
+      ...piecesData,
+    });
+
+    return c.json({
+      success: true,
+      pieces,
+      svg: piecesData.enclosedShapesSvg,
+    });
+  });
