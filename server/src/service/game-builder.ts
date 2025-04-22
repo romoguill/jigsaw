@@ -46,6 +46,45 @@ export const pathGenerator = ({
   return paths;
 };
 
+// Create the svg for the pieces and some metadata of the game.
+export const createPieces = ({
+  horizontalPaths,
+  verticalPaths,
+}: {
+  horizontalPaths: string[];
+  verticalPaths: string[];
+}) => {
+  const piecesBuilder = new PiecesBuilder({
+    horizontalPaths,
+    verticalPaths,
+  });
+
+  // Extract the number of rows and columns from the paths
+  const rows = piecesBuilder.horizontalCurves.length;
+  const cols = piecesBuilder.verticalCurves.length;
+  const pieceSize = piecesBuilder.pieceSize;
+
+  // Generate all curves. Creates curve objects for each path.
+  piecesBuilder.generateAllCurves();
+
+  // Apply rotation to vertical curves. Originaly the vertical paths are generated as horizontal.
+  piecesBuilder.applyRotationToVerticalCurves();
+
+  // Generate the enclosing shape as svg for each piece
+  const enclosedShapesSvg: string[] = [];
+  for (let i = 0; i <= rows; i++) {
+    for (let j = 0; j <= cols; j++) {
+      const enclosedShape = piecesBuilder.generateEnclosedShape(i, j);
+      const svgPaths = piecesBuilder.enclosedShapeToSvgPaths(enclosedShape);
+      const enclosedShapeSvg = piecesBuilder.enclosedShapeToSvg(svgPaths, i, j);
+
+      enclosedShapesSvg.push(enclosedShapeSvg);
+    }
+  }
+
+  return { enclosedShapesSvg, rows, cols, pieceSize };
+};
+
 type ImagePiece = {
   x: number;
   y: number;
@@ -56,18 +95,16 @@ type ImagePiece = {
 
 export const cutImageIntoPieces = async ({
   imageBuffer,
+  rows,
+  cols,
   pieceSize,
-  horizontalPaths,
-  verticalPaths,
 }: {
   imageBuffer: Buffer;
   pieceSize: number;
-  horizontalPaths: string[];
-  verticalPaths: string[];
+  rows: number;
+  cols: number;
 }) => {
   const pieces: ImagePiece[] = [];
-  const rows = horizontalPaths.length;
-  const cols = verticalPaths.length;
 
   // Create pieces_cut directory if it doesn't exist
   const piecesDir = path.join(process.cwd(), 'pieces_cut');
@@ -95,89 +132,54 @@ export const cutImageIntoPieces = async ({
   //   .toBuffer();
 
   // Create the pieces builder
-  const piecesBuilder = new PiecesBuilder({
-    horizontalPaths,
-    verticalPaths,
-  });
 
-  // Generate all curves. Creates curve objects for each path.
-  piecesBuilder.generateAllCurves();
+  const enclosingPathSvg = Path.getPathSvg(enclosingPath);
+  console.log('enclosing path svg');
+  console.log(enclosingPathSvg);
 
-  // Apply rotation to vertical curves
-  piecesBuilder.applyRotationToVerticalCurves();
+  // Create pieces based on paths
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      // Create SVG mask for this piece
+      const svgMask = `
+            <svg width="${pieceSize}" height="${pieceSize}" viewBox="400 400 ${400 + pieceSize} ${400 + pieceSize}">
+              <path d="${enclosingPathSvg}" fill="white"/>
+            </svg>`;
 
-  // Generate the enclosing shape for each piece
-  let enclosedShapesSvg: string[] = [];
-  for (let i = 0; i <= rows; i++) {
-    for (let j = 0; j <= cols; j++) {
-      const enclosedShape = piecesBuilder.generateEnclosedShape(i, j);
-      const svgPaths = piecesBuilder.enclosedShapeToSvgPaths(enclosedShape);
-      const enclosedShapeSvg = piecesBuilder.enclosedShapeToSvg(svgPaths, i, j);
+      // Create the piece using composite
+      const pieceBuffer = await sharp(imageBuffer)
+        .extract({
+          // left: Math.max(0, col * pieceSize - 10),
+          // top: Math.max(0, row * pieceSize - 10),
+          // width: Math.min(pieceSize + 20, metadata.width),
+          // height: Math.min(pieceSize + 20, metadata.height),
+          left: 0,
+          top: 0,
+          width: metadata.width,
+          height: metadata.height,
+        })
+        .composite([
+          {
+            input: Buffer.from(svgMask),
+            blend: 'dest-in',
+            gravity: 'northwest',
+          },
+        ])
+        .png()
+        .toBuffer();
 
-      enclosedShapesSvg.push(enclosedShapeSvg);
+      const piecePath = path.join(piecesDir, `piece_${row}_${col}.png`);
+      await sharp(pieceBuffer).toFile(piecePath);
+
+      pieces.push({
+        x: col * pieceSize,
+        y: row * pieceSize,
+        width: pieceSize,
+        height: pieceSize,
+        path: piecePath,
+      });
     }
   }
 
-  return enclosedShapesSvg;
-
-  // for (let i = 0; i < rows - 1; i++) {
-  //   for (let j = 0; j < cols - 1; j++) {
-  //     const enclosingPath = Path.createEnclosingPath(
-  //       { horizontalPaths, verticalPaths },
-  //       i,
-  //       j,
-  //       pieceSize
-  //     );
-
-  //     const enclosingPathSvg = Path.getPathSvg(enclosingPath);
-  //     console.log('enclosing path svg');
-  //     console.log(enclosingPathSvg);
-
-  //     // Create pieces based on paths
-  //     for (let row = 0; row < rows; row++) {
-  //       for (let col = 0; col < cols; col++) {
-  //         // Create SVG mask for this piece
-  //         const svgMask = `
-  //           <svg width="${pieceSize}" height="${pieceSize}" viewBox="400 400 ${400 + pieceSize} ${400 + pieceSize}">
-  //             <path d="${enclosingPathSvg}" fill="white"/>
-  //           </svg>`;
-
-  //         // Create the piece using composite
-  //         const pieceBuffer = await sharp(imageBuffer)
-  //           .extract({
-  //             // left: Math.max(0, col * pieceSize - 10),
-  //             // top: Math.max(0, row * pieceSize - 10),
-  //             // width: Math.min(pieceSize + 20, metadata.width),
-  //             // height: Math.min(pieceSize + 20, metadata.height),
-  //             left: 0,
-  //             top: 0,
-  //             width: metadata.width,
-  //             height: metadata.height,
-  //           })
-  //           .composite([
-  //             {
-  //               input: Buffer.from(svgMask),
-  //               blend: 'dest-in',
-  //               gravity: 'northwest',
-  //             },
-  //           ])
-  //           .png()
-  //           .toBuffer();
-
-  //         const piecePath = path.join(piecesDir, `piece_${row}_${col}.png`);
-  //         await sharp(pieceBuffer).toFile(piecePath);
-
-  //         pieces.push({
-  //           x: col * pieceSize,
-  //           y: row * pieceSize,
-  //           width: pieceSize,
-  //           height: pieceSize,
-  //           path: piecePath,
-  //         });
-  //       }
-  //     }
-  //   }
-  // }
-
-  // return pieces;
+  return pieces;
 };
