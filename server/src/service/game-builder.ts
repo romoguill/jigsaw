@@ -27,7 +27,7 @@ export const pathGenerator = ({
 
   // Generate horizontal paths
   for (let i = 0; i < rows; i++) {
-    const pathBuilder = new Path(origin, pieceSize, pinSize, cols + 1);
+    const pathBuilder = new Path(origin, pieceSize, pinSize, cols);
 
     pathBuilder.generateCompletePath('complete');
 
@@ -40,7 +40,7 @@ export const pathGenerator = ({
 
   // Generate vertical paths
   for (let i = 0; i < cols; i++) {
-    const pathBuilder = new Path(origin, pieceSize, pinSize, rows + 1);
+    const pathBuilder = new Path(origin, pieceSize, pinSize, rows);
 
     pathBuilder.generateCompletePath('complete');
 
@@ -112,6 +112,13 @@ const cutImageToPuzzleSize = async ({
   const puzzleWidth = pieceSize * cols;
   const puzzleHeight = pieceSize * rows;
 
+  console.log('Puzzle dimensions:', {
+    puzzleWidth,
+    puzzleHeight,
+    imageWidth: metadata.width,
+    imageHeight: metadata.height,
+  });
+
   const buffer = await image
     .extract({
       left: Math.floor((metadata.width - puzzleWidth) / 2),
@@ -125,13 +132,6 @@ const cutImageToPuzzleSize = async ({
   if (!newMetadata.width || !newMetadata.height) {
     throw new Error('Invalid image dimensions');
   }
-
-  console.log('Puzzle dimensions:', {
-    puzzleWidth,
-    puzzleHeight,
-    newImageWidth: newMetadata.width,
-    newImageHeight: newMetadata.height,
-  });
 
   return { buffer, metadata: newMetadata };
 };
@@ -270,8 +270,8 @@ export const cutImageIntoPieces = async ({
       console.log(svgMask);
 
       const extractParams = {
-        left: pieceFootprint * col,
-        top: pieceFootprint * row,
+        left: Math.floor((pieceFootprint - pieceSize) / 2 + pieceSize) * col,
+        top: Math.floor((pieceFootprint - pieceSize) / 2 + pieceSize) * row,
         width: pieceFootprint,
         height: pieceFootprint,
       };
