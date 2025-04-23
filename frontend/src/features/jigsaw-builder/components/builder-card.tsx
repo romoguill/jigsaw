@@ -28,7 +28,7 @@ export function BuilderCard() {
 
   const gameData = useImageToGameData({ image: imgRef, pieceQuantity });
 
-  const { data: paths, isPending } = usePath(
+  const { data: pathsData, isPending } = usePath(
     {
       origin: { x: 0, y: 0 },
       cols: gameData?.columns || 0,
@@ -53,7 +53,7 @@ export function BuilderCard() {
   };
 
   const showMask =
-    enableQuery && showPreview && paths && gameData && imgRef.current;
+    enableQuery && showPreview && pathsData && gameData && imgRef.current;
 
   return (
     <Card className="max-w-lg">
@@ -86,7 +86,7 @@ export function BuilderCard() {
               />
               {showMask && (
                 <PathsMask
-                  paths={paths}
+                  paths={pathsData.paths}
                   pieceSize={gameData?.pieceSize}
                   scale={imgRef.current.width / imgRef.current.naturalWidth}
                 />
@@ -101,7 +101,7 @@ export function BuilderCard() {
                 rows: gameData.rows,
                 columns: gameData.columns,
               }}
-              paths={paths}
+              pathsData={pathsData}
             />
           </div>
         ) : (

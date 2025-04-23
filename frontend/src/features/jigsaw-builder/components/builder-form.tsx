@@ -25,7 +25,7 @@ import { useBuilderCreate } from "../api/mutations";
 interface BuilderFormProps {
   imageKey: string;
   onPieceQuantityChange: (n: number | undefined) => void;
-  paths?: Paths;
+  pathsData?: { paths: Paths } & { pieceFootprint: number };
   basicGameData: {
     origin: Coordinate;
     pieceSize: number;
@@ -38,7 +38,7 @@ function BuilderForm({
   imageKey,
   onPieceQuantityChange,
   basicGameData,
-  paths,
+  pathsData,
 }: BuilderFormProps) {
   const { mutate: buildJigsaw } = useBuilderCreate();
 
@@ -61,10 +61,11 @@ function BuilderForm({
         ...basicGameData,
         imageKey: imageKey,
         cached:
-          paths?.horizontal && paths.vertical
+          pathsData?.paths.horizontal && pathsData.paths.vertical
             ? {
-                horizontalPaths: paths.horizontal,
-                verticalPaths: paths.vertical,
+                horizontalPaths: pathsData.paths.horizontal,
+                verticalPaths: pathsData.paths.vertical,
+                pieceFootprint: pathsData.pieceFootprint,
               }
             : undefined,
       },

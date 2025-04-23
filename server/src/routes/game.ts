@@ -21,7 +21,6 @@ const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
       pieceSize: true,
       rows: true,
       columns: true,
-      pieceFootprint: true,
     })
     .extend({
       origin: coordinateSchema,
@@ -42,6 +41,7 @@ export const gameRoute = new Hono()
               .pick({
                 horizontalPaths: true,
                 verticalPaths: true,
+                pieceFootprint: true,
               })
               .optional(),
           })
@@ -60,6 +60,7 @@ export const gameRoute = new Hono()
           ...gameData,
           horizontalPaths: cached.horizontalPaths,
           verticalPaths: cached.verticalPaths,
+          pieceFootprint: cached.pieceFootprint,
         });
       } else {
         const {
