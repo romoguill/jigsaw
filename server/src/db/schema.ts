@@ -74,7 +74,7 @@ export const verification = sqliteTable('verification', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }),
 });
 
-// ----------
+// ---------- UPLOADS ----------
 
 export const uploadedImage = sqliteTable('uploaded_image', {
   id: integer('id').primaryKey(),
@@ -87,6 +87,7 @@ export const uploadedImage = sqliteTable('uploaded_image', {
   ...timestamps,
 });
 
+// ---------- GAMES ----------
 export const games = sqliteTable('games', {
   id: integer('id').primaryKey(),
   imageKey: text('image_key').notNull(),
@@ -102,6 +103,7 @@ export const games = sqliteTable('games', {
     .$type<string[]>()
     .notNull(),
   pieceSize: integer('piece_size').notNull(),
+  pieceFootprint: integer('piece_footprint').notNull(),
   columns: integer('columns').notNull(),
   rows: integer('rows').notNull(),
   ...timestamps,

@@ -83,9 +83,6 @@ export const createPieces = ({
     enclosedShapesSvg.push(column);
   }
 
-  console.log('enclosedShapesSvg');
-  console.log(enclosedShapesSvg);
-
   return { enclosedShapesSvg, rows, cols, pieceSize };
 };
 
