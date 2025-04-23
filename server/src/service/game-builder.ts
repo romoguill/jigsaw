@@ -17,6 +17,7 @@ export const pathGenerator = ({
   cols: number;
   rows: number;
 }) => {
+  let pieceFootprint = 0;
   const paths: { horizontal: string[]; vertical: string[] } = {
     horizontal: [],
     vertical: [],
@@ -31,6 +32,10 @@ export const pathGenerator = ({
     pathBuilder.generateCompletePath('complete');
 
     paths.horizontal.push(pathBuilder.toString());
+
+    // Set it here to avoid recalculating it for each path
+    pieceFootprint =
+      pieceFootprint === 0 ? pathBuilder.pieceFootprint : pieceFootprint;
   }
 
   // Generate vertical paths
@@ -42,7 +47,7 @@ export const pathGenerator = ({
     paths.vertical.push(pathBuilder.toString());
   }
 
-  return paths;
+  return { paths, pieceFootprint };
 };
 
 // Create the svg for the pieces and some metadata of the game.

@@ -21,6 +21,7 @@ const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
       pieceSize: true,
       rows: true,
       columns: true,
+      pieceFootprint: true,
     })
     .extend({
       origin: coordinateSchema,
@@ -61,7 +62,10 @@ export const gameRoute = new Hono()
           verticalPaths: cached.verticalPaths,
         });
       } else {
-        const paths = gameBuilderService.pathGenerator({
+        const {
+          paths: { horizontal: horizontalPaths, vertical: verticalPaths },
+          pieceFootprint,
+        } = gameBuilderService.pathGenerator({
           origin: gameData.origin,
           pieceSize: gameData.pieceSize,
           cols: gameData.columns,
@@ -70,8 +74,9 @@ export const gameRoute = new Hono()
 
         await db.insert(games).values({
           ...gameData,
-          horizontalPaths: paths.horizontal,
-          verticalPaths: paths.vertical,
+          horizontalPaths,
+          verticalPaths,
+          pieceFootprint,
         });
       }
 
@@ -92,14 +97,14 @@ export const gameRoute = new Hono()
     (c) => {
       const { origin, pieceSize, cols, rows } = c.req.valid('json');
 
-      const paths = gameBuilderService.pathGenerator({
+      const pathsData = gameBuilderService.pathGenerator({
         origin,
         pieceSize,
         cols,
         rows,
       });
 
-      return c.json({ success: true, data: paths });
+      return c.json({ success: true, data: pathsData });
     }
   )
   .post('/builder/:gameId/pieces', async (c) => {

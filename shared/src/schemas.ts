@@ -40,9 +40,10 @@ export const gameSchema = z.object({
   hasBorders: z.boolean().default(true),
   horizontalPaths: z.array(z.string()),
   verticalPaths: z.array(z.string()),
-  pieceSize: z.number(),
-  columns: z.number(),
-  rows: z.number(),
+  pieceSize: z.number().min(0),
+  pieceFootprint: z.number().min(0),
+  columns: z.number().min(0),
+  rows: z.number().min(0),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
 });

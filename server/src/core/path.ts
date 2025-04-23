@@ -81,6 +81,14 @@ export class Path {
     return this.path.join(' ');
   }
 
+  // Get the maximum footprint of the piece. It will be the piece with both pins out plus the maximum random modifier;
+  get pieceFootprint(): number {
+    return (
+      (this.pieceSize + this.pinSize * 2) *
+      (1 + this.rangeStartEndPoints[1] - this.rangeStartEndPoints[0])
+    );
+  }
+
   get endPoint(): Coordinate {
     // Endpoint are the two last values of any curve except the len = 1
     if (this.path.length <= 1) return this.origin;
