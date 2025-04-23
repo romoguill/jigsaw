@@ -91,6 +91,85 @@ export const createPieces = ({
   return { enclosedShapesSvg, rows, cols, pieceSize };
 };
 
+// Since the piece count will determine a smaller or equal size of the puzzle vs the image, I need to cut the image to the puzzle size.
+const cutImageToPuzzleSize = async ({
+  imageBuffer,
+  pieceSize,
+  rows,
+  cols,
+}: {
+  imageBuffer: Buffer;
+  pieceSize: number;
+  rows: number;
+  cols: number;
+}) => {
+  const image = sharp(imageBuffer);
+  const metadata = await image.metadata();
+  if (!metadata.width || !metadata.height) {
+    throw new Error('Invalid image dimensions');
+  }
+
+  const puzzleWidth = pieceSize * cols;
+  const puzzleHeight = pieceSize * rows;
+
+  const buffer = await image
+    .extract({
+      left: Math.floor((metadata.width - puzzleWidth) / 2),
+      top: Math.floor((metadata.height - puzzleHeight) / 2),
+      width: puzzleWidth,
+      height: puzzleHeight,
+    })
+    .toBuffer();
+
+  const newMetadata = await sharp(buffer).metadata();
+  if (!newMetadata.width || !newMetadata.height) {
+    throw new Error('Invalid image dimensions');
+  }
+
+  console.log('Puzzle dimensions:', {
+    puzzleWidth,
+    puzzleHeight,
+    newImageWidth: newMetadata.width,
+    newImageHeight: newMetadata.height,
+  });
+
+  return { buffer, metadata: newMetadata };
+};
+
+//
+const addPaddingToImage = async ({
+  imageBuffer,
+  pieceFootprint,
+  pieceSize,
+}: {
+  imageBuffer: Buffer;
+  pieceFootprint: number;
+  pieceSize: number;
+}) => {
+  let buffer = imageBuffer;
+  // Since the piece footprint is greater than the image, I need to extend the image with padding, to avoid cutting the pieces out of the image.
+  const padding = pieceFootprint - pieceSize;
+
+  if (padding > 0) {
+    buffer = await sharp(imageBuffer)
+      .extend({
+        top: Math.ceil(padding / 2),
+        bottom: Math.ceil(padding / 2),
+        left: Math.ceil(padding / 2),
+        right: Math.ceil(padding / 2),
+        background: { r: 255, g: 255, b: 255, alpha: 0 },
+      })
+      .toBuffer();
+  }
+
+  const metadata = await sharp(buffer).metadata();
+  if (!metadata.width || !metadata.height) {
+    throw new Error('Invalid image dimensions');
+  }
+
+  return { buffer, metadata };
+};
+
 type ImagePiece = {
   x: number;
   y: number;
@@ -130,7 +209,7 @@ export const cutImageIntoPieces = async ({
     throw new Error('Invalid image dimensions');
   }
 
-  console.log('Image dimensions:', {
+  console.log('Original image dimensions:', {
     width: metadata.width,
     height: metadata.height,
     pieceFootprint,
@@ -140,30 +219,33 @@ export const cutImageIntoPieces = async ({
     totalHeight: pieceFootprint * rows,
   });
 
-  // Since the piece footprint is greater than the image, I need to extend the image with padding, to avoid cutting the pieces out of the image.
-  const padding = pieceFootprint - pieceSize;
+  // Cut the image to the puzzle size
+  const puzzleImageCut = await cutImageToPuzzleSize({
+    imageBuffer,
+    pieceSize,
+    rows,
+    cols,
+  });
 
-  let paddedImageBuffer = imageBuffer;
-  if (padding > 0) {
-    paddedImageBuffer = await sharp(imageBuffer)
-      .extend({
-        top: Math.ceil(padding / 2),
-        bottom: Math.ceil(padding / 2),
-        left: Math.ceil(padding / 2),
-        right: Math.ceil(padding / 2),
-        background: { r: 255, g: 255, b: 255, alpha: 0 },
-      })
-      .toBuffer();
-  }
+  console.log('Puzzle image cut:', {
+    width: puzzleImageCut.metadata.width,
+    height: puzzleImageCut.metadata.height,
+    pieceFootprint,
+    rows,
+    cols,
+    totalWidth: pieceFootprint * cols,
+    totalHeight: pieceFootprint * rows,
+  });
 
-  const paddedMetadata = await sharp(paddedImageBuffer).metadata();
-  if (!paddedMetadata.width || !paddedMetadata.height) {
-    throw new Error('Invalid image dimensions');
-  }
+  const paddedImage = await addPaddingToImage({
+    imageBuffer: puzzleImageCut.buffer,
+    pieceFootprint,
+    pieceSize,
+  });
 
   console.log('Image padded:', {
-    width: paddedMetadata.width,
-    height: paddedMetadata.height,
+    width: paddedImage.metadata.width,
+    height: paddedImage.metadata.height,
     pieceFootprint,
     rows,
     cols,
@@ -199,13 +281,15 @@ export const cutImageIntoPieces = async ({
         col,
         ...extractParams,
         exceedsWidth:
-          extractParams.left + extractParams.width > paddedMetadata.width,
+          extractParams.left + extractParams.width >
+          (paddedImage.metadata.width ?? 0),
         exceedsHeight:
-          extractParams.top + extractParams.height > paddedMetadata.height,
+          extractParams.top + extractParams.height >
+          (paddedImage.metadata.height ?? 0),
       });
 
       // Create the piece using composite
-      const pieceBuffer = await sharp(paddedImageBuffer)
+      const pieceBuffer = await sharp(paddedImage.buffer)
         .extract(extractParams)
         .composite([
           {
