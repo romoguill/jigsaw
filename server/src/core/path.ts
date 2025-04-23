@@ -83,9 +83,9 @@ export class Path {
 
   // Get the maximum footprint of the piece. It will be the piece with both pins out plus the maximum random modifier;
   get pieceFootprint(): number {
-    return (
+    return Math.round(
       (this.pieceSize + this.pinSize * 2) *
-      (1 + this.rangeStartEndPoints[1] - this.rangeStartEndPoints[0])
+        (1 + this.rangeStartEndPoints[1] - this.rangeStartEndPoints[0])
     );
   }
 

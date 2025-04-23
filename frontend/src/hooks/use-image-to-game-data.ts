@@ -35,8 +35,8 @@ function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
 
         // Since pieces are squares i need the minimun value from sizes relations
         const pieceSize = Math.min(
-          naturalWidth / columns,
-          naturalHeight / rows
+          Math.round(naturalWidth / columns),
+          Math.round(naturalHeight / rows)
         );
         // Get the area covered by the iteration
         const gridArea = pieceSize ** 2 * pieceQuantity;

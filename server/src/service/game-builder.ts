@@ -104,10 +104,12 @@ export const cutImageIntoPieces = async ({
   rows,
   cols,
   pieceSize,
+  pieceFootprint,
   enclosedShapesSvg,
 }: {
   imageBuffer: Buffer;
   pieceSize: number;
+  pieceFootprint: number;
   rows: number;
   cols: number;
   enclosedShapesSvg: string[][];
@@ -128,29 +130,83 @@ export const cutImageIntoPieces = async ({
     throw new Error('Invalid image dimensions');
   }
 
+  console.log('Image dimensions:', {
+    width: metadata.width,
+    height: metadata.height,
+    pieceFootprint,
+    rows,
+    cols,
+    totalWidth: pieceFootprint * cols,
+    totalHeight: pieceFootprint * rows,
+  });
+
+  // Since the piece footprint is greater than the image, I need to extend the image with padding, to avoid cutting the pieces out of the image.
+  const padding = pieceFootprint - pieceSize;
+
+  let paddedImageBuffer = imageBuffer;
+  if (padding > 0) {
+    paddedImageBuffer = await sharp(imageBuffer)
+      .extend({
+        top: Math.ceil(padding / 2),
+        bottom: Math.ceil(padding / 2),
+        left: Math.ceil(padding / 2),
+        right: Math.ceil(padding / 2),
+        background: { r: 255, g: 255, b: 255, alpha: 0 },
+      })
+      .toBuffer();
+  }
+
+  const paddedMetadata = await sharp(paddedImageBuffer).metadata();
+  if (!paddedMetadata.width || !paddedMetadata.height) {
+    throw new Error('Invalid image dimensions');
+  }
+
+  console.log('Image padded:', {
+    width: paddedMetadata.width,
+    height: paddedMetadata.height,
+    pieceFootprint,
+    rows,
+    cols,
+    totalWidth: pieceFootprint * cols,
+    totalHeight: pieceFootprint * rows,
+  });
+
   // Create pieces based on paths
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
+  for (let row = 0; row <= rows; row++) {
+    for (let col = 0; col <= cols; col++) {
+      // This offset will center the piece of size pieceSize inside the pieceFootprint
+      const translateOffsetX =
+        pieceSize * col - (pieceFootprint - pieceSize) / 2;
+      const translateOffsetY =
+        pieceSize * row - (pieceFootprint - pieceSize) / 2;
       // Create SVG mask for this piece
       const svgMask = `
-            <svg width="${pieceSize + 180}" height="${pieceSize + 180}" viewBox="${pieceSize * col - 90} ${pieceSize * row - 90} ${pieceSize + 20} ${pieceSize + 20}">
+            <svg width="${pieceFootprint}" height="${pieceFootprint}" viewBox="${translateOffsetX} ${translateOffsetY} ${pieceFootprint} ${pieceFootprint}">
               <path d="${enclosedShapesSvg[row][col]}" fill="white"/>
             </svg>`;
 
       console.log(svgMask);
 
+      const extractParams = {
+        left: pieceFootprint * col,
+        top: pieceFootprint * row,
+        width: pieceFootprint,
+        height: pieceFootprint,
+      };
+
+      console.log('Extraction parameters for piece:', {
+        row,
+        col,
+        ...extractParams,
+        exceedsWidth:
+          extractParams.left + extractParams.width > paddedMetadata.width,
+        exceedsHeight:
+          extractParams.top + extractParams.height > paddedMetadata.height,
+      });
+
       // Create the piece using composite
-      const pieceBuffer = await sharp(imageBuffer)
-        .extract({
-          // left: Math.max(0, col * pieceSize - 10),
-          // top: Math.max(0, row * pieceSize - 10),
-          // width: Math.min(pieceSize + 20, metadata.width),
-          // height: Math.min(pieceSize + 20, metadata.height),
-          left: 0,
-          top: 0,
-          width: metadata.width,
-          height: metadata.height,
-        })
+      const pieceBuffer = await sharp(paddedImageBuffer)
+        .extract(extractParams)
         .composite([
           {
             input: Buffer.from(svgMask),

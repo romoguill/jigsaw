@@ -1,7 +1,7 @@
 import { PIN_SIZE_MULTIPLIER } from '../constants.js';
 
 export const calculatePinSize = (pieceSize: number) => {
-  return pieceSize * PIN_SIZE_MULTIPLIER;
+  return Math.round(pieceSize * PIN_SIZE_MULTIPLIER);
 };
 
 // When rotating and other vector operations, +0 and -0 can break testing. This function will return 0 for both.

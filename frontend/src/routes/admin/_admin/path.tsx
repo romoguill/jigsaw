@@ -12,7 +12,7 @@ function RouteComponent() {
   useEffect(() => {
     const fetchPath = async () => {
       const res = await apiClient.api.game.builder[":gameId"].pieces.$post({
-        param: { gameId: "4" },
+        param: { gameId: "1" },
       });
       const data = await res.json();
       setPath(data.svg.flat());
