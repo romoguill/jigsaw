@@ -26,7 +26,7 @@ export const pathGenerator = ({
   const pinSize = calculatePinSize(pieceSize);
 
   // Generate horizontal paths
-  for (let i = 0; i < rows; i++) {
+  for (let i = 0; i < rows - 1; i++) {
     const pathBuilder = new Path(origin, pieceSize, pinSize, cols);
 
     pathBuilder.generateCompletePath('complete');
@@ -39,7 +39,7 @@ export const pathGenerator = ({
   }
 
   // Generate vertical paths
-  for (let i = 0; i < cols; i++) {
+  for (let i = 0; i < cols - 1; i++) {
     const pathBuilder = new Path(origin, pieceSize, pinSize, rows);
 
     pathBuilder.generateCompletePath('complete');
@@ -64,8 +64,8 @@ export const createPieces = ({
   });
 
   // Extract the number of rows and columns from the paths
-  const rows = piecesBuilder.horizontalCurves.length;
-  const cols = piecesBuilder.verticalCurves.length;
+  const rows = piecesBuilder.horizontalCurves.length + 1;
+  const cols = piecesBuilder.verticalCurves.length + 1;
   const pieceSize = piecesBuilder.pieceSize;
 
   // Generate all curves. Creates curve objects for each path.
@@ -76,9 +76,9 @@ export const createPieces = ({
 
   // Generate the enclosing shape as svg for each piece
   const enclosedShapesSvg: string[][] = [];
-  for (let i = 0; i <= rows; i++) {
+  for (let i = 0; i < rows; i++) {
     const column: string[] = [];
-    for (let j = 0; j <= cols; j++) {
+    for (let j = 0; j < cols; j++) {
       const enclosedShape = piecesBuilder.generateEnclosedShape(i, j);
       const svgPaths = piecesBuilder.enclosedShapeToSvgPaths(enclosedShape);
       const enclosedShapeSvg = piecesBuilder.enclosedShapeToSvg(svgPaths, i, j);

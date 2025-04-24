@@ -8,8 +8,8 @@ interface PathsMaskProps {
 
 function PathsMask({ paths, pieceSize, scale }: PathsMaskProps) {
   const rect = {
-    height: paths.horizontal.length * pieceSize,
-    width: paths.vertical.length * pieceSize,
+    height: (paths.horizontal.length + 1) * pieceSize,
+    width: (paths.vertical.length + 1) * pieceSize,
   };
   console.log("Paths mask dimensions:", {
     height: rect.height,

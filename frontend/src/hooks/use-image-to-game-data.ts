@@ -52,6 +52,10 @@ function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
         }
       }
 
+      console.log("finalColumns", finalColumns);
+      console.log("finalRows", finalRows);
+      console.log("finalPieceSize", finalPieceSize);
+
       return {
         finalColumns,
         finalRows,

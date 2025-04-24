@@ -117,6 +117,8 @@ export const gameRoute = new Hono()
       .from(games)
       .where(eq(games.id, Number(gameId)));
 
+    console.log('game', game);
+
     if (!game) {
       throw new HTTPException(404, { message: 'Game not found' });
     }
