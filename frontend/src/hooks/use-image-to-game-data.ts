@@ -34,10 +34,10 @@ function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
         if (pieceQuantity !== rows * columns) continue;
 
         // Since pieces are squares i need the minimun value from sizes relations
-        const pieceSize = Math.min(
-          Math.floor(naturalWidth / columns),
-          Math.floor(naturalHeight / rows)
+        const pieceSize = Math.floor(
+          Math.min(naturalWidth / columns, naturalHeight / rows)
         );
+        console.log("pieceSize", pieceSize);
         // Get the area covered by the iteration
         const gridArea = pieceSize ** 2 * pieceQuantity;
 

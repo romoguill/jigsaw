@@ -9,15 +9,18 @@ export class PiecesBuilder {
   };
   private _horizontalCurves: Curve[][][] = [];
   private _verticalCurves: Curve[][][] = [];
-  private _pieceSize: number = 0;
+  private _pieceSize: number;
 
-  constructor(paths: { horizontalPaths: string[]; verticalPaths: string[] }) {
+  constructor(
+    paths: { horizontalPaths: string[]; verticalPaths: string[] },
+    pieceSize: number
+  ) {
     this.paths = paths;
+    this._pieceSize = pieceSize;
   }
 
   private parsePath(path: string): string[][] {
     if (path.slice(0, 5) !== 'M 0 0') {
-      console.log('error');
       throw new Error('Invalid path');
     }
 

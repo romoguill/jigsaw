@@ -83,7 +83,7 @@ export class Path {
 
   // Get the maximum footprint of the piece. It will be the piece with both pins out plus the maximum random modifier;
   get pieceFootprint(): number {
-    return Math.round(
+    return Math.ceil(
       (this.pieceSize + this.pinSize * 2) *
         (1 + this.rangeStartEndPoints[1] - this.rangeStartEndPoints[0])
     );
@@ -136,8 +136,8 @@ export class Path {
     const angle = this.randomAngle(angleRange);
 
     const controlPoint: Coordinate = {
-      x: Math.round(from.x + magnitud * Math.cos(angle)),
-      y: Math.round(from.y + magnitud * Math.sin(angle)),
+      x: Math.floor(from.x + magnitud * Math.cos(angle)),
+      y: Math.floor(from.y + magnitud * Math.sin(angle)),
     };
 
     return controlPoint;
@@ -153,27 +153,27 @@ export class Path {
     ) => [
       // First flat edge
       {
-        x: Math.round(this.pieceSize / 2 - this.pinSize / 2),
+        x: Math.floor(this.pieceSize / 2 - this.pinSize / 2),
         y: 0,
       },
       // First side pin
       {
         x: 0,
-        y: Math.round(this.pinSize * pinDirection),
+        y: Math.floor(this.pinSize * pinDirection),
       },
       // Top side pin
       {
-        x: Math.round(this.pinSize),
+        x: Math.floor(this.pinSize),
         y: 0,
       },
       // Second side pin
       {
         x: 0,
-        y: Math.round(this.pinSize * -pinDirection),
+        y: Math.floor(this.pinSize * -pinDirection),
       },
       // Second flat edge
       {
-        x: Math.round(this.pieceSize / 2 - this.pinSize / 2),
+        x: Math.ceil(this.pieceSize / 2 - this.pinSize / 2),
         y: 0,
       },
     ];
@@ -190,8 +190,8 @@ export class Path {
 
       endPointsDelta(pinDirection).forEach((epd, i) => {
         const endPoint = {
-          x: Math.round(prevEndPoint.x + epd.x),
-          y: Math.round(prevEndPoint.y + epd.y),
+          x: Math.floor(prevEndPoint.x + epd.x),
+          y: Math.floor(prevEndPoint.y + epd.y),
         };
 
         prevEndPoint = { ...endPoint };
@@ -215,8 +215,8 @@ export class Path {
           const path = this.path[this.path.length - 1];
 
           const randomizedEndPoint = {
-            x: Math.round(endPoint.x + this.randomEndPoint()),
-            y: Math.round(endPoint.y + this.randomEndPoint()),
+            x: Math.floor(endPoint.x + this.randomEndPoint()),
+            y: Math.floor(endPoint.y + this.randomEndPoint()),
           };
 
           // Since the control point is relative to the end point, we need to update it.
@@ -224,8 +224,8 @@ export class Path {
           const deltaY = randomizedEndPoint.y - endPoint.y;
 
           const randomizedControlEndPoint = {
-            x: Math.round(controlPoint.x + deltaX),
-            y: Math.round(controlPoint.y + deltaY),
+            x: Math.floor(controlPoint.x + deltaX),
+            y: Math.floor(controlPoint.y + deltaY),
           };
 
           newPath = path.replace(

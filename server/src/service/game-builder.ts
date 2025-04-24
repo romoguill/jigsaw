@@ -54,19 +54,23 @@ export const pathGenerator = ({
 export const createPieces = ({
   horizontalPaths,
   verticalPaths,
+  pieceSize,
 }: {
   horizontalPaths: string[];
   verticalPaths: string[];
+  pieceSize: number;
 }) => {
-  const piecesBuilder = new PiecesBuilder({
-    horizontalPaths,
-    verticalPaths,
-  });
+  const piecesBuilder = new PiecesBuilder(
+    {
+      horizontalPaths,
+      verticalPaths,
+    },
+    pieceSize
+  );
 
   // Extract the number of rows and columns from the paths
   const rows = piecesBuilder.horizontalCurves.length + 1;
   const cols = piecesBuilder.verticalCurves.length + 1;
-  const pieceSize = piecesBuilder.pieceSize;
 
   // Generate all curves. Creates curve objects for each path.
   piecesBuilder.generateAllCurves();
@@ -111,13 +115,6 @@ const cutImageToPuzzleSize = async ({
 
   const puzzleWidth = pieceSize * cols;
   const puzzleHeight = pieceSize * rows;
-
-  console.log('Puzzle dimensions:', {
-    puzzleWidth,
-    puzzleHeight,
-    imageWidth: metadata.width,
-    imageHeight: metadata.height,
-  });
 
   const buffer = await image
     .extract({
@@ -194,7 +191,6 @@ export const cutImageIntoPieces = async ({
   enclosedShapesSvg: string[][];
 }) => {
   const pieces: ImagePiece[] = [];
-  console.log({ pieceSize });
 
   // Create pieces_cut directory if it doesn't exist
   const piecesDir = path.join(process.cwd(), 'pieces_cut');
@@ -209,16 +205,6 @@ export const cutImageIntoPieces = async ({
     throw new Error('Invalid image dimensions');
   }
 
-  console.log('Original image dimensions:', {
-    width: metadata.width,
-    height: metadata.height,
-    pieceFootprint,
-    rows,
-    cols,
-    totalWidth: pieceFootprint * cols,
-    totalHeight: pieceFootprint * rows,
-  });
-
   // Cut the image to the puzzle size
   const puzzleImageCut = await cutImageToPuzzleSize({
     imageBuffer,
@@ -227,35 +213,15 @@ export const cutImageIntoPieces = async ({
     cols,
   });
 
-  console.log('Puzzle image cut:', {
-    width: puzzleImageCut.metadata.width,
-    height: puzzleImageCut.metadata.height,
-    pieceFootprint,
-    rows,
-    cols,
-    totalWidth: pieceFootprint * cols,
-    totalHeight: pieceFootprint * rows,
-  });
-
   const paddedImage = await addPaddingToImage({
     imageBuffer: puzzleImageCut.buffer,
     pieceFootprint,
     pieceSize,
   });
 
-  console.log('Image padded:', {
-    width: paddedImage.metadata.width,
-    height: paddedImage.metadata.height,
-    pieceFootprint,
-    rows,
-    cols,
-    totalWidth: pieceFootprint * cols,
-    totalHeight: pieceFootprint * rows,
-  });
-
   // Create pieces based on paths
-  for (let row = 0; row <= rows; row++) {
-    for (let col = 0; col <= cols; col++) {
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
       // This offset will center the piece of size pieceSize inside the pieceFootprint
       const translateOffsetX =
         pieceSize * col - (pieceFootprint - pieceSize) / 2;
@@ -267,30 +233,14 @@ export const cutImageIntoPieces = async ({
               <path d="${enclosedShapesSvg[row][col]}" fill="white"/>
             </svg>`;
 
-      console.log(svgMask);
-
-      const extractParams = {
-        left: Math.floor((pieceFootprint - pieceSize) / 2 + pieceSize) * col,
-        top: Math.floor((pieceFootprint - pieceSize) / 2 + pieceSize) * row,
-        width: pieceFootprint,
-        height: pieceFootprint,
-      };
-
-      console.log('Extraction parameters for piece:', {
-        row,
-        col,
-        ...extractParams,
-        exceedsWidth:
-          extractParams.left + extractParams.width >
-          (paddedImage.metadata.width ?? 0),
-        exceedsHeight:
-          extractParams.top + extractParams.height >
-          (paddedImage.metadata.height ?? 0),
-      });
-
-      // Create the piece using composite
+      // Create the piece by first cutting the image and then compositing the svg mask
       const pieceBuffer = await sharp(paddedImage.buffer)
-        .extract(extractParams)
+        .extract({
+          left: pieceSize * col,
+          top: pieceSize * row,
+          width: pieceFootprint,
+          height: pieceFootprint,
+        })
         .composite([
           {
             input: Buffer.from(svgMask),

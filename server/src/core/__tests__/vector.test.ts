@@ -56,7 +56,7 @@ describe('Vector', () => {
     it('should rotate vector 90 degrees clockwise', () => {
       const vector = new Vector({ x: 1, y: 0 });
       vector.rotateVector90();
-      console.log(vector.x);
+
       expect(vector.x).toBeCloseTo(0, 10);
       expect(vector.y).toBeCloseTo(1, 10);
     });

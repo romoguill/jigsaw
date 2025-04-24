@@ -11,12 +11,6 @@ function PathsMask({ paths, pieceSize, scale }: PathsMaskProps) {
     height: (paths.horizontal.length + 1) * pieceSize,
     width: (paths.vertical.length + 1) * pieceSize,
   };
-  console.log("Paths mask dimensions:", {
-    height: rect.height,
-    width: rect.width,
-    pieceSize,
-    scale,
-  });
 
   return (
     <svg

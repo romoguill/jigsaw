@@ -9,7 +9,6 @@ export const Route = createFileRoute("/")({ component: RouteComponent });
 
 function RouteComponent() {
   const { data: user } = useCurrentUser();
-  console.log({ user });
 
   return (
     <div className="h-full">
