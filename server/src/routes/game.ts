@@ -6,9 +6,12 @@ import {
 } from '@jigsaw/shared/schemas.js';
 import { Hono } from 'hono';
 import { db } from 'src/db/db.js';
-import { games } from 'src/db/schema.js';
+import { games, uploadedImage } from 'src/db/schema.js';
 import { z } from 'zod';
-import { authMiddleware } from '../middleware/auth-middleware.js';
+import {
+  authMiddleware,
+  type ContextWithAuth,
+} from '../middleware/auth-middleware.js';
 import * as gameBuilderService from '../service/game-builder.js';
 import { utapi } from './upload.js';
 import { HTTPException } from 'hono/http-exception';
@@ -110,6 +113,7 @@ export const gameRoute = new Hono()
   )
   .post('/builder/:gameId/pieces', async (c) => {
     const gameId = c.req.param('gameId');
+    const userId = c.get('user').id;
 
     // Get the game from the database
     const [game] = await db
@@ -147,6 +151,31 @@ export const gameRoute = new Hono()
       imageBuffer: Buffer.from(imageBuffer),
       ...piecesData,
     });
+
+    // Upload the pieces to uploadthing
+    const uploadResults = await utapi.uploadFiles(
+      pieces.map((piece) => piece.file)
+    );
+
+    // Check that all pieces were uploaded successfully
+    if (uploadResults.some((result) => result.error)) {
+      throw new HTTPException(500, {
+        message: 'Failed to upload pieces',
+      });
+    }
+
+    // Insert the pieces into the database
+    await db.insert(uploadedImage).values(
+      // Use ! because I checked before
+      uploadResults.map((result, i) => ({
+        imageKey: result.data!.key,
+        gameId: Number(gameId),
+        userId,
+        isPiece: true,
+        width: pieces[i].width,
+        height: pieces[i].height,
+      }))
+    );
 
     return c.json({
       success: true,

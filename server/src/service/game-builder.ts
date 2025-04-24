@@ -172,7 +172,7 @@ type ImagePiece = {
   y: number;
   width: number;
   height: number;
-  path: string;
+  file: File;
 };
 
 export const cutImageIntoPieces = async ({
@@ -251,15 +251,18 @@ export const cutImageIntoPieces = async ({
         .png()
         .toBuffer();
 
-      const piecePath = path.join(piecesDir, `piece_${row}_${col}.png`);
-      await sharp(pieceBuffer).toFile(piecePath);
+      // Convert Buffer to File
+      const blob = new Blob([pieceBuffer], { type: 'image/png' });
+      const file = new File([blob], `piece_${row}_${col}.png`, {
+        type: 'image/png',
+      });
 
       pieces.push({
         x: col * pieceSize,
         y: row * pieceSize,
         width: pieceSize,
         height: pieceSize,
-        path: piecePath,
+        file,
       });
     }
   }

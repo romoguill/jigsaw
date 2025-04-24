@@ -5,8 +5,8 @@ import { HTTPException } from 'hono/http-exception';
 
 export type ContextWithAuth = {
   Variables: {
-    user: User | null;
-    session: typeof auth.$Infer.Session.session | null;
+    user: User;
+    session: typeof auth.$Infer.Session.session;
   };
 };
 
@@ -15,8 +15,6 @@ export const authMiddleware = createMiddleware<ContextWithAuth>(
     const authData = await auth.api.getSession({ headers: c.req.raw.headers });
 
     if (!authData) {
-      c.set('user', null);
-      c.set('session', null);
       throw new HTTPException(401);
     }
 
