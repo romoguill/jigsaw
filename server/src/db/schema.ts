@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import type { z } from 'zod';
@@ -84,6 +84,8 @@ export const uploadedImage = sqliteTable('uploaded_image', {
   imageKey: text('image_key').notNull(),
   width: integer('width').notNull(),
   height: integer('height').notNull(),
+  isPiece: integer('is_piece', { mode: 'boolean' }).notNull().default(false),
+  gameId: integer('game_id').references(() => games.id),
   ...timestamps,
 });
 
@@ -108,6 +110,19 @@ export const games = sqliteTable('games', {
   rows: integer('rows').notNull(),
   ...timestamps,
 });
+
+// ---------- RELATIONS ----------
+
+export const gamesRelations = relations(games, ({ many }) => ({
+  pieces: many(uploadedImage),
+}));
+
+export const uploadedImageRelations = relations(uploadedImage, ({ one }) => ({
+  game: one(games, {
+    fields: [uploadedImage.gameId],
+    references: [games.id],
+  }),
+}));
 
 // Schema for inserting a new game
 export const insertGameSchema = createInsertSchema(games);
