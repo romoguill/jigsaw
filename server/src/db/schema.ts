@@ -89,6 +89,17 @@ export const uploadedImage = sqliteTable('uploaded_image', {
   ...timestamps,
 });
 
+export const pieces = sqliteTable('pieces', {
+  id: integer('id').primaryKey(),
+  uploadedImageId: integer('uploaded_image_id')
+    .notNull()
+    .references(() => uploadedImage.id, { onDelete: 'cascade' }),
+  gameId: integer('game_id').references(() => games.id),
+  row: integer('row').notNull(),
+  col: integer('col').notNull(),
+  ...timestamps,
+});
+
 // ---------- GAMES ----------
 export const games = sqliteTable('games', {
   id: integer('id').primaryKey(),
@@ -113,14 +124,29 @@ export const games = sqliteTable('games', {
 
 // ---------- RELATIONS ----------
 
-export const gamesRelations = relations(games, ({ many }) => ({
-  pieces: many(uploadedImage),
+export const gamesRelations = relations(games, ({ many, one }) => ({
+  pieces: many(pieces),
+  uploadedImage: one(uploadedImage, {
+    fields: [games.imageKey],
+    references: [uploadedImage.imageKey],
+  }),
 }));
 
 export const uploadedImageRelations = relations(uploadedImage, ({ one }) => ({
   game: one(games, {
     fields: [uploadedImage.gameId],
     references: [games.id],
+  }),
+}));
+
+export const piecesRelations = relations(pieces, ({ one }) => ({
+  game: one(games, {
+    fields: [pieces.gameId],
+    references: [games.id],
+  }),
+  uploadedImage: one(uploadedImage, {
+    fields: [pieces.uploadedImageId],
+    references: [uploadedImage.id],
   }),
 }));
 
