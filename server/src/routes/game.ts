@@ -12,7 +12,8 @@ import { z } from 'zod';
 import { authMiddleware } from '../middleware/auth-middleware.js';
 import * as gameBuilderService from '../service/game-builder.js';
 import { utapi } from './upload.js';
-
+import { eq } from 'drizzle-orm';
+import { getPublicUploadthingUrl } from '../lib/utils.js';
 const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
   gameSchema
     .pick({
@@ -28,6 +29,30 @@ const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
 
 export const gameRoute = new Hono()
   .use(authMiddleware)
+  .post(
+    '/builder/path',
+    zValidator(
+      'json',
+      z.object({
+        origin: coordinateSchema,
+        pieceSize: z.number(),
+        cols: z.number(),
+        rows: z.number(),
+      })
+    ),
+    (c) => {
+      const { origin, pieceSize, cols, rows } = c.req.valid('json');
+
+      const pathsData = gameBuilderService.pathGenerator({
+        origin,
+        pieceSize,
+        cols,
+        rows,
+      });
+
+      return c.json({ success: true, data: pathsData });
+    }
+  )
   .post(
     '/builder',
     zValidator(
@@ -165,27 +190,35 @@ export const gameRoute = new Hono()
       });
     }
   )
-  .post(
-    '/builder/path',
-    zValidator(
-      'json',
-      z.object({
-        origin: coordinateSchema,
-        pieceSize: z.number(),
-        cols: z.number(),
-        rows: z.number(),
-      })
-    ),
-    (c) => {
-      const { origin, pieceSize, cols, rows } = c.req.valid('json');
+  .get('/:id', async (c) => {
+    const game = await db.query.games.findFirst({
+      where: eq(games.id, Number(c.req.param('id'))),
+      with: {
+        pieces: {
+          with: {
+            uploadedImage: {
+              columns: {
+                imageKey: true,
+              },
+            },
+          },
+        },
+        uploadedImage: true,
+      },
+    });
 
-      const pathsData = gameBuilderService.pathGenerator({
-        origin,
-        pieceSize,
-        cols,
-        rows,
-      });
-
-      return c.json({ success: true, data: pathsData });
+    if (!game) {
+      throw new HTTPException(404, { message: 'Game not found' });
     }
-  );
+
+    // Get the image from uploadthing
+    const piecesWithUrls = game.pieces.map((piece) => ({
+      ...piece,
+      uploadedImage: {
+        ...piece.uploadedImage,
+        url: getPublicUploadthingUrl(piece.uploadedImage.imageKey),
+      },
+    }));
+
+    return c.json({ game: { ...game, pieces: piecesWithUrls } });
+  });

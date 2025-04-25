@@ -1,5 +1,6 @@
 import { drizzle } from 'drizzle-orm/libsql/node';
 import path from 'path';
+import * as schema from './schema.js';
 
 export const db = drizzle({
   connection: {
@@ -9,4 +10,5 @@ export const db = drizzle({
         ? process.env.DATABASE_AUTH_TOKEN!
         : undefined,
   },
+  schema: { ...schema },
 });

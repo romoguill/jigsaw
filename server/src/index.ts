@@ -11,9 +11,10 @@ import { uploadRoute } from './routes/upload.js';
 import { gameRoute } from './routes/game.js';
 
 const app = new Hono()
+  .basePath('/api')
   .use(logger())
   .use(
-    '/api/auth/*',
+    '/auth/*',
     cors({
       origin: 'http://localhost:5173', // Vite origin
       allowHeaders: ['Content-Type', 'Authorization'],
@@ -24,17 +25,17 @@ const app = new Hono()
     })
   )
   .use(
-    '/api/uploadthing/**',
+    '/uploadthing/**',
     cors({
       origin: '*',
       allowMethods: ['POST', 'GET'],
       allowHeaders: ['Content-Type', 'Authorization'],
     })
   )
-  .route('/api', healthCheckRoute)
-  .route('/api/auth', authRoute)
-  .route('/api/game', gameRoute)
-  .route('/api/uploadthing', uploadRoute)
+  .route('/', healthCheckRoute)
+  .route('/auth', authRoute)
+  .route('/game', gameRoute)
+  .route('/uploadthing', uploadRoute)
   // Static files from Vite build
   .get('*', serveStatic({ root: '../frontend/dist' }));
 

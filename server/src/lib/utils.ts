@@ -8,3 +8,7 @@ export const calculatePinSize = (pieceSize: number) => {
 export const normilize0 = (value: number) => {
   return value === 0 ? 0 : value;
 };
+
+export const getPublicUploadthingUrl = (imageKey: string) => {
+  return `${process.env.UPLOADTHING_PUBLIC_URL}/${imageKey}`;
+};
