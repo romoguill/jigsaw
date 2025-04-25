@@ -1,6 +1,6 @@
 import FormFieldError from "@/components/global/forms/form-field-error";
 import { FormSubmitError } from "@/components/global/forms/form-submit-error";
-import { Button } from "@/components/ui/button";
+import { ButtonLoader } from "@/components/ui/button-loader";
 import { Label } from "@/components/ui/field";
 import {
   Select,
@@ -19,9 +19,9 @@ import {
   Paths,
   pieceCount,
 } from "@jigsaw/shared/schemas";
+import { useNavigate } from "@tanstack/react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useBuilderCreate } from "../api/mutations";
-import { ButtonLoader } from "@/components/ui/button-loader";
 interface BuilderFormProps {
   imageKey: string;
   onPieceQuantityChange: (n: number | undefined) => void;
@@ -40,6 +40,7 @@ function BuilderForm({
   basicGameData,
   pathsData,
 }: BuilderFormProps) {
+  const navigate = useNavigate({ from: "/admin" });
   const { mutate: buildJigsaw, isPending } = useBuilderCreate();
 
   const { handleSubmit, control, formState } = useForm<JigsawBuilderFormValues>(
@@ -55,21 +56,28 @@ function BuilderForm({
 
   const onSubmit: SubmitHandler<JigsawBuilderFormValues> = (data) => {
     // If paths are provided, use them to avoid rebuilding paths (cached option)
-    buildJigsaw({
-      data: {
-        ...data,
-        ...basicGameData,
-        imageKey: imageKey,
-        cached:
-          pathsData?.paths.horizontal && pathsData.paths.vertical
-            ? {
-                horizontalPaths: pathsData.paths.horizontal,
-                verticalPaths: pathsData.paths.vertical,
-                pieceFootprint: pathsData.pieceFootprint,
-              }
-            : undefined,
+    buildJigsaw(
+      {
+        data: {
+          ...data,
+          ...basicGameData,
+          imageKey: imageKey,
+          cached:
+            pathsData?.paths.horizontal && pathsData.paths.vertical
+              ? {
+                  horizontalPaths: pathsData.paths.horizontal,
+                  verticalPaths: pathsData.paths.vertical,
+                  pieceFootprint: pathsData.pieceFootprint,
+                }
+              : undefined,
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          navigate({ to: "/game" });
+        },
+      }
+    );
   };
 
   return (
@@ -137,22 +145,6 @@ function BuilderForm({
           </Select>
         )}
       />
-
-      {/* TODO: Add borders to the puzzle */}
-      {/* <Controller
-        control={control}
-        name="borders"
-        render={({ field }) => (
-          <Switch
-            {...field}
-            value={String(field.value)}
-            isSelected={field.value}
-            onChange={field.onChange}
-          >
-            <Label>with borders (edge pieces)</Label>
-          </Switch>
-        )}
-      /> */}
 
       <FormSubmitError error={formState.errors.root?.message} />
 

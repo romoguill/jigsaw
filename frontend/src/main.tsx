@@ -16,6 +16,12 @@ const router = createRouter({
   },
 });
 
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
+
 // eslint-disable-next-line react-refresh/only-export-components
 function App() {
   const { data: user } = useCurrentUser();
