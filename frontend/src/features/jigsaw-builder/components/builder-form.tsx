@@ -21,7 +21,7 @@ import {
 } from "@jigsaw/shared/schemas";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useBuilderCreate } from "../api/mutations";
-
+import { ButtonLoader } from "@/components/ui/button-loader";
 interface BuilderFormProps {
   imageKey: string;
   onPieceQuantityChange: (n: number | undefined) => void;
@@ -40,7 +40,7 @@ function BuilderForm({
   basicGameData,
   pathsData,
 }: BuilderFormProps) {
-  const { mutate: buildJigsaw } = useBuilderCreate();
+  const { mutate: buildJigsaw, isPending } = useBuilderCreate();
 
   const { handleSubmit, control, formState } = useForm<JigsawBuilderFormValues>(
     {
@@ -155,9 +155,10 @@ function BuilderForm({
       /> */}
 
       <FormSubmitError error={formState.errors.root?.message} />
-      <Button isDisabled={formState.isSubmitting} type="submit">
+
+      <ButtonLoader isDisabled={isPending} isPending={isPending} type="submit">
         Build Puzzle
-      </Button>
+      </ButtonLoader>
     </form>
   );
 }

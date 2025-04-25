@@ -94,7 +94,9 @@ export const pieces = sqliteTable('pieces', {
   uploadedImageId: integer('uploaded_image_id')
     .notNull()
     .references(() => uploadedImage.id, { onDelete: 'cascade' }),
-  gameId: integer('game_id').references(() => games.id),
+  gameId: integer('game_id')
+    .notNull()
+    .references(() => games.id, { onDelete: 'cascade' }),
   row: integer('row').notNull(),
   col: integer('col').notNull(),
   ...timestamps,

@@ -11,7 +11,7 @@ export const useBuilderCreate = () => {
 
   return useMutation({
     mutationFn: async ({ data }: { data: ReqType["json"] }) => {
-      apiRoute({
+      await apiRoute({
         json: { ...data },
       });
     },

@@ -168,8 +168,8 @@ const addPaddingToImage = async ({
 };
 
 type ImagePiece = {
-  x: number;
-  y: number;
+  row: number;
+  col: number;
   width: number;
   height: number;
   file: File;
@@ -258,8 +258,8 @@ export const cutImageIntoPieces = async ({
       });
 
       pieces.push({
-        x: col * pieceSize,
-        y: row * pieceSize,
+        row,
+        col,
         width: pieceSize,
         height: pieceSize,
         file,
