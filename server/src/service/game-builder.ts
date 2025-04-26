@@ -2,9 +2,9 @@ import type { Coordinate } from '@jigsaw/shared/index.js';
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import { Path } from 'src/core/path.js';
-import { PiecesBuilder } from 'src/core/pieces-builder.js';
-import { calculatePinSize } from 'src/lib/utils.js';
+import { Path } from '../core/path.js';
+import { PiecesBuilder } from '../core/pieces-builder.js';
+import { calculatePinSize } from '../lib/utils.js';
 
 export const pathGenerator = ({
   origin,

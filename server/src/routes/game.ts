@@ -4,16 +4,18 @@ import {
   gameSchema,
   jigsawBuilderFormSchema,
 } from '@jigsaw/shared/schemas.js';
+import type { GameRoutes } from '@jigsaw/shared/api.js';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { db } from 'src/db/db.js';
-import { games, pieces, uploadedImage } from 'src/db/schema.js';
+import { db } from '../db/db.js';
+import { games, pieces, uploadedImage } from '../db/schema.js';
 import { z } from 'zod';
 import { authMiddleware } from '../middleware/auth-middleware.js';
 import * as gameBuilderService from '../service/game-builder.js';
 import { utapi } from './upload.js';
 import { eq } from 'drizzle-orm';
 import { getPublicUploadthingUrl } from '../lib/utils.js';
+
 const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
   gameSchema
     .pick({
@@ -27,7 +29,11 @@ const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
     })
 );
 
-export const gameRoute = new Hono()
+export const gameRoute = new Hono<{
+  Variables: {
+    user: { id: string };
+  };
+}>()
   .use(authMiddleware)
   .post(
     '/builder/path',
@@ -185,6 +191,7 @@ export const gameRoute = new Hono()
 
       return c.json({
         success: true,
+        gameId: game.id,
         pieces: cutPieces,
         svg: piecesData.enclosedShapesSvg,
       });

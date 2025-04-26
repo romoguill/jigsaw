@@ -1,4 +1,5 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",
@@ -24,8 +25,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@jigsaw/shared/*": ["../shared/src/*"]
-    }
+      "@jigsaw/shared/*": ["../shared/src/*"],
+      "@jigsaw/server/*": ["../server/src/*"]
+    },
+    "composite": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [{ "path": "../shared" }, { "path": "../server" }]
 }

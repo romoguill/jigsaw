@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { InferRequestType } from "hono/client";
 import { pathKeys } from "./keys";
 
-const routePaths = apiClient.api.game.builder.path.$post;
+const routePaths = apiClient.game.builder.path.$post;
 
 type RequestType = InferRequestType<typeof routePaths>;
 type Options = {

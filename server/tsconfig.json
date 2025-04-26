@@ -12,7 +12,10 @@
     "baseUrl": ".",
     "paths": {
       "@jigsaw/shared/*": ["../shared/src/*"]
-    }
+    },
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true
   },
   "include": ["src", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"],
   "references": [{ "path": "../shared" }]
