@@ -27,9 +27,8 @@
       "@/*": ["./src/*"],
       "@jigsaw/shared/*": ["../shared/src/*"],
       "@jigsaw/server/*": ["../server/src/*"]
-    },
-    "composite": true
+    }
   },
   "include": ["src"],
-  "references": [{ "path": "../shared" }, { "path": "../server" }]
+  "references": [{ "path": "../shared" }]
 }

@@ -2,8 +2,9 @@
   "name": "@jigsaw/server",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "npm run build:watch",
     "build": "tsc",
+    "build:watch": "tsc --watch",
     "start": "node build/index.js",
     "lint": "eslint .",
     "format": "prettier --write .",

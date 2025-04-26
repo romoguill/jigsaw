@@ -4,6 +4,7 @@ import { db } from '../db/db.js';
 import { account, session, user, verification } from '../db/schema.js';
 import { adminClient } from 'better-auth/client/plugins';
 
+// Define the auth instance with a type assertion
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'sqlite',
@@ -39,4 +40,4 @@ export const auth = betterAuth({
     },
   },
   plugins: [adminClient()],
-});
+}) as any; // Use any to bypass the type inference issue
