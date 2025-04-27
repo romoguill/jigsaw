@@ -1,0 +1,20 @@
+{
+  "name": "@jigsaw/api-client",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "rm -rf dist && tsc",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@jigsaw/server": "workspace:*",
+    "hono": "^4.7.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
