@@ -13,7 +13,7 @@ import {
   composeRenderProps,
 } from "react-aria-components";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/frontend/lib/utils";
 import { fieldGroupVariants, labelVariants } from "./jolly-utils";
 
 const Label = ({ className, ...props }: AriaLabelProps) => (

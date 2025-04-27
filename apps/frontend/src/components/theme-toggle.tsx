@@ -1,6 +1,6 @@
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "@/frontend/hooks/use-theme";
 import { MoonIcon, SunIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@/frontend/components/ui/button";
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();

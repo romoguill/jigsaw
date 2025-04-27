@@ -7,7 +7,7 @@ import {
   type ButtonProps as AriaButtonProps,
 } from "react-aria-components";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/frontend/lib/utils";
 import { buttonVariants } from "./jolly-utils";
 
 interface ButtonProps

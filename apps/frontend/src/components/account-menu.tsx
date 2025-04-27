@@ -1,9 +1,14 @@
-import { useLogout } from "@/features/auth/hooks/mutations";
-import { useCurrentUser } from "@/features/auth/hooks/queries";
+import { useLogout } from "@/frontend/features/auth/hooks/mutations";
+import { useCurrentUser } from "@/frontend/features/auth/hooks/queries";
 import { Link } from "@tanstack/react-router";
-import { Button } from "./ui/button";
-import { Menu, MenuItem, MenuPopover, MenuTrigger } from "./ui/menu";
-import { Route as adminRoute } from "./../routes/admin/_admin/index";
+import { Button } from "@/frontend/components/ui/button";
+import {
+  Menu,
+  MenuItem,
+  MenuPopover,
+  MenuTrigger,
+} from "@/frontend/components/ui/menu";
+import { Route as adminRoute } from "@/frontend/routes/admin/_admin/index";
 
 function AccountMenu() {
   const { data: user } = useCurrentUser();

@@ -4,9 +4,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { UploadButton } from "@/features/uploadImages/components/upload-button";
-import useImageToGameData from "@/hooks/use-image-to-game-data";
+} from "@/frontend/components/ui/card";
+import { UploadButton } from "@/frontend/features/uploadImages/components/upload-button";
+import useImageToGameData from "@/frontend/hooks/use-image-to-game-data";
 import { useCallback, useRef, useState } from "react";
 import { usePath } from "../api/queries";
 import BuilderForm from "./builder-form";

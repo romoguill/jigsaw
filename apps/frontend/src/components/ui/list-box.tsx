@@ -1,4 +1,4 @@
-import { Check } from "lucide-react"
+import { Check } from "lucide-react";
 import {
   Collection as AriaCollection,
   Header as AriaHeader,
@@ -8,13 +8,13 @@ import {
   ListBoxProps as AriaListBoxProps,
   Section as AriaSection,
   composeRenderProps,
-} from "react-aria-components"
+} from "react-aria-components";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/frontend/lib/utils";
 
-const ListBoxSection = AriaSection
+const ListBoxSection = AriaSection;
 
-const ListBoxCollection = AriaCollection
+const ListBoxCollection = AriaCollection;
 
 function ListBox<T extends object>({
   className,
@@ -32,7 +32,7 @@ function ListBox<T extends object>({
       )}
       {...props}
     />
-  )
+  );
 }
 
 const ListBoxItem = <T extends object>({
@@ -72,8 +72,8 @@ const ListBoxItem = <T extends object>({
         </>
       ))}
     </AriaListBoxItem>
-  )
-}
+  );
+};
 
 function ListBoxHeader({
   className,
@@ -84,7 +84,7 @@ function ListBoxHeader({
       className={cn("py-1.5 pl-8 pr-2 text-sm font-semibold", className)}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -93,4 +93,4 @@ export {
   ListBoxHeader,
   ListBoxSection,
   ListBoxCollection,
-}
+};

@@ -5,7 +5,7 @@ import {
   composeRenderProps,
 } from "react-aria-components";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/frontend/lib/utils";
 
 const Switch = React.forwardRef<HTMLLabelElement, AriaSwitchProps>(
   ({ className, children, ...props }, ref) => (

@@ -7,7 +7,7 @@ import {
   type ToggleButtonProps as AriaToggleButtonProps,
 } from "react-aria-components";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/frontend/lib/utils";
 import { toggleVariants } from "./jolly-utils";
 
 interface ToggleProps

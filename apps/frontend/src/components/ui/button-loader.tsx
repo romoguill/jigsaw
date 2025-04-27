@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from "./button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/frontend/lib/utils";
 import { Loader2 } from "lucide-react";
 
 interface ButtonLoaderProps extends Omit<ButtonProps, "children"> {

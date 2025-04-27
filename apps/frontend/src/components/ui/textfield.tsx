@@ -10,7 +10,7 @@ import {
   Text,
 } from "react-aria-components";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/frontend/lib/utils";
 
 import { FieldError, Label } from "./field";
 

@@ -1,4 +1,4 @@
-import { Theme } from "@/types";
+import { Theme } from "@/frontend/types";
 import { createContext, useEffect, useState } from "react";
 
 type ThemeProviderProps = {

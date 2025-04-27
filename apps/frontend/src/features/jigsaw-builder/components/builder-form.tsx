@@ -1,7 +1,7 @@
-import FormFieldError from "@/components/global/forms/form-field-error";
-import { FormSubmitError } from "@/components/global/forms/form-submit-error";
-import { ButtonLoader } from "@/components/ui/button-loader";
-import { Label } from "@/components/ui/field";
+import FormFieldError from "@/frontend/components/global/forms/form-field-error";
+import { FormSubmitError } from "@/frontend/components/global/forms/form-submit-error";
+import { ButtonLoader } from "@/frontend/components/ui/button-loader";
+import { Label } from "@/frontend/components/ui/field";
 import {
   Select,
   SelectItem,
@@ -9,7 +9,7 @@ import {
   SelectPopover,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/frontend/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Coordinate,

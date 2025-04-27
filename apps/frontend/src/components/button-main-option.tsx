@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
-import PuzzlePiece from "./puzzle-piece";
-import { Button } from "./ui/button";
+import { cn } from "@/frontend/lib/utils";
+import PuzzlePiece from "@/frontend/components/puzzle-piece";
+import { Button } from "@/frontend/components/ui/button";
 
 interface ButtonMainOptionProps {
   withPiece?: boolean;

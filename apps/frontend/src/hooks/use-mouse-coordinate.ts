@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Coordinate } from "../types";
+import { Coordinate } from "@/frontend/types";
 
 function useMouseCoordinate() {
   const [mouseCoordinate, setMouseCoordinate] = useState<Coordinate>({

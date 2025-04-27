@@ -1,4 +1,4 @@
-import { Toggle } from "@/components/ui/toggle";
+import { Toggle } from "@/frontend/components/ui/toggle";
 import { Loader2 } from "lucide-react";
 
 interface PreviewPiecesButtonProps {
