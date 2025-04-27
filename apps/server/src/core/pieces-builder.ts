@@ -1,4 +1,4 @@
-import type { Coordinate } from '@jigsaw/shared/schemas';
+import type { Coordinate } from '@jigsaw/shared';
 import { Curve } from './curve.js';
 
 export class PiecesBuilder {

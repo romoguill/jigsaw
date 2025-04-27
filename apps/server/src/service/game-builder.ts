@@ -1,4 +1,4 @@
-import type { Coordinate } from '@jigsaw/shared/index.js';
+import type { Coordinate } from '@jigsaw/shared';
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';

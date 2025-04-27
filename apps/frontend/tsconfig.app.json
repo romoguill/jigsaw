@@ -25,10 +25,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@jigsaw/shared/*": ["../shared/src/*"],
-      "@jigsaw/server/*": ["../server/src/*"]
+      "@/frontend/*": ["./src/*"]
     }
   },
-  "include": ["src"],
-  "references": [{ "path": "../shared" }]
+  "include": ["src"]
 }

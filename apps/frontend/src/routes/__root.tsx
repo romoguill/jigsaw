@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@/providers/theme-provider";
+import { ThemeProvider } from "@/frontend/providers/theme-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { User } from "@jigsaw/shared";

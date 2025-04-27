@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "pnpm run -r --parallel --aggregate-output dev",
     "build": "pnpm run -r build",
+    "typecheck": "pnpm run -r --parallel --aggregate-output typecheck",
     "build:shared": "pnpm --filter @jigsaw/shared build",
     "build:server": "pnpm --filter @jigsaw/server build",
     "build:frontend": "pnpm --filter @jigsaw/frontend build",

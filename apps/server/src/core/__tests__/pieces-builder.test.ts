@@ -35,7 +35,7 @@ const completeGamePaths = {
 describe('PiecesBuilder', () => {
   describe('constructor', () => {
     it('should initialize with provided paths', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
 
       // Check instance.
       expect(builder).toBeInstanceOf(PiecesBuilder);
@@ -44,7 +44,7 @@ describe('PiecesBuilder', () => {
 
   describe('parsePath', () => {
     it('should parse a simple path with one complete segment', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
 
       const result = builder.parsePaths();
 
@@ -135,7 +135,7 @@ describe('PiecesBuilder', () => {
     });
 
     it('should parse a path with multiple segments', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
 
       const result = builder.parsePaths();
 
@@ -250,7 +250,7 @@ describe('PiecesBuilder', () => {
         ...paths,
         horizontalPaths: modifiedHorizontalPaths,
       };
-      const builder = new PiecesBuilder(pathsModified);
+      const builder = new PiecesBuilder(pathsModified, pieceSize);
 
       expect(() => builder.parsePaths()).toThrowError('Invalid path');
     });
@@ -263,7 +263,7 @@ describe('PiecesBuilder', () => {
         ...paths,
         horizontalPaths: modifiedHorizontalPaths,
       };
-      const builder = new PiecesBuilder(pathsModified);
+      const builder = new PiecesBuilder(pathsModified, pieceSize);
 
       expect(() => builder.parsePaths()).toThrow();
     });
@@ -271,7 +271,7 @@ describe('PiecesBuilder', () => {
 
   describe('toCurves', () => {
     it('should convert path segments to curves', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
       const { parsedHorizontalPaths } = builder.parsePaths();
 
       const horizontalCurves = builder.toCurves(parsedHorizontalPaths[0]);
@@ -355,7 +355,7 @@ describe('PiecesBuilder', () => {
     });
 
     it('should handle multiple path segments', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
       const { parsedVerticalPaths } = builder.parsePaths();
 
       const verticalCurves = builder.toCurves(parsedVerticalPaths[0]);
@@ -439,7 +439,7 @@ describe('PiecesBuilder', () => {
     });
 
     it('should handle empty path segments', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
       const pathSegments: string[][] = [];
 
       const curves = builder.toCurves(pathSegments);
@@ -450,7 +450,7 @@ describe('PiecesBuilder', () => {
 
   describe('getAllCurves', () => {
     it('should return both horizontal and vertical curves', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
       const result = builder.generateAllCurves();
 
       // Check that we have the expected number of paths
@@ -511,7 +511,7 @@ describe('PiecesBuilder', () => {
 
   describe('getPieceSize', () => {
     it('should return the correct piece size', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
       builder.parsePaths();
 
       expect(builder.pieceSize).toBe(640);
@@ -520,7 +520,7 @@ describe('PiecesBuilder', () => {
 
   describe('getEnclosedCurves', () => {
     it('should return the correct curves for a piece in the second row and first column', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
 
       builder.generateAllCurves();
 
@@ -536,7 +536,7 @@ describe('PiecesBuilder', () => {
     });
 
     it('should handle corner pieces', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
       builder.generateAllCurves();
 
       // We need to check for the last column
@@ -553,7 +553,7 @@ describe('PiecesBuilder', () => {
 
   describe('applyRotationToVerticalCurves', () => {
     it('should rotate all vertical curves 90 degrees clockwise', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
 
       builder.generateAllCurves();
 
@@ -612,7 +612,7 @@ describe('PiecesBuilder', () => {
     });
 
     it('should rotate curves around their starting point', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
       builder.generateAllCurves();
 
       // Get the first curve of the first segment of the first vertical path
@@ -632,7 +632,7 @@ describe('PiecesBuilder', () => {
         horizontalPaths: [...horizontalPaths],
         verticalPaths: [],
       };
-      const builder = new PiecesBuilder(emptyPaths);
+      const builder = new PiecesBuilder(emptyPaths, pieceSize);
       builder.generateAllCurves();
 
       // This should not throw an error
@@ -642,7 +642,7 @@ describe('PiecesBuilder', () => {
 
   describe('generateEnclosedShape', () => {
     it('should generate enclosed shape for a piece in the middle of the grid', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
       builder.generateAllCurves();
       builder.applyRotationToVerticalCurves();
 
@@ -707,7 +707,7 @@ describe('PiecesBuilder', () => {
         }),
       ];
 
-      const builder = new PiecesBuilder(completeGamePaths);
+      const builder = new PiecesBuilder(completeGamePaths, pieceSize);
       builder.generateAllCurves();
       builder.applyRotationToVerticalCurves();
 
@@ -723,7 +723,7 @@ describe('PiecesBuilder', () => {
 
   describe('enclosedShapeToSvgPaths', () => {
     it('should convert enclosed shape to SVG paths', () => {
-      const builder = new PiecesBuilder(completeGamePaths);
+      const builder = new PiecesBuilder(completeGamePaths, pieceSize);
       builder.generateAllCurves();
       builder.applyRotationToVerticalCurves();
 
@@ -749,7 +749,7 @@ describe('PiecesBuilder', () => {
     });
 
     it('should handle null segments', () => {
-      const builder = new PiecesBuilder(completeGamePaths);
+      const builder = new PiecesBuilder(completeGamePaths, pieceSize);
       builder.generateAllCurves();
       builder.applyRotationToVerticalCurves();
 
@@ -772,7 +772,7 @@ describe('PiecesBuilder', () => {
 
   describe('enclosedShapeToSvg', () => {
     it('should generate complete SVG path for a piece', () => {
-      const builder = new PiecesBuilder(completeGamePaths);
+      const builder = new PiecesBuilder(completeGamePaths, pieceSize);
       builder.generateAllCurves();
       builder.applyRotationToVerticalCurves();
 
@@ -791,7 +791,7 @@ describe('PiecesBuilder', () => {
     });
 
     it('should handle border pieces correctly', () => {
-      const builder = new PiecesBuilder(paths);
+      const builder = new PiecesBuilder(paths, pieceSize);
       builder.generateAllCurves();
       builder.applyRotationToVerticalCurves();
 

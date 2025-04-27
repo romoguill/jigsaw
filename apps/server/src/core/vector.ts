@@ -1,4 +1,4 @@
-import type { Coordinate } from '@jigsaw/shared/index.js';
+import type { Coordinate } from '@jigsaw/shared';
 import { normilize0 } from '../lib/utils.js';
 
 export class Vector {

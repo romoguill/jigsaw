@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/frontend/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
 import type { InferRequestType } from "hono/client";
 import { pathKeys } from "./keys";

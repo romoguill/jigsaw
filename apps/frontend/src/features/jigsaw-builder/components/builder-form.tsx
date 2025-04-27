@@ -18,7 +18,7 @@ import {
   JigsawBuilderFormValues,
   Paths,
   pieceCount,
-} from "@jigsaw/shared/schemas";
+} from "@jigsaw/shared";
 import { useNavigate } from "@tanstack/react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useBuilderCreate } from "../api/mutations";

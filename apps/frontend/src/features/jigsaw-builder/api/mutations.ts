@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/frontend/lib/api-client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { InferRequestType } from "hono/client";
 import { jigsawBuilderKeys } from "./keys";

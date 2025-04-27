@@ -1,4 +1,4 @@
-import type { Coordinate } from '@jigsaw/shared/index.js';
+import type { Coordinate } from '@jigsaw/shared';
 
 export class Path {
   path: string[] = [];

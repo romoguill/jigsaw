@@ -1,5 +1,5 @@
 import { Vector } from '../vector.js';
-import type { Coordinate } from '@jigsaw/shared/index.js';
+import type { Coordinate } from '@jigsaw/shared';
 
 describe('Vector', () => {
   describe('constructor', () => {

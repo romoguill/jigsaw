@@ -1,8 +1,8 @@
-import AccountMenu from "@/components/account-menu";
-import GoogleOAuthButton from "@/components/auth/google-oauth-button";
-import ButtonMainOption from "@/components/button-main-option";
-import ThemeToggle from "@/components/theme-toggle";
-import { useCurrentUser } from "@/features/auth/hooks/queries";
+import AccountMenu from "@/frontend/components/account-menu";
+import GoogleOAuthButton from "@/frontend/components/auth/google-oauth-button";
+import ButtonMainOption from "@/frontend/components/button-main-option";
+import ThemeToggle from "@/frontend/components/theme-toggle";
+import { useCurrentUser } from "@/frontend/features/auth/hooks/queries";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({ component: RouteComponent });

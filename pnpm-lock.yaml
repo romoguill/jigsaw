@@ -20,9 +20,12 @@ importers:
       '@hookform/resolvers':
         specifier: ^4.1.3
         version: 4.1.3(react-hook-form@7.56.1)
+      '@jigsaw/api-client':
+        specifier: workspace:^
+        version: link:../../packages/api-client
       '@jigsaw/shared':
-        specifier: file:../shared
-        version: file:apps/shared
+        specifier: workspace:^
+        version: link:../../packages/shared
       '@radix-ui/react-label':
         specifier: ^2.1.2
         version: 2.1.4(@types/react-dom@18.3.6)(@types/react@18.3.20)(react-dom@18.3.1)(react@18.3.1)
@@ -145,8 +148,8 @@ importers:
         specifier: ^0.4.3
         version: 0.4.3(hono@4.7.7)(zod@3.24.3)
       '@jigsaw/shared':
-        specifier: file:../shared
-        version: file:apps/shared
+        specifier: workspace:^
+        version: link:../../packages/shared
       '@libsql/client':
         specifier: ^0.14.0
         version: 0.14.0
@@ -203,11 +206,23 @@ importers:
         specifier: ^1.3.1
         version: 1.6.1(@types/node@20.17.31)
 
-  apps/shared:
+  packages/api-client:
     dependencies:
       '@jigsaw/server':
         specifier: workspace:^
-        version: link:../server
+        version: link:../../apps/server
+      '@jigsaw/shared':
+        specifier: workspace:^
+        version: link:../shared
+      hono:
+        specifier: ^4.7.1
+        version: 4.7.7
+
+  packages/shared:
+    dependencies:
+      '@jigsaw/server':
+        specifier: workspace:^
+        version: link:../../apps/server
       zod:
         specifier: ^3.24.2
         version: 3.24.3
@@ -227,15 +242,6 @@ importers:
       typescript-eslint:
         specifier: ^8.18.2
         version: 8.31.0(eslint@8.57.1)(typescript@5.3.3)
-
-  packages/api-client:
-    dependencies:
-      '@jigsaw/server':
-        specifier: workspace:^
-        version: link:../../apps/server
-      hono:
-        specifier: ^4.7.1
-        version: 4.7.7
 
 packages:
 
@@ -7297,12 +7303,4 @@ packages:
     dependencies:
       '@types/react': 18.3.20
       react: 18.3.1
-    dev: false
-
-  file:apps/shared:
-    resolution: {directory: apps/shared, type: directory}
-    name: '@jigsaw/shared'
-    dependencies:
-      '@jigsaw/server': link:apps/server
-      zod: 3.24.3
     dev: false

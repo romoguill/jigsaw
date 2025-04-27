@@ -1,4 +1,4 @@
-import { BuilderCard } from "@/features/jigsaw-builder/components/builder-card";
+import { BuilderCard } from "@/frontend/features/jigsaw-builder/components/builder-card";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/_admin/")({

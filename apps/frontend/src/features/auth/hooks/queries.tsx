@@ -1,4 +1,4 @@
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/frontend/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
 import type { User } from "@jigsaw/shared";
 

@@ -8,7 +8,7 @@ import { hc } from 'hono/client';
 const client = hc<ApiType>('');
 export type Client = typeof client;
 
-export const hcWithType = (...args: Parameters<typeof hc>): Client =>
+export const clientWithType = (...args: Parameters<typeof hc>): Client =>
   hc<ApiType>(...args);
 
 // Use for passing the router to client.

@@ -8,12 +8,12 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 export default defineConfig({
   plugins: [
     TanStackRouterVite({ autoCodeSplitting: true }),
-    react(),
     tailwindcss(),
+    react(),
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@/frontend": path.resolve(__dirname, "./src"),
     },
   },
   envDir: "../server",

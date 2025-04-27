@@ -15,7 +15,8 @@
     "build": "tsc",
     "dev": "tsc -w",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "zod": "^3.24.2",

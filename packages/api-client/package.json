@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@jigsaw/server": "workspace:^",
+    "@jigsaw/shared": "workspace:^",
     "hono": "^4.7.1"
   },
   "keywords": [],

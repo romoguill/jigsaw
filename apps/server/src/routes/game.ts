@@ -3,18 +3,20 @@ import {
   coordinateSchema,
   gameSchema,
   jigsawBuilderFormSchema,
-} from '@jigsaw/shared/schemas.js';
-import type { GameRoutes } from '@jigsaw/shared/api.js';
-import { Hono } from 'hono';
+} from '@jigsaw/shared';
 import { HTTPException } from 'hono/http-exception';
 import { db } from '../db/db.js';
 import { games, pieces, uploadedImage } from '../db/schema.js';
 import { z } from 'zod';
-import { authMiddleware } from '../middleware/auth-middleware.js';
+import {
+  authMiddleware,
+  type ContextWithAuth,
+} from '../middleware/auth-middleware.js';
 import * as gameBuilderService from '../service/game-builder.js';
 import { utapi } from './upload.js';
 import { eq } from 'drizzle-orm';
 import { getPublicUploadthingUrl } from '../lib/utils.js';
+import { Hono } from 'hono';
 
 const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
   gameSchema
@@ -29,11 +31,7 @@ const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
     })
 );
 
-export const gameRoute = new Hono<{
-  Variables: {
-    user: { id: string };
-  };
-}>()
+export const gameRoute = new Hono<ContextWithAuth>()
   .use(authMiddleware)
   .post(
     '/builder/path',

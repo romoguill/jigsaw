@@ -1,4 +1,4 @@
-import Puzzle from "@/features/jigsaw/components/puzzle";
+import Puzzle from "@/frontend/features/jigsaw/components/puzzle";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/games/$id")({

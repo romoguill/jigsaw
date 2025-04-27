@@ -85,11 +85,13 @@ declare const client: {
                     $post: {
                         input: {
                             json: {
-                                [x: string]: any;
-                                origin?: unknown;
-                                pieceSize?: unknown;
-                                cols?: unknown;
-                                rows?: unknown;
+                                pieceSize: number;
+                                rows: number;
+                                origin: {
+                                    x: number;
+                                    y: number;
+                                };
+                                cols: number;
                             };
                         };
                         output: {
@@ -114,7 +116,26 @@ declare const client: {
         game: {
             builder: import("hono/client").ClientRequest<{
                 $post: {
-                    input: any;
+                    input: {
+                        json: {
+                            columns: number;
+                            imageKey: string;
+                            difficulty: "easy" | "medium" | "hard";
+                            pieceCount: "12" | "50" | "100" | "200" | "500" | "1000";
+                            pieceSize: number;
+                            rows: number;
+                            origin: {
+                                x: number;
+                                y: number;
+                            };
+                            borders: boolean;
+                            cached?: {
+                                horizontalPaths: string[];
+                                verticalPaths: string[];
+                                pieceFootprint: number;
+                            } | undefined;
+                        };
+                    };
                     output: {
                         success: boolean;
                         gameId: number | undefined;
@@ -242,7 +263,7 @@ declare const client: {
     };
 };
 export type Client = typeof client;
-export declare const hcWithType: (baseUrl: string, options?: import("hono/client").ClientRequestOptions | undefined) => Client;
+export declare const clientWithType: (baseUrl: string, options?: import("hono/client").ClientRequestOptions | undefined) => Client;
 export type UploadRouter = UploadThingRouter;
 export {};
 //# sourceMappingURL=index.d.ts.map
