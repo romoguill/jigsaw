@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@jigsaw/server": "workspace:*",
+    "@jigsaw/server": "workspace:^",
     "hono": "^4.7.1"
   },
   "keywords": [],

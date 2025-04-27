@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "build",
     "target": "ESNext",
@@ -6,16 +7,13 @@
     "strict": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "types": ["node", "vitest/globals"],
+    "types": ["node"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "baseUrl": ".",
     "paths": {
-      "@jigsaw/shared/*": ["../shared/src/*"]
-    },
-    "declaration": true,
-    "declarationMap": true
+      "@/server/*": ["./src/*"]
+    }
   },
-  "include": ["src", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts"],
-  "references": [{ "path": "../shared" }]
+  "include": ["./src"]
 }

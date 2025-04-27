@@ -1,10 +1,13 @@
 {
   "name": "@jigsaw/server",
   "type": "module",
+  "exports": {
+    "./routes": "./src/index.ts",
+    "./uploadthing": "./src/lib/uploadthing.ts"
+  },
   "scripts": {
-    "dev": "npm run build:watch",
+    "dev": "tsc --watch",
     "build": "tsc",
-    "build:watch": "tsc --watch",
     "start": "node build/index.js",
     "lint": "eslint .",
     "format": "prettier --write .",

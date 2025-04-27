@@ -2,8 +2,8 @@
   "name": "jigsaw",
   "private": true,
   "scripts": {
-    "dev": "pnpm run --parallel dev",
-    "build": "pnpm run build:shared && pnpm run build:server && pnpm run build:frontend",
+    "dev": "pnpm run -r --parallel --aggregate-output dev",
+    "build": "pnpm run -r build",
     "build:shared": "pnpm --filter @jigsaw/shared build",
     "build:server": "pnpm --filter @jigsaw/server build",
     "build:frontend": "pnpm --filter @jigsaw/frontend build",
@@ -18,13 +18,10 @@
     "format:server": "pnpm --filter @jigsaw/server format",
     "db:push": "pnpm --filter @jigsaw/server db:push",
     "db:studio": "pnpm --filter @jigsaw/server db:studio",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "pnpm run -r test",
     "test:server": "pnpm --filter @jigsaw/server test",
     "test:server:watch": "pnpm --filter @jigsaw/server test:watch",
     "test:server:coverage": "pnpm --filter @jigsaw/server test:coverage"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
   },
   "optionalDependencies": {
     "drizzle-orm": "^0.39.3",
