@@ -205,6 +205,9 @@ importers:
 
   apps/shared:
     dependencies:
+      '@jigsaw/server':
+        specifier: workspace:^
+        version: link:../server
       zod:
         specifier: ^3.24.2
         version: 3.24.3
@@ -7300,5 +7303,6 @@ packages:
     resolution: {directory: apps/shared, type: directory}
     name: '@jigsaw/shared'
     dependencies:
+      '@jigsaw/server': link:apps/server
       zod: 3.24.3
     dev: false

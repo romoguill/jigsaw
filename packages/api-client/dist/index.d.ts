@@ -1,3 +1,4 @@
+import type { UploadThingRouter } from '@jigsaw/server/uploadthing';
 declare const client: {
     api: {
         uploadthing: {
@@ -242,5 +243,6 @@ declare const client: {
 };
 export type Client = typeof client;
 export declare const hcWithType: (baseUrl: string, options?: import("hono/client").ClientRequestOptions | undefined) => Client;
+export type UploadRouter = UploadThingRouter;
 export {};
 //# sourceMappingURL=index.d.ts.map

@@ -1,3 +1,4 @@
+import type { UploadThingRouter } from '@jigsaw/server/uploadthing';
 import type { ApiType } from '@jigsaw/server/routes';
 
 import { hc } from 'hono/client';
@@ -9,3 +10,6 @@ export type Client = typeof client;
 
 export const hcWithType = (...args: Parameters<typeof hc>): Client =>
   hc<ApiType>(...args);
+
+// Use for passing the router to client.
+export type UploadRouter = UploadThingRouter;
