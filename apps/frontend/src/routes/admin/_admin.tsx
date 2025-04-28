@@ -13,8 +13,8 @@ export const Route = createFileRoute("/admin/_admin")({
 
 function RouteComponent() {
   return (
-    <div className="h-full flex flex-col">
+    <main className="h-full flex flex-col">
       <Outlet />
-    </div>
+    </main>
   );
 }

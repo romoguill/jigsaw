@@ -21,5 +21,8 @@ export const useCurrentUser = () => {
 
       return data.user as User | undefined;
     },
+    staleTime: Infinity, // Keep the data fresh indefinitely
+    gcTime: Infinity, // Never garbage collect the data
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 };

@@ -74,7 +74,7 @@ function BuilderForm({
       },
       {
         onSuccess: () => {
-          navigate({ to: "/games" });
+          navigate({ to: "/admin" });
         },
       }
     );

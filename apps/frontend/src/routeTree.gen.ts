@@ -19,6 +19,7 @@ import { Route as GamesIdImport } from './routes/games/$id'
 import { Route as AdminAdminImport } from './routes/admin/_admin'
 import { Route as AdminAdminIndexImport } from './routes/admin/_admin/index'
 import { Route as AdminAdminDetailTestImport } from './routes/admin/_admin/detail-test'
+import { Route as AdminAdminCreateGameImport } from './routes/admin/_admin/create-game'
 
 // Create Virtual Routes
 
@@ -67,6 +68,12 @@ const AdminAdminDetailTestRoute = AdminAdminDetailTestImport.update({
   getParentRoute: () => AdminAdminRoute,
 } as any)
 
+const AdminAdminCreateGameRoute = AdminAdminCreateGameImport.update({
+  id: '/create-game',
+  path: '/create-game',
+  getParentRoute: () => AdminAdminRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -106,6 +113,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesIndexImport
       parentRoute: typeof rootRoute
     }
+    '/admin/_admin/create-game': {
+      id: '/admin/_admin/create-game'
+      path: '/create-game'
+      fullPath: '/admin/create-game'
+      preLoaderRoute: typeof AdminAdminCreateGameImport
+      parentRoute: typeof AdminAdminImport
+    }
     '/admin/_admin/detail-test': {
       id: '/admin/_admin/detail-test'
       path: '/detail-test'
@@ -126,11 +140,13 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AdminAdminRouteChildren {
+  AdminAdminCreateGameRoute: typeof AdminAdminCreateGameRoute
   AdminAdminDetailTestRoute: typeof AdminAdminDetailTestRoute
   AdminAdminIndexRoute: typeof AdminAdminIndexRoute
 }
 
 const AdminAdminRouteChildren: AdminAdminRouteChildren = {
+  AdminAdminCreateGameRoute: AdminAdminCreateGameRoute,
   AdminAdminDetailTestRoute: AdminAdminDetailTestRoute,
   AdminAdminIndexRoute: AdminAdminIndexRoute,
 }
@@ -154,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminAdminRouteWithChildren
   '/games/$id': typeof GamesIdRoute
   '/games': typeof GamesIndexRoute
+  '/admin/create-game': typeof AdminAdminCreateGameRoute
   '/admin/detail-test': typeof AdminAdminDetailTestRoute
   '/admin/': typeof AdminAdminIndexRoute
 }
@@ -163,6 +180,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminAdminIndexRoute
   '/games/$id': typeof GamesIdRoute
   '/games': typeof GamesIndexRoute
+  '/admin/create-game': typeof AdminAdminCreateGameRoute
   '/admin/detail-test': typeof AdminAdminDetailTestRoute
 }
 
@@ -173,6 +191,7 @@ export interface FileRoutesById {
   '/admin/_admin': typeof AdminAdminRouteWithChildren
   '/games/$id': typeof GamesIdRoute
   '/games/': typeof GamesIndexRoute
+  '/admin/_admin/create-game': typeof AdminAdminCreateGameRoute
   '/admin/_admin/detail-test': typeof AdminAdminDetailTestRoute
   '/admin/_admin/': typeof AdminAdminIndexRoute
 }
@@ -184,10 +203,17 @@ export interface FileRouteTypes {
     | '/admin'
     | '/games/$id'
     | '/games'
+    | '/admin/create-game'
     | '/admin/detail-test'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/games/$id' | '/games' | '/admin/detail-test'
+  to:
+    | '/'
+    | '/admin'
+    | '/games/$id'
+    | '/games'
+    | '/admin/create-game'
+    | '/admin/detail-test'
   id:
     | '__root__'
     | '/'
@@ -195,6 +221,7 @@ export interface FileRouteTypes {
     | '/admin/_admin'
     | '/games/$id'
     | '/games/'
+    | '/admin/_admin/create-game'
     | '/admin/_admin/detail-test'
     | '/admin/_admin/'
   fileRoutesById: FileRoutesById
@@ -243,6 +270,7 @@ export const routeTree = rootRoute
       "filePath": "admin/_admin.tsx",
       "parent": "/admin",
       "children": [
+        "/admin/_admin/create-game",
         "/admin/_admin/detail-test",
         "/admin/_admin/"
       ]
@@ -252,6 +280,10 @@ export const routeTree = rootRoute
     },
     "/games/": {
       "filePath": "games/index.tsx"
+    },
+    "/admin/_admin/create-game": {
+      "filePath": "admin/_admin/create-game.tsx",
+      "parent": "/admin/_admin"
     },
     "/admin/_admin/detail-test": {
       "filePath": "admin/_admin/detail-test.tsx",
