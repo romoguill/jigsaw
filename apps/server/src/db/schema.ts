@@ -106,6 +106,9 @@ export const pieces = sqliteTable('pieces', {
 export const games = sqliteTable('games', {
   id: integer('id').primaryKey(),
   imageKey: text('image_key').notNull(),
+  ownerId: integer('owner_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
   difficulty: text('difficulty', { enum: gameDifficulty }).notNull(),
   pieceCount: integer('piece_count').notNull(),
   hasBorders: integer('has_borders', { mode: 'boolean' })
@@ -131,6 +134,10 @@ export const gamesRelations = relations(games, ({ many, one }) => ({
   uploadedImage: one(uploadedImage, {
     fields: [games.imageKey],
     references: [uploadedImage.imageKey],
+  }),
+  owner: one(user, {
+    fields: [games.ownerId],
+    references: [user.id],
   }),
 }));
 
