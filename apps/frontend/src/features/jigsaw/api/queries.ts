@@ -19,3 +19,16 @@ export const gameQueryOptions = (id: string) =>
     queryKey: gameKeys.single(id),
     queryFn: () => getGame(id),
   });
+
+export const getGames = async () => {
+  const response = await apiClient.game.$get();
+  const data = await response.json();
+
+  return data;
+};
+
+export const gamesQueryOptions = () =>
+  queryOptions({
+    queryKey: gameKeys.all,
+    queryFn: () => getGames(),
+  });

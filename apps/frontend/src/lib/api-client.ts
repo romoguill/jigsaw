@@ -1,3 +1,14 @@
 import { clientWithType } from "@jigsaw/api-client";
 
-export const apiClient = clientWithType(import.meta.env.BASE_URL).api;
+export const apiClient = clientWithType(import.meta.env.BASE_URL, {
+  fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+    const response = await fetch(input, init);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw error;
+    }
+
+    return response;
+  },
+}).api;
