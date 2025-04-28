@@ -87,7 +87,9 @@ export const uploadedImage = sqliteTable('uploaded_image', {
   width: integer('width').notNull(),
   height: integer('height').notNull(),
   isPiece: integer('is_piece', { mode: 'boolean' }).notNull().default(false),
-  gameId: integer('game_id').references(() => games.id),
+  gameId: integer('game_id').references(() => games.id, {
+    onDelete: 'cascade',
+  }),
   ...timestamps,
 });
 

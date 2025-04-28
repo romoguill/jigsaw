@@ -1,7 +1,9 @@
 import { DataTable } from "@/frontend/components/data-table";
+import { Button } from "@/frontend/components/ui/button";
 import { apiClient } from "@/frontend/lib/api-client";
 import { ColumnDef } from "@tanstack/react-table";
 import { InferResponseType } from "hono/client";
+import { useDeleteGame } from "../api/mutations";
 
 // type GameEntry = {
 //   id: number;
@@ -21,6 +23,8 @@ interface GamesTableProps {
 }
 
 function GamesTable({ games }: GamesTableProps) {
+  const { mutate: deleteGame } = useDeleteGame();
+
   const columns: ColumnDef<GameEntry>[] = [
     {
       accessorKey: "imageUrl",
@@ -61,6 +65,18 @@ function GamesTable({ games }: GamesTableProps) {
           month: "numeric",
           day: "numeric",
         }),
+    },
+    {
+      accessorKey: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <Button
+          variant="destructive"
+          onClick={() => deleteGame(row.original.id)}
+        >
+          Delete
+        </Button>
+      ),
     },
   ];
 
