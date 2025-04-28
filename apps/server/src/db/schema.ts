@@ -10,10 +10,10 @@ const gameDifficulty = ['easy', 'medium', 'hard'] as const;
 
 export const timestamps = {
   createdAt: integer('created_at', { mode: 'timestamp' })
-    .default(sql`CURRENT_TIMESTAMP`)
+    .default(sql`(unixepoch())`)
     .notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' })
-    .default(sql`CURRENT_TIMESTAMP`)
+    .default(sql`(unixepoch())`)
     .notNull(),
 };
 

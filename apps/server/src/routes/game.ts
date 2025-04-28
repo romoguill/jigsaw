@@ -4,7 +4,7 @@ import {
   gameSchema,
   jigsawBuilderFormSchema,
 } from '@jigsaw/shared';
-import { eq, or } from 'drizzle-orm';
+import { and, eq, or } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
@@ -265,5 +265,35 @@ export const gameRoute = new Hono<ContextWithAuth>()
       },
     });
 
-    return c.json(userGames);
+    const gameWithImageUrls = userGames.map((game) => ({
+      ...game,
+      imageUrl: getPublicUploadthingUrl(game.uploadedImage.imageKey),
+    }));
+
+    return c.json(gameWithImageUrls);
+  })
+  .delete('/:id', async (c) => {
+    const userId = c.get('user').id;
+
+    const userFilter = or(
+      eq(games.ownerId, userId),
+      eq(
+        games.ownerId,
+        db
+          .select({ id: user.id })
+          .from(user)
+          .where(eq(user.role, 'admin'))
+          .limit(1)
+      )
+    );
+
+    const game = await db
+      .delete(games)
+      .where(and(eq(games.id, Number(c.req.param('id'))), userFilter));
+
+    if (!game) {
+      throw new HTTPException(404, { message: 'Game not found' });
+    }
+
+    return c.json({ success: true });
   });

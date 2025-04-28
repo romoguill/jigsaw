@@ -1,16 +1,20 @@
 import { DataTable } from "@/frontend/components/data-table";
+import { apiClient } from "@/frontend/lib/api-client";
 import { ColumnDef } from "@tanstack/react-table";
-import { GameDifficulty, User } from "@jigsaw/shared";
+import { InferResponseType } from "hono/client";
 
-type GameEntry = {
-  id: number;
-  imageKey: string;
-  pieceCount: number;
-  pieceSize: number;
-  difficulty: GameDifficulty;
-  owner: User;
-  createdAt: string;
-};
+// type GameEntry = {
+//   id: number;
+//   imageKey: string;
+//   imageUrl: string;
+//   pieceCount: number;
+//   pieceSize: number;
+//   difficulty: GameDifficulty;
+//   owner: User;
+//   createdAt: string;
+// };
+
+type GameEntry = InferResponseType<typeof apiClient.game.$get>[number];
 
 interface GamesTableProps {
   games: GameEntry[];
@@ -19,8 +23,15 @@ interface GamesTableProps {
 function GamesTable({ games }: GamesTableProps) {
   const columns: ColumnDef<GameEntry>[] = [
     {
-      accessorKey: "imageKey",
-      header: "Image Key",
+      accessorKey: "imageUrl",
+      header: undefined,
+      cell: ({ row }) => (
+        <img
+          src={row.original.imageUrl}
+          alt={`Game - ${row.original.id}`}
+          className="w-20 h-20 object-cover"
+        />
+      ),
     },
     {
       accessorKey: "pieceCount",
@@ -44,6 +55,12 @@ function GamesTable({ games }: GamesTableProps) {
     {
       accessorKey: "createdAt",
       header: "Created At",
+      cell: ({ row }) =>
+        new Date(row.original.createdAt).toLocaleString("fr-CA", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        }),
     },
   ];
 
