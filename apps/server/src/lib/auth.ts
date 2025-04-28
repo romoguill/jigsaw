@@ -40,4 +40,4 @@ export const auth = betterAuth({
     },
   },
   plugins: [adminClient()],
-}) as any; // Use any to bypass the type inference issue
+});

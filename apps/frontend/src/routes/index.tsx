@@ -2,13 +2,14 @@ import AccountMenu from "@/frontend/components/account-menu";
 import GoogleOAuthButton from "@/frontend/components/auth/google-oauth-button";
 import ButtonMainOption from "@/frontend/components/button-main-option";
 import ThemeToggle from "@/frontend/components/theme-toggle";
-import { useCurrentUser } from "@/frontend/features/auth/hooks/queries";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({ component: RouteComponent });
 
 function RouteComponent() {
-  const { data: user } = useCurrentUser();
+  const {
+    auth: { user },
+  } = Route.useRouteContext();
 
   return (
     <div className="h-full">

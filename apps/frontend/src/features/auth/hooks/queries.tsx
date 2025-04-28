@@ -9,6 +9,7 @@ export const useCurrentUser = () => {
     queryKey: currentUserKey,
     queryFn: async (): Promise<User | undefined> => {
       const { data, error } = await authClient.getSession();
+      console.log(data);
 
       if (error) {
         return undefined;
@@ -19,10 +20,12 @@ export const useCurrentUser = () => {
         return undefined;
       }
 
-      return data.user as User | undefined;
+      return data.user as unknown as User | undefined;
     },
-    staleTime: Infinity, // Keep the data fresh indefinitely
-    gcTime: Infinity, // Never garbage collect the data
-    refetchOnWindowFocus: false, // Don't refetch on window focus
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    retry: 3,
   });
 };

@@ -13,6 +13,8 @@ export const Route = createFileRoute("/admin/_admin/")({
 function RouteComponent() {
   const { data: games } = useSuspenseQuery(gamesQueryOptions());
 
+  console.log(games);
+
   return (
     <main className="grow flex items-center justify-center">
       <GamesTable games={games} />
