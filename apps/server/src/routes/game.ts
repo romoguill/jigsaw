@@ -251,6 +251,7 @@ export const gameRoute = new Hono<ContextWithAuth>()
     const userGames = await db.query.games.findMany({
       where: userFilter,
       with: {
+        owner: true,
         pieces: {
           with: {
             uploadedImage: {

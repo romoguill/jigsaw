@@ -1,6 +1,6 @@
 import { DataTable } from "@/frontend/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { GameDifficulty } from "@jigsaw/shared";
+import { GameDifficulty, User } from "@jigsaw/shared";
 
 type GameEntry = {
   id: number;
@@ -8,7 +8,7 @@ type GameEntry = {
   pieceCount: number;
   pieceSize: number;
   difficulty: GameDifficulty;
-  ownerId: string;
+  owner: User;
   createdAt: string;
 };
 
@@ -37,6 +37,9 @@ function GamesTable({ games }: GamesTableProps) {
     {
       accessorKey: "owner",
       header: "Owner",
+      cell: ({ row }) => {
+        return row.original.owner.role;
+      },
     },
     {
       accessorKey: "createdAt",

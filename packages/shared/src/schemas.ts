@@ -19,7 +19,7 @@ export type ShapeCorners =
 export const theme = ['dark', 'light', 'system'] as const;
 export type Theme = typeof theme;
 
-export const role = ['admin', 'user', 'visitor'] as const;
+export const role = ['admin', 'user', 'guest'] as const;
 export type Role = typeof role;
 
 export const pieceCount = ['12', '50', '100', '200', '500', '1000'] as const;
@@ -55,10 +55,10 @@ export const userSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   emailVerified: z.boolean(),
-  image: z.string().optional(),
+  image: z.string().nullable(),
   role: z.enum(role),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export type User = z.infer<typeof userSchema>;

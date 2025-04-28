@@ -9,10 +9,10 @@ const gameDifficulty = ['easy', 'medium', 'hard'] as const;
 // ----- UTILITIES -----
 
 export const timestamps = {
-  createdAt: text('created_at')
+  createdAt: integer('created_at', { mode: 'timestamp' })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  updatedAt: text('updated_at')
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
 };
@@ -25,7 +25,9 @@ export const user = sqliteTable('user', {
   email: text('email').notNull().unique(),
   emailVerified: integer('email_verified', { mode: 'boolean' }).notNull(),
   image: text('image'),
-  role: text('role').notNull().default('user'),
+  role: text('role', { enum: ['admin', 'user', 'guest'] })
+    .notNull()
+    .default('user'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
