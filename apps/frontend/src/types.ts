@@ -8,7 +8,7 @@ export type ShapeCorners =
   | "bottomLeft"
   | "bottomRight";
 
-type PiecesData = { id: string; image: string }[][];
+export type PiecesData = { id: string; image: string }[][];
 
 export type GameData = { piecesData: PiecesData; pieceSize: number };
 

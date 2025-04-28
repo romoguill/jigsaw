@@ -225,5 +225,5 @@ export const gameRoute = new Hono<ContextWithAuth>()
       },
     }));
 
-    return c.json({ game: { ...game, pieces: piecesWithUrls } });
+    return c.json({ ...game, pieces: piecesWithUrls });
   });
