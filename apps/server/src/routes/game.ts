@@ -4,19 +4,19 @@ import {
   gameSchema,
   jigsawBuilderFormSchema,
 } from '@jigsaw/shared';
+import { eq, or } from 'drizzle-orm';
+import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { db } from '../db/db.js';
-import { games, pieces, uploadedImage } from '../db/schema.js';
 import { z } from 'zod';
+import { db } from '../db/db.js';
+import { games, pieces, uploadedImage, user } from '../db/schema.js';
+import { getPublicUploadthingUrl } from '../lib/utils.js';
 import {
   authMiddleware,
   type ContextWithAuth,
 } from '../middleware/auth-middleware.js';
 import * as gameBuilderService from '../service/game-builder.js';
 import { utapi } from './upload.js';
-import { eq } from 'drizzle-orm';
-import { getPublicUploadthingUrl } from '../lib/utils.js';
-import { Hono } from 'hono';
 
 const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
   gameSchema
@@ -91,6 +91,7 @@ export const gameRoute = new Hono<ContextWithAuth>()
           .insert(games)
           .values({
             ...gameData,
+            ownerId: userId,
             horizontalPaths: cached.horizontalPaths,
             verticalPaths: cached.verticalPaths,
             pieceFootprint: cached.pieceFootprint,
@@ -111,6 +112,7 @@ export const gameRoute = new Hono<ContextWithAuth>()
           .insert(games)
           .values({
             ...gameData,
+            ownerId: userId,
             horizontalPaths,
             verticalPaths,
             pieceFootprint,
@@ -226,4 +228,41 @@ export const gameRoute = new Hono<ContextWithAuth>()
     }));
 
     return c.json({ ...game, pieces: piecesWithUrls });
+  })
+  .get('/', async (c) => {
+    const currentUser = c.get('user');
+
+    // Admin will have access to all games but logged in users will have access to games created by the admin and themselves
+    const userFilter =
+      currentUser.role !== 'admin'
+        ? or(
+            eq(games.ownerId, currentUser.id),
+            eq(
+              games.ownerId,
+              db
+                .select({ id: user.id })
+                .from(user)
+                .where(eq(user.role, 'admin'))
+                .limit(1)
+            )
+          )
+        : undefined;
+
+    const userGames = await db.query.games.findMany({
+      where: userFilter,
+      with: {
+        pieces: {
+          with: {
+            uploadedImage: {
+              columns: {
+                imageKey: true,
+              },
+            },
+          },
+        },
+        uploadedImage: true,
+      },
+    });
+
+    return c.json(userGames);
   });

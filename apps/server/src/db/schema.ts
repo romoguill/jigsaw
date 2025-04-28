@@ -106,7 +106,7 @@ export const pieces = sqliteTable('pieces', {
 export const games = sqliteTable('games', {
   id: integer('id').primaryKey(),
   imageKey: text('image_key').notNull(),
-  ownerId: integer('owner_id')
+  ownerId: text('owner_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
   difficulty: text('difficulty', { enum: gameDifficulty }).notNull(),
