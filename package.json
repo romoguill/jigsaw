@@ -2,10 +2,11 @@
   "name": "jigsaw",
   "private": true,
   "scripts": {
-    "dev": "pnpm run -r --parallel --aggregate-output dev",
+    "dev": "pnpm run build:shared && pnpm run build:api-client && pnpm run -r --parallel --aggregate-output dev",
     "build": "pnpm run -r build",
     "typecheck": "pnpm run -r --parallel --aggregate-output typecheck",
     "build:shared": "pnpm --filter @jigsaw/shared build",
+    "build:api-client": "pnpm --filter @jigsaw/api-client build",
     "build:server": "pnpm --filter @jigsaw/server build",
     "build:frontend": "pnpm --filter @jigsaw/frontend build",
     "install:all": "pnpm install && pnpm run build:shared",

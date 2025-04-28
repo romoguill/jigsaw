@@ -6,7 +6,7 @@
     "./uploadthing": "./src/lib/uploadthing.ts"
   },
   "scripts": {
-    "dev": "tsc --watch",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node build/index.js",
     "lint": "eslint .",
