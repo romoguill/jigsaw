@@ -7,7 +7,7 @@ interface PuzzleCardProps {
   imageUrl: string;
   pieceCount: number;
   difficulty: GameDifficulty;
-  onClick?: () => void;
+  onPlay?: () => void;
 }
 
 function PuzzleCard({
@@ -15,7 +15,7 @@ function PuzzleCard({
   imageUrl,
   pieceCount,
   difficulty,
-  onClick,
+  onPlay,
 }: PuzzleCardProps) {
   const difficultyConfig = {
     easy: { color: "bg-green-400", text: "text-green-900", label: "Easy" },
@@ -32,7 +32,7 @@ function PuzzleCard({
   return (
     <article
       className="group relative overflow-hidden rounded-xl shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.02] cursor-pointer"
-      onClick={onClick}
+      onClick={onPlay}
     >
       <div className="relative overflow-hidden">
         <img

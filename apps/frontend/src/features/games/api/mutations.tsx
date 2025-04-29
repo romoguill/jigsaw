@@ -12,7 +12,7 @@ export const useCreateGameSession = () => {
       gameState,
     }: {
       gameId: number;
-      gameState: GameState;
+      gameState?: GameState;
     }) => {
       const response = await apiClient.game.sessions.$post({
         json: { gameId, gameState },

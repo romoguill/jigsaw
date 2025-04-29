@@ -138,7 +138,13 @@ export const gameSession = sqliteTable('game_session', {
   gameId: integer('game_id')
     .notNull()
     .references(() => games.id, { onDelete: 'cascade' }),
-  gameState: text('game_state', { mode: 'json' }).$type<GameState>().notNull(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  gameState: text('game_state', { mode: 'json' })
+    .$type<GameState>()
+    .notNull()
+    .default({ pieces: [] }),
   ...timestamps,
 });
 

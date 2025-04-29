@@ -1,7 +1,8 @@
+import { useCreateGameSession } from "@/frontend/features/games/api/mutations";
 import PuzzleCard from "@/frontend/features/games/components/puzzle-card";
 import { gamesQueryOptions } from "@/frontend/features/jigsaw/api/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/games/")({
   component: RouteComponent,
@@ -12,6 +13,8 @@ export const Route = createFileRoute("/games/")({
 
 function RouteComponent() {
   const { data: games } = useSuspenseQuery(gamesQueryOptions());
+  const { mutate: createGameSession } = useCreateGameSession();
+  const navigate = useNavigate();
 
   return (
     <div className="w-full p-10 container">
@@ -24,6 +27,16 @@ function RouteComponent() {
             difficulty={game.difficulty}
             imageUrl={game.imageUrl}
             pieceCount={game.pieceCount}
+            onPlay={() =>
+              createGameSession(
+                { gameId: game.id },
+                {
+                  onSuccess: (data) => {
+                    navigate({ to: `/games/sessions/${data.sessionId}` });
+                  },
+                }
+              )
+            }
           />
         ))}
       </section>
