@@ -233,6 +233,11 @@ export const cutImageIntoPieces = async ({
               <path d="${enclosedShapesSvg[row][col]}" fill="white"/>
             </svg>`;
 
+      const svgBorderMask = `
+            <svg width="${pieceFootprint}" height="${pieceFootprint}" viewBox="${translateOffsetX} ${translateOffsetY} ${pieceFootprint} ${pieceFootprint}">
+              <path d="${enclosedShapesSvg[row][col]}" stroke="rgba(25, 25, 25, 0.5)" stroke-width="5" fill="none"/>
+            </svg>`;
+
       // Create the piece by first cutting the image and then compositing the svg mask
       const pieceBuffer = await sharp(paddedImage.buffer)
         .extract({
@@ -245,6 +250,11 @@ export const cutImageIntoPieces = async ({
           {
             input: Buffer.from(svgMask),
             blend: 'dest-in',
+            gravity: 'northwest',
+          },
+          {
+            input: Buffer.from(svgBorderMask),
+            blend: 'over',
             gravity: 'northwest',
           },
         ])

@@ -26,7 +26,7 @@ const drawLoadingCircles = (ctx: CanvasRenderingContext2D, time: number) => {
   // Draw three circles with sequential scaling animation
   for (let i = 0; i < 3; i++) {
     // Calculate phase offset for each circle
-    const phase = time * animationSpeed + (i * Math.PI) / 4;
+    const phase = time * animationSpeed + (i * Math.PI) / 3.5;
 
     // Calculate scale using sine wave for smooth animation
     const scale =
