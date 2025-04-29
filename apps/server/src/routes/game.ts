@@ -2,6 +2,7 @@ import { zValidator } from '@hono/zod-validator';
 import {
   coordinateSchema,
   gameSchema,
+  gameStateSchema,
   jigsawBuilderFormSchema,
 } from '@jigsaw/shared';
 import { and, eq, or } from 'drizzle-orm';
@@ -9,7 +10,13 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
 import { db } from '../db/db.js';
-import { games, pieces, uploadedImage, user } from '../db/schema.js';
+import {
+  games,
+  gameSession,
+  pieces,
+  uploadedImage,
+  user,
+} from '../db/schema.js';
 import { getPublicUploadthingUrl } from '../lib/utils.js';
 import {
   authMiddleware,
@@ -17,6 +24,7 @@ import {
 } from '../middleware/auth-middleware.js';
 import * as gameBuilderService from '../service/game-builder.js';
 import { utapi } from './upload.js';
+import crypto from 'crypto';
 
 const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
   gameSchema
@@ -296,4 +304,27 @@ export const gameRoute = new Hono<ContextWithAuth>()
     }
 
     return c.json({ success: true });
-  });
+  })
+  .post(
+    '/sessions',
+    zValidator(
+      'json',
+      z.object({
+        gameId: z.number().int(),
+        gameState: gameStateSchema,
+      })
+    ),
+    async (c) => {
+      // Not checking for user. The idea would be to share game state with other users using the sessionId
+      const { gameId, gameState } = c.req.valid('json');
+      const sessionId = crypto.randomUUID();
+
+      await db.insert(gameSession).values({
+        sessionId,
+        gameId,
+        gameState,
+      });
+
+      return c.json({ success: true, sessionId });
+    }
+  );
