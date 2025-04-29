@@ -6,14 +6,14 @@ export const Route = createFileRoute("/games/sessions/$sessionId")({
   component: RouteComponent,
   loader: async ({ context, params }) => {
     context.queryClient.ensureQueryData(
-      gameSessionQueryOptions(Number(params.sessionId))
+      gameSessionQueryOptions(params.sessionId)
     );
   },
 });
 
 function RouteComponent() {
   const { sessionId } = Route.useParams();
-  const { data } = useSuspenseQuery(gameSessionQueryOptions(Number(sessionId)));
+  const { data } = useSuspenseQuery(gameSessionQueryOptions(sessionId));
 
   return <div>Hello "/games/session/$sessionId"!</div>;
 }

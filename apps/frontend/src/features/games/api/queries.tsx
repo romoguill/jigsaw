@@ -2,12 +2,12 @@ import { queryOptions } from "@tanstack/react-query";
 import { gameSessionKeys } from "./keys";
 import { apiClient } from "@/frontend/lib/api-client";
 
-export const gameSessionQueryOptions = (gameId: number) =>
+export const gameSessionQueryOptions = (sessionId: string) =>
   queryOptions({
-    queryKey: gameSessionKeys.single(gameId.toString()),
+    queryKey: gameSessionKeys.single(sessionId),
     queryFn: async () => {
       const response = await apiClient.game.sessions[":id"].$get({
-        param: { id: gameId.toString() },
+        param: { id: sessionId },
       });
 
       return response.json();
