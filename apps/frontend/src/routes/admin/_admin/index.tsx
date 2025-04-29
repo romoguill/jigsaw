@@ -1,4 +1,3 @@
-import { Button } from "@/frontend/components/ui/button";
 import { buttonVariants } from "@/frontend/components/ui/jolly-utils";
 import GamesTable from "@/frontend/features/admin/components/games-table";
 import { gamesQueryOptions } from "@/frontend/features/jigsaw/api/queries";
