@@ -8,7 +8,6 @@ interface PuzzleProps {
 }
 
 function Puzzle({ puzzleData }: PuzzleProps) {
-  console.log(puzzleData);
   const gameRef = useRef<Jiggsaw | null>(null);
 
   gameRef.current = new Jiggsaw(puzzleData);

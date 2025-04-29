@@ -14,6 +14,7 @@ export class Jiggsaw {
   snapThreshold: number = 0;
 
   constructor(public readonly data: GameData) {
+    console.log({ data });
     // Create pieces
     this.pieces = data.piecesData.flatMap((row, rowIdx) =>
       row.map(
@@ -23,6 +24,8 @@ export class Jiggsaw {
             Math.floor(Math.random() * 500),
             Math.floor(Math.random() * 500),
             piece.image,
+            data.pieceSize,
+            data.pieceFootprint,
             {
               top: data.piecesData[rowIdx - 1]?.[colIdx].id,
               right: data.piecesData[rowIdx][colIdx + 1]?.id,

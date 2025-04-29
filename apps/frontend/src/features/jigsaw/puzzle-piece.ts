@@ -9,12 +9,15 @@ export class PuzzlePiece {
     x: 0,
     y: 0,
   };
+  scale = 1;
 
   constructor(
     public id: string,
     public x: number,
     public y: number,
     public imgUrl: string,
+    public pieceSize: number,
+    public pieceFootprint: number,
     // neighbour -> e.g {top: shapeId-123}
     public neighbours: Record<ShapeSide, string | null> = {
       top: null,
@@ -25,6 +28,7 @@ export class PuzzlePiece {
     public groupId: string = id
   ) {
     this.loadImage();
+    this.scale = this.width / pieceSize;
   }
 
   get position(): Coordinate {
@@ -76,16 +80,15 @@ export class PuzzlePiece {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    ctx.fillStyle = "red";
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-
     if (this.image) {
-      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      ctx.drawImage(
+        this.image,
+        this.x - (this.pieceSize * this.scale) / 4,
+        this.y - (this.pieceSize * this.scale) / 4,
+        this.pieceFootprint * this.scale,
+        this.pieceFootprint * this.scale
+      );
     }
-
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "#333";
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
   }
 
   // Move will be relative to the group origin

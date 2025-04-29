@@ -31,6 +31,7 @@ export const useGameToPuzzleData = (gameId: number) => {
 
   const puzzleData: GameData = {
     pieceSize: gameData.pieceSize,
+    pieceFootprint: gameData.pieceFootprint,
     piecesData: parsePieceData,
   };
 

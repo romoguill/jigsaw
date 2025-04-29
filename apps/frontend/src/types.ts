@@ -10,6 +10,10 @@ export type ShapeCorners =
 
 export type PiecesData = { id: string; image: string }[][];
 
-export type GameData = { piecesData: PiecesData; pieceSize: number };
+export type GameData = {
+  piecesData: PiecesData;
+  pieceSize: number;
+  pieceFootprint: number;
+};
 
 export type Theme = "dark" | "light" | "system";
