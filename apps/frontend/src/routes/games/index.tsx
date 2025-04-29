@@ -14,9 +14,9 @@ function RouteComponent() {
   const { data: games } = useSuspenseQuery(gamesQueryOptions());
 
   return (
-    <div>
-      <h1>Pick one puzzle</h1>
-      <section>
+    <div className="w-full p-10 container">
+      <h1 className="text-2xl font-bold">Pick one puzzle</h1>
+      <section className="grid gap-4 mt-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {games.map((game) => (
           <PuzzleCard
             key={game.id}

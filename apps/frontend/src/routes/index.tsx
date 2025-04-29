@@ -2,7 +2,7 @@ import AccountMenu from "@/frontend/components/account-menu";
 import GoogleOAuthButton from "@/frontend/components/auth/google-oauth-button";
 import ButtonMainOption from "@/frontend/components/button-main-option";
 import ThemeToggle from "@/frontend/components/theme-toggle";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({ component: RouteComponent });
 
@@ -21,7 +21,9 @@ function RouteComponent() {
         <img width={250} src="/main-logo.png" alt="logo" />
         <ul className="flex flex-col gap-4">
           <li>
-            <ButtonMainOption withPiece>Continue</ButtonMainOption>
+            <Link to="/games">
+              <ButtonMainOption withPiece>Continue</ButtonMainOption>
+            </Link>
           </li>
           <li>
             <ButtonMainOption withPiece>New Game</ButtonMainOption>
