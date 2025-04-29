@@ -18,6 +18,7 @@ import { Route as GamesIndexImport } from './routes/games/index'
 import { Route as GamesIdImport } from './routes/games/$id'
 import { Route as AdminAdminImport } from './routes/admin/_admin'
 import { Route as AdminAdminIndexImport } from './routes/admin/_admin/index'
+import { Route as GamesSessionSessionIdImport } from './routes/games/session/$sessionId'
 import { Route as AdminAdminDetailTestImport } from './routes/admin/_admin/detail-test'
 import { Route as AdminAdminCreateGameImport } from './routes/admin/_admin/create-game'
 
@@ -60,6 +61,12 @@ const AdminAdminIndexRoute = AdminAdminIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminAdminRoute,
+} as any)
+
+const GamesSessionSessionIdRoute = GamesSessionSessionIdImport.update({
+  id: '/games/session/$sessionId',
+  path: '/games/session/$sessionId',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const AdminAdminDetailTestRoute = AdminAdminDetailTestImport.update({
@@ -127,6 +134,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminDetailTestImport
       parentRoute: typeof AdminAdminImport
     }
+    '/games/session/$sessionId': {
+      id: '/games/session/$sessionId'
+      path: '/games/session/$sessionId'
+      fullPath: '/games/session/$sessionId'
+      preLoaderRoute: typeof GamesSessionSessionIdImport
+      parentRoute: typeof rootRoute
+    }
     '/admin/_admin/': {
       id: '/admin/_admin/'
       path: '/'
@@ -172,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/games': typeof GamesIndexRoute
   '/admin/create-game': typeof AdminAdminCreateGameRoute
   '/admin/detail-test': typeof AdminAdminDetailTestRoute
+  '/games/session/$sessionId': typeof GamesSessionSessionIdRoute
   '/admin/': typeof AdminAdminIndexRoute
 }
 
@@ -182,6 +197,7 @@ export interface FileRoutesByTo {
   '/games': typeof GamesIndexRoute
   '/admin/create-game': typeof AdminAdminCreateGameRoute
   '/admin/detail-test': typeof AdminAdminDetailTestRoute
+  '/games/session/$sessionId': typeof GamesSessionSessionIdRoute
 }
 
 export interface FileRoutesById {
@@ -193,6 +209,7 @@ export interface FileRoutesById {
   '/games/': typeof GamesIndexRoute
   '/admin/_admin/create-game': typeof AdminAdminCreateGameRoute
   '/admin/_admin/detail-test': typeof AdminAdminDetailTestRoute
+  '/games/session/$sessionId': typeof GamesSessionSessionIdRoute
   '/admin/_admin/': typeof AdminAdminIndexRoute
 }
 
@@ -205,6 +222,7 @@ export interface FileRouteTypes {
     | '/games'
     | '/admin/create-game'
     | '/admin/detail-test'
+    | '/games/session/$sessionId'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -214,6 +232,7 @@ export interface FileRouteTypes {
     | '/games'
     | '/admin/create-game'
     | '/admin/detail-test'
+    | '/games/session/$sessionId'
   id:
     | '__root__'
     | '/'
@@ -223,6 +242,7 @@ export interface FileRouteTypes {
     | '/games/'
     | '/admin/_admin/create-game'
     | '/admin/_admin/detail-test'
+    | '/games/session/$sessionId'
     | '/admin/_admin/'
   fileRoutesById: FileRoutesById
 }
@@ -232,6 +252,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   GamesIdRoute: typeof GamesIdRoute
   GamesIndexRoute: typeof GamesIndexRoute
+  GamesSessionSessionIdRoute: typeof GamesSessionSessionIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -239,6 +260,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   GamesIdRoute: GamesIdRoute,
   GamesIndexRoute: GamesIndexRoute,
+  GamesSessionSessionIdRoute: GamesSessionSessionIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -254,7 +276,8 @@ export const routeTree = rootRoute
         "/",
         "/admin",
         "/games/$id",
-        "/games/"
+        "/games/",
+        "/games/session/$sessionId"
       ]
     },
     "/": {
@@ -288,6 +311,9 @@ export const routeTree = rootRoute
     "/admin/_admin/detail-test": {
       "filePath": "admin/_admin/detail-test.tsx",
       "parent": "/admin/_admin"
+    },
+    "/games/session/$sessionId": {
+      "filePath": "games/session/$sessionId.tsx"
     },
     "/admin/_admin/": {
       "filePath": "admin/_admin/index.tsx",

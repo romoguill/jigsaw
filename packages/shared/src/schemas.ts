@@ -78,3 +78,16 @@ export const pathsSchema = z.object({
 });
 
 export type Paths = z.infer<typeof pathsSchema>;
+
+export const gameStateSchema = z.object({
+  pieces: z.array(
+    z.object({
+      id: z.number().int(),
+      x: z.number().int(),
+      y: z.number().int(),
+      groupId: z.number().int(),
+    })
+  ),
+});
+
+export type GameState = z.infer<typeof gameStateSchema>;

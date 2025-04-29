@@ -1,3 +1,4 @@
+import type { GameState } from '@jigsaw/shared';
 import { relations, sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
@@ -131,6 +132,16 @@ export const games = sqliteTable('games', {
   ...timestamps,
 });
 
+export const gameSession = sqliteTable('game_session', {
+  id: integer('id').primaryKey(),
+  sessionId: text('session_id').notNull(),
+  gameId: integer('game_id')
+    .notNull()
+    .references(() => games.id, { onDelete: 'cascade' }),
+  gameState: text('game_state', { mode: 'json' }).$type<GameState>().notNull(),
+  ...timestamps,
+});
+
 // ---------- RELATIONS ----------
 
 export const gamesRelations = relations(games, ({ many, one }) => ({
@@ -143,6 +154,7 @@ export const gamesRelations = relations(games, ({ many, one }) => ({
     fields: [games.ownerId],
     references: [user.id],
   }),
+  gameSession: many(gameSession),
 }));
 
 export const uploadedImageRelations = relations(uploadedImage, ({ one }) => ({
@@ -163,6 +175,12 @@ export const piecesRelations = relations(pieces, ({ one }) => ({
   }),
 }));
 
+export const gameSessionRelations = relations(gameSession, ({ one }) => ({
+  game: one(games, {
+    fields: [gameSession.gameId],
+    references: [games.id],
+  }),
+}));
 // Schema for inserting a new game
 export const insertGameSchema = createInsertSchema(games);
 
