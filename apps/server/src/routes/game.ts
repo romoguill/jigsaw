@@ -327,4 +327,17 @@ export const gameRoute = new Hono<ContextWithAuth>()
 
       return c.json({ success: true, sessionId });
     }
-  );
+  )
+  .get('/sessions/:id', async (c) => {
+    const sessionId = c.req.param('id');
+
+    const session = await db.query.gameSession.findFirst({
+      where: eq(gameSession.sessionId, sessionId),
+    });
+
+    if (!session) {
+      throw new HTTPException(404, { message: 'Session not found' });
+    }
+
+    return c.json(session);
+  });
