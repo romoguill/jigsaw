@@ -5,6 +5,7 @@ export class PuzzlePiece {
   height = 100;
   image: HTMLImageElement | null = null;
   active = false;
+  isImageLoaded = false;
   offsetFromGroupOrigin: Coordinate = {
     x: 0,
     y: 0,
@@ -75,6 +76,9 @@ export class PuzzlePiece {
   private loadImage() {
     const image = new Image();
     image.src = this.imgUrl;
+    image.onload = () => {
+      this.isImageLoaded = true;
+    };
 
     this.image = image;
   }

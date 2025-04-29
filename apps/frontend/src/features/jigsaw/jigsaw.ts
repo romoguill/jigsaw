@@ -12,6 +12,7 @@ export class Jiggsaw {
   groups: Map<string, PieceGroup> = new Map([]);
   size: { rows: number; cols: number } = { rows: 0, cols: 0 };
   snapThreshold: number = 0;
+  allPiecesLoaded = false;
 
   constructor(public readonly data: GameData) {
     console.log({ data });
@@ -48,6 +49,15 @@ export class Jiggsaw {
 
     // Set snap threshold to % of piece size
     this.snapThreshold = (data.pieceSize * 10) / 100;
+
+    // Check if all pieces are loaded
+    this.checkAllPiecesLoaded();
+  }
+
+  // Check if all pieces have loaded their images
+  checkAllPiecesLoaded(): boolean {
+    this.allPiecesLoaded = this.pieces.every((piece) => piece.isImageLoaded);
+    return this.allPiecesLoaded;
   }
 
   // Utility for merging groups. A into B and delete B from the Map

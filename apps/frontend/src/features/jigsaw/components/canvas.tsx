@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useMouseCoordinate from "../../../hooks/use-mouse-coordinate";
 import { useRenderLoop } from "../../../hooks/use-render-loop";
 import useWindowSize from "../../../hooks/use-window-size";
@@ -10,6 +10,39 @@ const drawShapes = (shapes: PuzzlePiece[], ctx: CanvasRenderingContext2D) => {
   shapes.forEach((shape) => shape.draw(ctx));
 };
 
+// Draw three circles that scale in sequence
+const drawLoadingCircles = (ctx: CanvasRenderingContext2D, time: number) => {
+  const centerX = ctx.canvas.width / 2;
+  const centerY = ctx.canvas.height / 2;
+  const circleRadius = 15;
+  const spacing = 60;
+  const animationSpeed = 0.04;
+  const baseScale = 0.5;
+  const maxScale = 1.5;
+
+  // Clear the canvas
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  // Draw three circles with sequential scaling animation
+  for (let i = 0; i < 3; i++) {
+    // Calculate phase offset for each circle
+    const phase = time * animationSpeed + (i * Math.PI) / 4;
+
+    // Calculate scale using sine wave for smooth animation
+    const scale =
+      baseScale + ((Math.sin(phase) + 1) * (maxScale - baseScale)) / 2;
+
+    // Calculate position for each circle
+    const x = centerX - spacing + i * spacing;
+
+    // Draw the circle
+    ctx.beginPath();
+    ctx.arc(x, centerY, circleRadius * scale, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(163, 168, 191, ${0.3 + (0.7 * scale) / maxScale})`;
+    ctx.fill();
+  }
+};
+
 interface CanvasProps {
   jigsaw: Jiggsaw;
 }
@@ -17,14 +50,37 @@ interface CanvasProps {
 function Canvas({ jigsaw }: CanvasProps) {
   const activeGroupRef = useRef<PieceGroup | null>(null);
   const startDragCoordinateRef = useRef<Coordinate | null>(null);
+  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
+  const animationTimeRef = useRef(0);
 
   const { canvasRef } = useRenderLoop({
     draw: (ctx) => {
-      drawShapes(jigsaw.pieces, ctx);
+      if (allImagesLoaded) {
+        drawShapes(jigsaw.pieces, ctx);
+      } else {
+        // Draw loading circles animation
+        animationTimeRef.current += 1;
+        drawLoadingCircles(ctx, animationTimeRef.current);
+      }
     },
   });
   const windowSize = useWindowSize();
   const mouseCoordinate = useMouseCoordinate();
+
+  // Check if all images are loaded
+  useEffect(() => {
+    const checkLoading = () => {
+      const loaded = jigsaw.checkAllPiecesLoaded();
+      setAllImagesLoaded(loaded);
+
+      if (!loaded) {
+        // Continue checking until all images are loaded
+        setTimeout(checkLoading, 100);
+      }
+    };
+
+    checkLoading();
+  }, [jigsaw]);
 
   // Update spatial grid (grid for performance. Typical in game development)
   const updateSpatialGrid = useCallback(
@@ -48,6 +104,8 @@ function Canvas({ jigsaw }: CanvasProps) {
   // ----- MOUSE HANDLERS -----
   const handleMouseDown: React.MouseEventHandler<HTMLCanvasElement> =
     useCallback(() => {
+      if (!allImagesLoaded) return;
+
       const activePiece = jigsaw.pieces.find((piece) =>
         piece.isIntersecting(mouseCoordinate)
       );
@@ -57,12 +115,13 @@ function Canvas({ jigsaw }: CanvasProps) {
         startDragCoordinateRef.current = { ...mouseCoordinate };
         activeGroupRef.current = jigsaw.groups.get(activePiece.groupId) || null;
       }
-    }, [jigsaw.groups, mouseCoordinate, jigsaw.pieces]);
+    }, [jigsaw.groups, mouseCoordinate, jigsaw.pieces, allImagesLoaded]);
 
   const handleMouseMove: React.MouseEventHandler<HTMLCanvasElement> =
     useCallback(() => {
       if (!startDragCoordinateRef.current) return;
       if (!activeGroupRef.current) return;
+      if (!allImagesLoaded) return;
 
       // Get the difference in coordinates from mouse initial click to dragged position.
       const delta: Coordinate = {
@@ -75,11 +134,12 @@ function Canvas({ jigsaw }: CanvasProps) {
 
       // After each frame, reset the start drag position to the current mouse x, y
       startDragCoordinateRef.current = { ...mouseCoordinate };
-    }, [jigsaw, mouseCoordinate]);
+    }, [jigsaw, mouseCoordinate, allImagesLoaded]);
 
   const handleMouseUp: React.MouseEventHandler<HTMLCanvasElement> =
     useCallback(() => {
       if (!activeGroupRef.current) return null;
+      if (!allImagesLoaded) return;
 
       const spatialGrid = updateSpatialGrid(jigsaw.pieces);
 
@@ -95,7 +155,7 @@ function Canvas({ jigsaw }: CanvasProps) {
 
       startDragCoordinateRef.current = null;
       activeGroupRef.current = null;
-    }, [jigsaw, updateSpatialGrid]);
+    }, [jigsaw, updateSpatialGrid, allImagesLoaded]);
 
   return (
     <canvas
