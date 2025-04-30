@@ -311,7 +311,9 @@ export const gameRoute = new Hono<ContextWithAuth>()
       'json',
       z.object({
         gameId: z.number().int(),
-        gameState: gameStateSchema.optional().default({ pieces: [] }),
+        gameState: gameStateSchema
+          .optional()
+          .default({ pieces: [], groups: [] }),
       })
     ),
     async (c) => {
@@ -343,4 +345,15 @@ export const gameRoute = new Hono<ContextWithAuth>()
     }
 
     return c.json(session);
+  })
+  .put('/sessions/:id', zValidator('json', gameStateSchema), async (c) => {
+    const sessionId = c.req.param('id');
+    const gameState = c.req.valid('json');
+
+    await db
+      .update(gameSession)
+      .set({ gameState })
+      .where(eq(gameSession.sessionId, sessionId));
+
+    return c.json({ succes: true });
   });
