@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { useCurrentUser } from "./features/auth/hooks/queries.tsx";
 import "./index.css";
 import { routeTree } from "./routeTree.gen.ts";
+import { Toaster } from "./components/ui/sonner.tsx";
 
 const queryClient = new QueryClient();
 
@@ -35,5 +36,6 @@ function App() {
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <App />
+    <Toaster />
   </QueryClientProvider>
 );
