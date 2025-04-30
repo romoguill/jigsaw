@@ -1,5 +1,11 @@
 import { absoluteDistance } from "../../lib/utils";
-import { Coordinate, GameData, ShapeSide, shapeSides } from "../../types";
+import {
+  Coordinate,
+  GameData,
+  GroupsData,
+  ShapeSide,
+  shapeSides,
+} from "../../types";
 import { PuzzlePiece } from "./puzzle-piece";
 
 export interface PieceGroup {
@@ -14,32 +20,50 @@ export class Jiggsaw {
   snapThreshold: number = 0;
   allPiecesLoaded = false;
 
-  constructor(public readonly data: GameData) {
-    console.log({ data });
+  constructor(
+    public readonly data: GameData,
+    public readonly groupsData?: GroupsData
+  ) {
     // Create pieces
     this.pieces = data.piecesData.flatMap((row, rowIdx) =>
-      row.map(
-        (piece, colIdx) =>
-          new PuzzlePiece(
-            piece.id,
-            Math.floor(Math.random() * 500),
-            Math.floor(Math.random() * 500),
-            piece.image,
-            data.pieceSize,
-            data.pieceFootprint,
-            {
-              top: data.piecesData[rowIdx - 1]?.[colIdx].id,
-              right: data.piecesData[rowIdx][colIdx + 1]?.id,
-              bottom: data.piecesData[rowIdx + 1]?.[colIdx].id,
-              left: data.piecesData[rowIdx][colIdx - 1]?.id,
-            }
-          )
-      )
+      row.map((piece, colIdx) => {
+        const puzzlePiece = new PuzzlePiece(
+          piece.id,
+          piece.x ?? Math.floor(Math.random() * 500),
+          piece.y ?? Math.floor(Math.random() * 500),
+          piece.image,
+          data.pieceSize,
+          data.pieceFootprint,
+          {
+            top: data.piecesData[rowIdx - 1]?.[colIdx].id,
+            right: data.piecesData[rowIdx][colIdx + 1]?.id,
+            bottom: data.piecesData[rowIdx + 1]?.[colIdx].id,
+            left: data.piecesData[rowIdx][colIdx - 1]?.id,
+          },
+          piece.group?.id
+        );
+
+        if (puzzlePiece.groupId && piece.group) {
+          puzzlePiece.offsetFromGroupOrigin = {
+            x: piece.group.originOffset.x,
+            y: piece.group.originOffset.y,
+          };
+        }
+
+        return puzzlePiece;
+      })
     );
 
-    this.pieces.forEach((piece) =>
-      this.groups.set(piece.id, { id: piece.id, origin: piece.position })
-    );
+    // If game is new, generate new groups, else use the groups from the data
+    if (groupsData) {
+      groupsData.forEach((group) => {
+        this.groups.set(group.id, { id: group.id, origin: group.origin });
+      });
+    } else {
+      this.pieces.forEach((piece) => {
+        this.groups.set(piece.id, { id: piece.id, origin: piece.position });
+      });
+    }
 
     // Calculate puzzle size
     this.size = {

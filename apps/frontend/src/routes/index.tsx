@@ -26,7 +26,9 @@ function RouteComponent() {
             </Link>
           </li>
           <li>
-            <ButtonMainOption withPiece>New Game</ButtonMainOption>
+            <Link to="/games">
+              <ButtonMainOption withPiece>New Game</ButtonMainOption>
+            </Link>
           </li>
           <li>
             <ButtonMainOption withPiece>Join with ID</ButtonMainOption>
