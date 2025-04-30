@@ -25,3 +25,25 @@ export const useCreateGameSession = () => {
     },
   });
 };
+
+export const useUpdateGameSession = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      sessionId,
+      gameState,
+    }: {
+      sessionId: string;
+      gameState: GameState;
+    }) => {
+      await apiClient.game.sessions[":id"].$put({
+        param: { id: sessionId },
+        json: gameState,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: gameSessionKeys.all });
+    },
+  });
+};
