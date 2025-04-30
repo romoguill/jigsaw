@@ -1,5 +1,6 @@
 import { GameData } from "@/frontend/types";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { GameState } from "@jigsaw/shared";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { Jiggsaw } from "../jigsaw";
 import Canvas from "./canvas";
 
@@ -24,4 +25,5 @@ const Puzzle = forwardRef<Jiggsaw | null, PuzzleProps>(
     return <Canvas jigsaw={jigsaw} />;
   }
 );
+
 export default Puzzle;

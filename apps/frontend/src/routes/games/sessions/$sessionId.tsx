@@ -1,15 +1,18 @@
-import { Button } from "@/frontend/components/ui/button";
+import { ButtonLoader } from "@/frontend/components/ui/button-loader";
 import { useUpdateGameSession } from "@/frontend/features/games/api/mutations";
 import { gameSessionQueryOptions } from "@/frontend/features/games/api/queries";
 import { useGameToPuzzleData } from "@/frontend/features/games/hooks/useGameToPuzzleData";
 import { gameQueryOptions } from "@/frontend/features/jigsaw/api/queries";
 import Puzzle from "@/frontend/features/jigsaw/components/puzzle";
 import { Jiggsaw } from "@/frontend/features/jigsaw/jigsaw";
+import { cn } from "@/frontend/lib/utils";
+import { GameState } from "@jigsaw/shared";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef } from "react";
+import { SaveIcon } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-
 export const Route = createFileRoute("/games/sessions/$sessionId")({
   component: RouteComponent,
   loader: async ({ context, params }) => {
@@ -27,6 +30,8 @@ export const Route = createFileRoute("/games/sessions/$sessionId")({
 
 function RouteComponent() {
   const puzzleRef = useRef<Jiggsaw | null>(null);
+  const [gameSavedState, setGameSavedState] = useState<GameState | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   const { sessionId } = Route.useParams();
 
@@ -34,7 +39,20 @@ function RouteComponent() {
     gameSessionQueryOptions(sessionId)
   );
   const piecesData = useGameToPuzzleData(gameDetails.gameId);
-  const { mutate: updateGameSession } = useUpdateGameSession();
+  const { mutate: updateGameSession, isPending: isUpdating } =
+    useUpdateGameSession();
+
+  useEffect(() => {
+    if (gameSavedState) {
+      setIsSaved(true);
+    }
+
+    const timeout = setTimeout(() => {
+      setIsSaved(false);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [gameSavedState]);
 
   const handleUpdateState = () => {
     if (puzzleRef.current) {
@@ -43,7 +61,7 @@ function RouteComponent() {
         { sessionId, gameState },
         {
           onSuccess: () => {
-            toast.success("Game state updated");
+            setGameSavedState(gameState);
           },
           onError: () => {
             toast.error("Failed to update game state");
@@ -55,10 +73,29 @@ function RouteComponent() {
 
   return (
     <>
-      <Button className="absolute top-5 left-5" onClick={handleUpdateState}>
-        Save
-      </Button>
-      <Puzzle puzzleData={piecesData} ref={puzzleRef} />;
+      <ButtonLoader
+        className="absolute top-5 left-5"
+        variant={"ghost"}
+        onClick={handleUpdateState}
+        isPending={isUpdating}
+      >
+        <SaveIcon size={20} />
+        <AnimatePresence>
+          {isSaved && (
+            <motion.span
+              key="game-saved"
+              initial={false}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+              className="text-green-300 absolute left-12 top-1/2 -translate-y-1/2"
+            >
+              Game saved!
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </ButtonLoader>
+      <Puzzle ref={puzzleRef} puzzleData={piecesData} />;
     </>
   );
 }
