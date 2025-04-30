@@ -79,15 +79,28 @@ export const pathsSchema = z.object({
 
 export type Paths = z.infer<typeof pathsSchema>;
 
+export const pieceStateSchema = z.object({
+  id: z.string(),
+  x: z.number().int(),
+  y: z.number().int(),
+  group: z.object({
+    id: z.string(),
+    originOffset: coordinateSchema,
+  }),
+});
+
+export type PieceState = z.infer<typeof pieceStateSchema>;
+
+export const groupStateSchema = z.object({
+  id: z.string(),
+  origin: coordinateSchema,
+});
+
+export type GroupState = z.infer<typeof groupStateSchema>;
+
 export const gameStateSchema = z.object({
-  pieces: z.array(
-    z.object({
-      id: z.number().int(),
-      x: z.number().int(),
-      y: z.number().int(),
-      groupId: z.number().int(),
-    })
-  ),
+  pieces: z.array(pieceStateSchema),
+  groups: z.array(groupStateSchema),
 });
 
 export type GameState = z.infer<typeof gameStateSchema>;

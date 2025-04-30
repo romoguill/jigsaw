@@ -144,7 +144,7 @@ export const gameSession = sqliteTable('game_session', {
   gameState: text('game_state', { mode: 'json' })
     .$type<GameState>()
     .notNull()
-    .default({ pieces: [] }),
+    .default({ pieces: [], groups: [] }),
   ...timestamps,
 });
 

@@ -1,11 +1,6 @@
+import { GameState, GroupState } from "@jigsaw/shared";
 import { absoluteDistance } from "../../lib/utils";
-import {
-  Coordinate,
-  GameData,
-  GroupsData,
-  ShapeSide,
-  shapeSides,
-} from "../../types";
+import { Coordinate, GameData, ShapeSide, shapeSides } from "../../types";
 import { PuzzlePiece } from "./puzzle-piece";
 
 export interface PieceGroup {
@@ -22,7 +17,7 @@ export class Jiggsaw {
 
   constructor(
     public readonly data: GameData,
-    public readonly groupsData?: GroupsData
+    public readonly groupsData?: GroupState[]
   ) {
     // Create pieces
     this.pieces = data.piecesData.flatMap((row, rowIdx) =>
@@ -208,5 +203,21 @@ export class Jiggsaw {
       });
 
     return validSnaps;
+  }
+
+  // Get the game state. Used for saving the game
+  getGameState(): GameState {
+    return {
+      pieces: this.pieces.map((piece) => ({
+        id: piece.id,
+        x: piece.position.x,
+        y: piece.position.y,
+        group: {
+          id: piece.groupId,
+          originOffset: piece.offsetFromGroupOrigin,
+        },
+      })),
+      groups: Array.from(this.groups.values()),
+    };
   }
 }
