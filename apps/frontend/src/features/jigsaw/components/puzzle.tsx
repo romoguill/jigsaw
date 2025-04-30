@@ -12,13 +12,18 @@ const Puzzle = forwardRef<Jiggsaw | null, PuzzleProps>(
   ({ puzzleData }, ref) => {
     const gameRef = useRef<Jiggsaw | null>(null);
 
+    console.log({ puzzleData });
+
     // Only create a new Jiggsaw if not already created
     if (!gameRef.current) {
       gameRef.current = new Jiggsaw(puzzleData);
     }
 
+    console.log({ puzzleData });
+
     const jigsaw = gameRef.current;
 
+    console.log(JSON.stringify(jigsaw, null, 2));
     // Expose the jigsaw instance to the parent via ref
     useImperativeHandle(ref, () => jigsaw, [jigsaw]);
 

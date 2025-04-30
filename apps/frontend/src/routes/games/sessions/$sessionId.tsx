@@ -5,7 +5,6 @@ import { useGameToPuzzleData } from "@/frontend/features/games/hooks/useGameToPu
 import { gameQueryOptions } from "@/frontend/features/jigsaw/api/queries";
 import Puzzle from "@/frontend/features/jigsaw/components/puzzle";
 import { Jiggsaw } from "@/frontend/features/jigsaw/jigsaw";
-import { cn } from "@/frontend/lib/utils";
 import { GameState } from "@jigsaw/shared";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -38,9 +37,11 @@ function RouteComponent() {
   const { data: gameDetails } = useSuspenseQuery(
     gameSessionQueryOptions(sessionId)
   );
-  const piecesData = useGameToPuzzleData(gameDetails.gameId);
+  const piecesData = useGameToPuzzleData(gameDetails.gameId, sessionId);
   const { mutate: updateGameSession, isPending: isUpdating } =
     useUpdateGameSession();
+
+  console.log(gameDetails.gameState);
 
   useEffect(() => {
     if (gameSavedState) {

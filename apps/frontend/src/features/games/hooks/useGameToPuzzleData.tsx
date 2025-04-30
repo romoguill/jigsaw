@@ -3,13 +3,21 @@ import { GameData, PiecesData } from "@/frontend/types";
 import { gameQueryOptions } from "@/frontend/features/jigsaw/api/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { gameSessionQueryOptions } from "../api/queries";
 
-export const useGameToPuzzleData = (gameId: number) => {
+export const useGameToPuzzleData = (
+  gameId: number,
+  sessionId: string
+): GameData => {
   const { data: gameData } = useSuspenseQuery(
     gameQueryOptions(gameId.toString())
   );
 
-  const parsePieceData = useMemo(() => {
+  const { data: gameDetails } = useSuspenseQuery(
+    gameSessionQueryOptions(sessionId.toString())
+  );
+
+  const parsedPieceData: GameData["piecesData"] = useMemo(() => {
     const piecesData: PiecesData = [];
 
     gameData.pieces.forEach((piece) => {
@@ -29,10 +37,18 @@ export const useGameToPuzzleData = (gameId: number) => {
     return piecesData;
   }, [gameData]);
 
+  const parsedGroupsData: GameData["groupsData"] = useMemo(() => {
+    return gameDetails.gameState.groups.map((group) => ({
+      id: group.id.toString(),
+      origin: group.origin,
+    }));
+  }, [gameDetails]);
+
   const puzzleData: GameData = {
     pieceSize: gameData.pieceSize,
+    groupsData: parsedGroupsData,
     pieceFootprint: gameData.pieceFootprint,
-    piecesData: parsePieceData,
+    piecesData: parsedPieceData,
   };
 
   return puzzleData;
