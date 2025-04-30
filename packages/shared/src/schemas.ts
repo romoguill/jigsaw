@@ -80,11 +80,11 @@ export const pathsSchema = z.object({
 export type Paths = z.infer<typeof pathsSchema>;
 
 export const pieceStateSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   x: z.number().int(),
   y: z.number().int(),
   group: z.object({
-    id: z.string(),
+    id: z.number(),
     originOffset: coordinateSchema,
   }),
 });
@@ -92,7 +92,7 @@ export const pieceStateSchema = z.object({
 export type PieceState = z.infer<typeof pieceStateSchema>;
 
 export const groupStateSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   origin: coordinateSchema,
 });
 

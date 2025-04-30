@@ -13,14 +13,14 @@ export const useGameToPuzzleData = (
     gameQueryOptions(gameId.toString())
   );
 
-  const { data: gameDetails } = useSuspenseQuery(
+  const { data: gameSessionDetails } = useSuspenseQuery(
     gameSessionQueryOptions(sessionId.toString())
   );
 
   const parsedPieceData: GameData["piecesData"] = useMemo(() => {
     const piecesData: PiecesData = [];
 
-    gameData.pieces.forEach((piece) => {
+    gameSessionDetails.game.pieces.forEach((piece) => {
       const rowIndex = piece.row;
       const colIndex = piece.col;
 
@@ -31,18 +31,25 @@ export const useGameToPuzzleData = (
       piecesData[rowIndex][colIndex] = {
         id: piece.id.toString(),
         image: piece.uploadedImage.url,
+        x: gameSessionDetails.gameState.pieces.find((p) => {
+          console.log("comparisong");
+          console.log(p, piece);
+          return p.id === piece.id;
+        })?.x,
+        y: gameSessionDetails.gameState.pieces.find((p) => p.id === piece.id)
+          ?.y,
       };
     });
 
     return piecesData;
-  }, [gameData]);
+  }, [gameSessionDetails]);
 
   const parsedGroupsData: GameData["groupsData"] = useMemo(() => {
-    return gameDetails.gameState.groups.map((group) => ({
+    return gameSessionDetails.gameState.groups.map((group) => ({
       id: group.id.toString(),
       origin: group.origin,
     }));
-  }, [gameDetails]);
+  }, [gameSessionDetails]);
 
   const puzzleData: GameData = {
     pieceSize: gameData.pieceSize,

@@ -338,13 +338,50 @@ export const gameRoute = new Hono<ContextWithAuth>()
 
     const session = await db.query.gameSession.findFirst({
       where: eq(gameSession.sessionId, sessionId),
+      with: {
+        game: {
+          with: {
+            pieces: {
+              with: {
+                uploadedImage: {
+                  columns: {
+                    imageKey: true,
+                  },
+                },
+              },
+            },
+            uploadedImage: true,
+          },
+        },
+      },
     });
 
     if (!session) {
       throw new HTTPException(404, { message: 'Session not found' });
     }
 
-    return c.json(session);
+    const piecesWithUrls = session.game.pieces.map((piece) => ({
+      ...piece,
+      uploadedImage: {
+        ...piece.uploadedImage,
+        url: getPublicUploadthingUrl(piece.uploadedImage.imageKey),
+      },
+    }));
+
+    const gameUrl = getPublicUploadthingUrl(
+      session.game.uploadedImage.imageKey
+    );
+
+    const dataWithUrls = {
+      ...session,
+      game: {
+        ...session.game,
+        imageUrl: gameUrl,
+        pieces: piecesWithUrls,
+      },
+    };
+
+    return c.json(dataWithUrls);
   })
   .put('/sessions/:id', zValidator('json', gameStateSchema), async (c) => {
     const sessionId = c.req.param('id');

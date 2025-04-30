@@ -13,20 +13,20 @@ export class PuzzlePiece {
   scale = 1;
 
   constructor(
-    public id: string,
+    public id: number,
     public x: number,
     public y: number,
     public imgUrl: string,
     public pieceSize: number,
     public pieceFootprint: number,
     // neighbour -> e.g {top: shapeId-123}
-    public neighbours: Record<ShapeSide, string | null> = {
+    public neighbours: Record<ShapeSide, number | null> = {
       top: null,
       right: null,
       bottom: null,
       left: null,
     },
-    public groupId: string = id
+    public groupId: number = id
   ) {
     this.loadImage();
     this.scale = this.width / pieceSize;

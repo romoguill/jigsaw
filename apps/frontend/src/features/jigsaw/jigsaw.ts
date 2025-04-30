@@ -4,13 +4,13 @@ import { Coordinate, GameData, ShapeSide, shapeSides } from "../../types";
 import { PuzzlePiece } from "./puzzle-piece";
 
 export interface PieceGroup {
-  id: string;
+  id: number;
   origin: Coordinate;
 }
 
 export class Jiggsaw {
   pieces: PuzzlePiece[] = [];
-  groups: Map<string, PieceGroup> = new Map([]);
+  groups: Map<number, PieceGroup> = new Map([]);
   size: { rows: number; cols: number } = { rows: 0, cols: 0 };
   snapThreshold: number = 0;
   allPiecesLoaded = false;
@@ -80,7 +80,7 @@ export class Jiggsaw {
   }
 
   // Utility for merging groups. A into B and delete B from the Map
-  private mergeGroups(groupIdA: string, groupIdB: string): PieceGroup {
+  private mergeGroups(groupIdA: number, groupIdB: number): PieceGroup {
     const groupA = this.groups.get(groupIdA)!;
     const groupB = this.groups.get(groupIdB)!;
 
@@ -108,7 +108,7 @@ export class Jiggsaw {
     return groupA;
   }
 
-  moveGroup(groupId: string, delta: Coordinate): void {
+  moveGroup(groupId: number, delta: Coordinate): void {
     const group = this.groups.get(groupId);
 
     if (!group) return;
@@ -142,7 +142,7 @@ export class Jiggsaw {
     return nearbyPieces;
   }
 
-  snap(draggedGroupId: string, targetGroupId: string, delta: Coordinate) {
+  snap(draggedGroupId: number, targetGroupId: number, delta: Coordinate) {
     this.moveGroup(draggedGroupId, delta);
 
     this.mergeGroups(draggedGroupId, targetGroupId);
@@ -174,11 +174,11 @@ export class Jiggsaw {
 
   // Find valid snaps for a group
   findValidSnaps(
-    draggedGroupId: string,
+    draggedGroupId: number,
     spatialGrid: Map<string, PuzzlePiece[]>
   ) {
     const validSnaps: {
-      snappedGroupId: string;
+      snappedGroupId: number;
       side: ShapeSide;
       delta: Coordinate;
     }[] = [];

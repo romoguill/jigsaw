@@ -14,7 +14,7 @@ export type ShapeCorners =
 export const piecesDataSchema = z.array(
   z.array(
     z
-      .object({ id: z.string(), image: z.string() })
+      .object({ id: z.number(), image: z.string() })
       .merge(pieceStateSchema.omit({ id: true }).partial())
   )
 );
