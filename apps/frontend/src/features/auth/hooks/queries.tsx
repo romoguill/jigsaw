@@ -9,7 +9,6 @@ export const useCurrentUser = () => {
     queryKey: currentUserKey,
     queryFn: async (): Promise<User | undefined> => {
       const { data, error } = await authClient.getSession();
-      console.log(data);
 
       if (error) {
         return undefined;

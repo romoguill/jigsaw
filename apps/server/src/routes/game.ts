@@ -321,8 +321,6 @@ export const gameRoute = new Hono<ContextWithAuth>()
       const { gameId, gameState } = c.req.valid('json');
       const sessionId = crypto.randomUUID();
 
-      console.log(sessionId, gameId, userId, gameState);
-
       await db.insert(gameSession).values({
         sessionId,
         gameId,

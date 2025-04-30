@@ -41,8 +41,6 @@ function RouteComponent() {
   const { mutate: updateGameSession, isPending: isUpdating } =
     useUpdateGameSession();
 
-  console.log(gameDetails.gameState);
-
   useEffect(() => {
     if (gameSavedState) {
       setIsSaved(true);

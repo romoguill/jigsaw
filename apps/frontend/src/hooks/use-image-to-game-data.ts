@@ -37,7 +37,7 @@ function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
         const pieceSize = Math.floor(
           Math.min(naturalWidth / columns, naturalHeight / rows)
         );
-        console.log("pieceSize", pieceSize);
+
         // Get the area covered by the iteration
         const gridArea = pieceSize ** 2 * pieceQuantity;
 
@@ -51,10 +51,6 @@ function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
           break;
         }
       }
-
-      console.log("finalColumns", finalColumns);
-      console.log("finalRows", finalRows);
-      console.log("finalPieceSize", finalPieceSize);
 
       return {
         finalColumns,

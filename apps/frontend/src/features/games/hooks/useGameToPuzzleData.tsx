@@ -29,13 +29,10 @@ export const useGameToPuzzleData = (
       }
 
       piecesData[rowIndex][colIndex] = {
-        id: piece.id.toString(),
+        id: piece.id,
         image: piece.uploadedImage.url,
-        x: gameSessionDetails.gameState.pieces.find((p) => {
-          console.log("comparisong");
-          console.log(p, piece);
-          return p.id === piece.id;
-        })?.x,
+        x: gameSessionDetails.gameState.pieces.find((p) => p.id === piece.id)
+          ?.x,
         y: gameSessionDetails.gameState.pieces.find((p) => p.id === piece.id)
           ?.y,
       };
@@ -46,7 +43,7 @@ export const useGameToPuzzleData = (
 
   const parsedGroupsData: GameData["groupsData"] = useMemo(() => {
     return gameSessionDetails.gameState.groups.map((group) => ({
-      id: group.id.toString(),
+      id: group.id,
       origin: group.origin,
     }));
   }, [gameSessionDetails]);
