@@ -44,6 +44,7 @@ export const useGameToPuzzleData = (
     return piecesData;
   }, [gameSessionDetails]);
 
+  console.log(gameSessionDetails);
   const parsedGroupsData: GameData["groupsData"] = useMemo(() => {
     return gameSessionDetails.gameState.groups.map((group) => ({
       id: group.id,

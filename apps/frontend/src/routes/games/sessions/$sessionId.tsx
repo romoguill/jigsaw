@@ -13,6 +13,7 @@ import { SaveIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "motion/react";
+import ShapesParticles from "@/frontend/features/jigsaw/components/shapes-particles";
 
 export const Route = createFileRoute("/games/sessions/$sessionId")({
   component: RouteComponent,

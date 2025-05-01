@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Trophy } from "lucide-react";
+import ShapesParticles from "./shapes-particles";
 
 interface WinningCardProps {
   isVisible: boolean;
@@ -14,13 +15,14 @@ export default function WinningCard({ isVisible }: WinningCardProps) {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.5 }}
-          className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 flex items-center justify-center z-40 bg-black/50 backdrop-blur-sm"
         >
+          <ShapesParticles />
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
+            className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 z-50 shadow-2xl"
           >
             <motion.div
               initial={{ scale: 0 }}

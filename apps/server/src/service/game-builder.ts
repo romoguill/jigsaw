@@ -233,6 +233,8 @@ export const cutImageIntoPieces = async ({
               <path d="${enclosedShapesSvg[row][col]}" fill="white"/>
             </svg>`;
 
+      console.log(svgMask);
+
       const svgBorderMask = `
             <svg width="${pieceFootprint}" height="${pieceFootprint}" viewBox="${translateOffsetX} ${translateOffsetY} ${pieceFootprint} ${pieceFootprint}">
               <path d="${enclosedShapesSvg[row][col]}" stroke="rgba(25, 25, 25, 0.5)" stroke-width="5" fill="none"/>
