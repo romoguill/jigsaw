@@ -4,14 +4,16 @@ import { gameSessionQueryOptions } from "@/frontend/features/games/api/queries";
 import { useGameToPuzzleData } from "@/frontend/features/games/hooks/useGameToPuzzleData";
 import { gameQueryOptions } from "@/frontend/features/jigsaw/api/queries";
 import Puzzle from "@/frontend/features/jigsaw/components/puzzle";
+import WinningCard from "@/frontend/features/jigsaw/components/winning-card";
 import { Jiggsaw } from "@/frontend/features/jigsaw/jigsaw";
 import { GameState } from "@jigsaw/shared";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { SaveIcon } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { AnimatePresence, motion } from "motion/react";
+
 export const Route = createFileRoute("/games/sessions/$sessionId")({
   component: RouteComponent,
   loader: async ({ context, params }) => {
@@ -31,6 +33,7 @@ function RouteComponent() {
   const puzzleRef = useRef<Jiggsaw | null>(null);
   const [gameSavedState, setGameSavedState] = useState<GameState | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [isGameFinished, setIsGameFinshed] = useState(false);
 
   const { sessionId } = Route.useParams();
 
@@ -73,7 +76,7 @@ function RouteComponent() {
   const checkGameFinished = () => {
     if (puzzleRef.current) {
       if (puzzleRef.current.checkGameFinished()) {
-        toast.success("Game finished!");
+        setIsGameFinshed(true);
       }
     }
   };
@@ -107,6 +110,8 @@ function RouteComponent() {
         puzzleData={piecesData}
         onPieceMove={checkGameFinished}
       />
+
+      <WinningCard isVisible={isGameFinished} />
     </>
   );
 }
