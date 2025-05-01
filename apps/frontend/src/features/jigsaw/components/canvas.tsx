@@ -45,9 +45,10 @@ const drawLoadingCircles = (ctx: CanvasRenderingContext2D, time: number) => {
 
 interface CanvasProps {
   jigsaw: Jiggsaw;
+  onPieceMove?: () => void;
 }
 
-function Canvas({ jigsaw }: CanvasProps) {
+function Canvas({ jigsaw, onPieceMove }: CanvasProps) {
   const activeGroupRef = useRef<PieceGroup | null>(null);
   const startDragCoordinateRef = useRef<Coordinate | null>(null);
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
@@ -155,7 +156,10 @@ function Canvas({ jigsaw }: CanvasProps) {
 
       startDragCoordinateRef.current = null;
       activeGroupRef.current = null;
-    }, [jigsaw, updateSpatialGrid, allImagesLoaded]);
+
+      // Notify parent that pieces were moved
+      onPieceMove?.();
+    }, [jigsaw, updateSpatialGrid, allImagesLoaded, onPieceMove]);
 
   return (
     <canvas

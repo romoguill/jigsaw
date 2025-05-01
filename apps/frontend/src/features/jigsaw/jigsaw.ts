@@ -224,4 +224,9 @@ export class Jiggsaw {
       groups: Array.from(this.groups.values()),
     };
   }
+
+  // If there is only one group, the game is finished. All pieces are snapped together
+  checkGameFinished(): boolean {
+    return this.groups.size === 1;
+  }
 }

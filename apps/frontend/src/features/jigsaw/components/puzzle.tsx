@@ -5,10 +5,11 @@ import Canvas from "./canvas";
 
 interface PuzzleProps {
   puzzleData: GameData;
+  onPieceMove?: () => void;
 }
 
 const Puzzle = forwardRef<Jiggsaw | null, PuzzleProps>(
-  ({ puzzleData }, ref) => {
+  ({ puzzleData, onPieceMove }, ref) => {
     const gameRef = useRef<Jiggsaw | null>(null);
 
     // Only create a new Jiggsaw if not already created
@@ -21,7 +22,7 @@ const Puzzle = forwardRef<Jiggsaw | null, PuzzleProps>(
     // Expose the jigsaw instance to the parent via ref
     useImperativeHandle(ref, () => jigsaw, [jigsaw]);
 
-    return <Canvas jigsaw={jigsaw} />;
+    return <Canvas jigsaw={jigsaw} onPieceMove={onPieceMove} />;
   }
 );
 

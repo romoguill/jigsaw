@@ -70,6 +70,14 @@ function RouteComponent() {
     }
   };
 
+  const checkGameFinished = () => {
+    if (puzzleRef.current) {
+      if (puzzleRef.current.checkGameFinished()) {
+        toast.success("Game finished!");
+      }
+    }
+  };
+
   return (
     <>
       <ButtonLoader
@@ -94,7 +102,11 @@ function RouteComponent() {
           )}
         </AnimatePresence>
       </ButtonLoader>
-      <Puzzle ref={puzzleRef} puzzleData={piecesData} />;
+      <Puzzle
+        ref={puzzleRef}
+        puzzleData={piecesData}
+        onPieceMove={checkGameFinished}
+      />
     </>
   );
 }
