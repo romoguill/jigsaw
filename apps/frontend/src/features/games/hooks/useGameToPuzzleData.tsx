@@ -35,6 +35,9 @@ export const useGameToPuzzleData = (
           ?.x,
         y: gameSessionDetails.gameState.pieces.find((p) => p.id === piece.id)
           ?.y,
+        group: gameSessionDetails.gameState.pieces.find(
+          (p) => p.id === piece.id
+        )?.group,
       };
     });
 

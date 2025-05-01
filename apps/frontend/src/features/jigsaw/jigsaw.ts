@@ -1,4 +1,4 @@
-import { GameState, GroupState } from "@jigsaw/shared";
+import { GameState } from "@jigsaw/shared";
 import { absoluteDistance } from "../../lib/utils";
 import { Coordinate, GameData, ShapeSide, shapeSides } from "../../types";
 import { PuzzlePiece } from "./puzzle-piece";
@@ -15,10 +15,7 @@ export class Jiggsaw {
   snapThreshold: number = 0;
   allPiecesLoaded = false;
 
-  constructor(
-    public readonly data: GameData,
-    public readonly groupsData?: GroupState[]
-  ) {
+  constructor(public readonly data: GameData) {
     // Create pieces
     this.pieces = data.piecesData.flatMap((row, rowIdx) =>
       row.map((piece, colIdx) => {
@@ -48,11 +45,18 @@ export class Jiggsaw {
         return puzzlePiece;
       })
     );
-
+    console.log(data);
+    console.log(data.groupsData);
     // If game is new, generate new groups, else use the groups from the data
-    if (groupsData) {
-      groupsData.forEach((group) => {
-        this.groups.set(group.id, { id: group.id, origin: group.origin });
+    if (data.groupsData) {
+      data.groupsData.forEach((group) => {
+        this.groups.set(group.id, {
+          id: group.id,
+          origin: {
+            x: group.origin.x,
+            y: group.origin.y,
+          },
+        });
       });
     } else {
       this.pieces.forEach((piece) => {
