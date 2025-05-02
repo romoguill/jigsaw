@@ -1,6 +1,6 @@
 import { useUpdateGameSession } from "@/frontend/features/games/api/mutations";
 import { gameSessionQueryOptions } from "@/frontend/features/games/api/queries";
-import { useGameToPuzzleData } from "@/frontend/features/games/hooks/useGameToPuzzleData";
+import useGameToPuzzleData from "@/frontend/features/games/hooks/useGameToPuzzleData";
 import { gameQueryOptions } from "@/frontend/features/jigsaw/api/queries";
 import GameToolbar from "@/frontend/features/jigsaw/components/nav/game-toolbar";
 import Puzzle from "@/frontend/features/jigsaw/components/puzzle";

@@ -5,10 +5,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { gameSessionQueryOptions } from "../api/queries";
 
-export const useGameToPuzzleData = (
-  gameId: number,
-  sessionId: string
-): GameData => {
+const useGameToPuzzleData = (gameId: number, sessionId: string): GameData => {
   const { data: gameData } = useSuspenseQuery(
     gameQueryOptions(gameId.toString())
   );
@@ -44,7 +41,6 @@ export const useGameToPuzzleData = (
     return piecesData;
   }, [gameSessionDetails]);
 
-  console.log(gameSessionDetails);
   const parsedGroupsData: GameData["groupsData"] = useMemo(() => {
     return gameSessionDetails.gameState.groups.map((group) => ({
       id: group.id,
@@ -61,3 +57,5 @@ export const useGameToPuzzleData = (
 
   return puzzleData;
 };
+
+export default useGameToPuzzleData;

@@ -1,5 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Itim&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@font-face {
+  font-family: "Digital7";
+  src: url("/fonts/digital-7 (mono).ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 
@@ -23,6 +30,7 @@ body:fullscreen,
   --color-bg-canvas: #ddd;
   --font-playful: "Itim", sans-serif;
   --font-sans: "Work Sans", sans-serif;
+  --font-digital: "Digital7";
 }
 
 :root {
