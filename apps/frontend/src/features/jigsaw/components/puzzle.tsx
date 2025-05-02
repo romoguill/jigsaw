@@ -1,9 +1,9 @@
+import useGameStore from "@/frontend/store/game-store";
 import { GameData } from "@/frontend/types";
+import { PlayCircleIcon } from "lucide-react";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import { Jiggsaw } from "../jigsaw";
 import Canvas from "./canvas";
-import useGameStore from "@/frontend/store/store";
-import { PlayIcon } from "lucide-react";
 
 interface PuzzleProps {
   puzzleData: GameData;
@@ -27,9 +27,13 @@ const Puzzle = forwardRef<Jiggsaw | null, PuzzleProps>(
 
     return (
       <>
-        {!isTimerRunning && (
+        {!isTimerRunning && jigsaw.allPiecesLoaded && (
           <div className="absolute top-0 left-0 w-full h-full bg-black/50 z-50 flex items-center justify-center">
-            <PlayIcon size={100} className="text-white" onClick={resumeTimer} />
+            <PlayCircleIcon
+              size={100}
+              className="text-muted-foreground hover:text-white transition-all duration-300"
+              onClick={resumeTimer}
+            />
           </div>
         )}
         <Canvas jigsaw={jigsaw} onPieceMove={onPieceMove} />

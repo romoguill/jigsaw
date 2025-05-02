@@ -1,5 +1,5 @@
 import { Button } from "@/frontend/components/ui/button";
-import useGameStore from "@/frontend/store/store";
+import useGameStore from "@/frontend/store/game-store";
 import { PlayIcon, SquareIcon } from "lucide-react";
 import { useEffect } from "react";
 

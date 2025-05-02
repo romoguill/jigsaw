@@ -5,6 +5,7 @@ import useWindowSize from "../../../hooks/use-window-size";
 import { Coordinate } from "../../../types";
 import { Jiggsaw, PieceGroup } from "../jigsaw";
 import { PuzzlePiece } from "../puzzle-piece";
+import useGameStore from "@/frontend/store/game-store";
 
 const drawShapes = (shapes: PuzzlePiece[], ctx: CanvasRenderingContext2D) => {
   shapes.forEach((shape) => shape.draw(ctx));
@@ -49,6 +50,7 @@ interface CanvasProps {
 }
 
 function Canvas({ jigsaw, onPieceMove }: CanvasProps) {
+  const { resumeTimer } = useGameStore();
   const activeGroupRef = useRef<PieceGroup | null>(null);
   const startDragCoordinateRef = useRef<Coordinate | null>(null);
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
@@ -74,14 +76,17 @@ function Canvas({ jigsaw, onPieceMove }: CanvasProps) {
       const loaded = jigsaw.checkAllPiecesLoaded();
       setAllImagesLoaded(loaded);
 
+      console.log("loaded", loaded);
       if (!loaded) {
         // Continue checking until all images are loaded
         setTimeout(checkLoading, 100);
+      } else {
+        resumeTimer();
       }
     };
 
     checkLoading();
-  }, [jigsaw]);
+  }, [jigsaw, resumeTimer]);
 
   // Update spatial grid (grid for performance. Typical in game development)
   const updateSpatialGrid = useCallback(

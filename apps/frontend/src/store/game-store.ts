@@ -12,6 +12,7 @@ interface GameStore {
 }
 
 const useGameStore = create<GameStore>((set) => ({
+  // Fullscreen
   isFullScreen: false,
   toggleFullScreen: (handle: FullScreenHandle) => {
     if (handle.active) {
@@ -24,8 +25,10 @@ const useGameStore = create<GameStore>((set) => ({
       isFullScreen: !state.isFullScreen,
     }));
   },
+
+  // Timer
   timer: 0,
-  isTimerRunning: true,
+  isTimerRunning: false,
   setTimer: (timer: number) => {
     set({ timer });
   },

@@ -1,5 +1,5 @@
 import { ButtonLoader } from "@/frontend/components/ui/button-loader";
-import useStore from "@/frontend/store/store";
+import useStore from "@/frontend/store/game-store";
 import { SaveIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { FullScreenHandle } from "react-full-screen";
