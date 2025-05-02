@@ -1,26 +1,29 @@
-import { AnimatePresence } from "motion/react";
-import { motion } from "motion/react";
-import FullScreenToggle from "./full-screen-toggle";
 import { ButtonLoader } from "@/frontend/components/ui/button-loader";
+import useStore from "@/frontend/store/store";
 import { SaveIcon } from "lucide-react";
-
+import { AnimatePresence, motion } from "motion/react";
+import { FullScreenHandle } from "react-full-screen";
+import FullScreenToggle from "./full-screen-toggle";
+import Timer from "./timer";
 interface GameToolbarProps {
   isSaving: boolean;
   isSaved: boolean;
   onSave: () => void;
-  onFullScreenToggle: () => void;
+  fullScreenHandle: FullScreenHandle;
 }
 
 function GameToolbar({
   isSaving,
   isSaved,
   onSave,
-  onFullScreenToggle,
+  fullScreenHandle,
 }: GameToolbarProps) {
+  const toggleFullScreen = useStore((state) => state.toggleFullScreen);
+
   return (
     <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-8 py-4 z-30">
       <ButtonLoader
-        className="absolute top-5 left-5"
+        className=""
         variant={"ghost"}
         onClick={onSave}
         isPending={isSaving}
@@ -41,9 +44,12 @@ function GameToolbar({
           )}
         </AnimatePresence>
       </ButtonLoader>
+
+      <Timer />
+
       <FullScreenToggle
-        className="ml-auto"
-        onFullScreenToggle={onFullScreenToggle}
+        className=""
+        onFullScreenToggle={() => toggleFullScreen(fullScreenHandle)}
       />
     </nav>
   );

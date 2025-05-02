@@ -81,18 +81,10 @@ function RouteComponent() {
     }
   };
 
-  const handleFullScreenToggle = () => {
-    if (fullScreenHandle.active) {
-      fullScreenHandle.exit();
-    } else {
-      fullScreenHandle.enter();
-    }
-  };
-
   return (
     <FullScreen handle={fullScreenHandle}>
       <GameToolbar
-        onFullScreenToggle={handleFullScreenToggle}
+        fullScreenHandle={fullScreenHandle}
         isSaving={isUpdating}
         isSaved={isSaved}
         onSave={handleUpdateState}
