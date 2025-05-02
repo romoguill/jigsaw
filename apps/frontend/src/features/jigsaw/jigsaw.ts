@@ -45,10 +45,9 @@ export class Jiggsaw {
         return puzzlePiece;
       })
     );
-    console.log(data);
-    console.log(data.groupsData);
+
     // If game is new, generate new groups, else use the groups from the data
-    if (data.groupsData) {
+    if (data.groupsData.length > 0) {
       data.groupsData.forEach((group) => {
         this.groups.set(group.id, {
           id: group.id,

@@ -11,6 +11,7 @@ export class PuzzlePiece {
     y: 0,
   };
   scale = 1;
+  zIndex: number;
 
   constructor(
     public id: number,
@@ -26,10 +27,12 @@ export class PuzzlePiece {
       bottom: null,
       left: null,
     },
-    public groupId: number = id
+    public groupId: number = id,
+    zIndex: number = 0
   ) {
     this.loadImage();
     this.scale = this.width / pieceSize;
+    this.zIndex = zIndex;
   }
 
   get position(): Coordinate {
@@ -103,6 +106,15 @@ export class PuzzlePiece {
 
   setActive(state: boolean) {
     this.active = state;
+    console.log(this.zIndex);
+    console.log("hola");
+    console.log("setActive", state);
+    if (state) {
+      // When piece becomes active, bring it to the front
+      this.zIndex = 1;
+    } else {
+      this.zIndex = 0;
+    }
   }
 
   // Is the coordinate inside the piece?

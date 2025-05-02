@@ -8,7 +8,12 @@ import { PuzzlePiece } from "../puzzle-piece";
 import useGameStore from "@/frontend/store/game-store";
 
 const drawShapes = (shapes: PuzzlePiece[], ctx: CanvasRenderingContext2D) => {
+  // Sort shapes by zIndex, so that active piece is on top
+  shapes.sort((a, b) => a.zIndex - b.zIndex);
   shapes.forEach((shape) => shape.draw(ctx));
+  const a = shapes.filter((shape) => shape.zIndex === 1);
+
+  if (a.length) console.log(a);
 };
 
 // Draw three circles that scale in sequence
@@ -76,7 +81,6 @@ function Canvas({ jigsaw, onPieceMove }: CanvasProps) {
       const loaded = jigsaw.checkAllPiecesLoaded();
       setAllImagesLoaded(loaded);
 
-      console.log("loaded", loaded);
       if (!loaded) {
         // Continue checking until all images are loaded
         setTimeout(checkLoading, 100);
@@ -115,6 +119,8 @@ function Canvas({ jigsaw, onPieceMove }: CanvasProps) {
       const activePiece = jigsaw.pieces.find((piece) =>
         piece.isIntersecting(mouseCoordinate)
       );
+
+      activePiece?.setActive(true);
 
       // Register the initial mouse position and set active the group being focused.
       if (activePiece) {
@@ -158,6 +164,8 @@ function Canvas({ jigsaw, onPieceMove }: CanvasProps) {
         const { snappedGroupId, delta } = validSnaps[0];
         jigsaw.snap(activeGroupRef.current.id, snappedGroupId, delta);
       }
+
+      jigsaw.pieces.forEach((piece) => piece.setActive(false));
 
       startDragCoordinateRef.current = null;
       activeGroupRef.current = null;

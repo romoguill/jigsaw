@@ -145,6 +145,7 @@ export const gameSession = sqliteTable('game_session', {
     .$type<GameState>()
     .notNull()
     .default({ pieces: [], groups: [] }),
+  timer: integer('timer').notNull().default(0),
   ...timestamps,
 });
 
