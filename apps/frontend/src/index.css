@@ -5,13 +5,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
-html {
-  height: 100vh;
-}
-
+html,
 body,
 #root {
   height: 100%;
+  width: 100%;
+}
+
+html:fullscreen,
+body:fullscreen,
+#root:fullscreen {
+  height: 100%;
+  width: 100%;
 }
 
 @theme {

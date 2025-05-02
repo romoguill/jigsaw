@@ -3,6 +3,7 @@ import { useUpdateGameSession } from "@/frontend/features/games/api/mutations";
 import { gameSessionQueryOptions } from "@/frontend/features/games/api/queries";
 import { useGameToPuzzleData } from "@/frontend/features/games/hooks/useGameToPuzzleData";
 import { gameQueryOptions } from "@/frontend/features/jigsaw/api/queries";
+import GameToolbar from "@/frontend/features/jigsaw/components/nav/game-toolbar";
 import Puzzle from "@/frontend/features/jigsaw/components/puzzle";
 import WinningCard from "@/frontend/features/jigsaw/components/winning-card";
 import { Jiggsaw } from "@/frontend/features/jigsaw/jigsaw";
@@ -10,10 +11,10 @@ import { GameState } from "@jigsaw/shared";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { SaveIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import { AnimatePresence, motion } from "motion/react";
-import ShapesParticles from "@/frontend/features/jigsaw/components/shapes-particles";
+import { useEffect, useRef, useState } from "react";
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/games/sessions/$sessionId")({
   component: RouteComponent,
@@ -35,6 +36,7 @@ function RouteComponent() {
   const [gameSavedState, setGameSavedState] = useState<GameState | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isGameFinished, setIsGameFinshed] = useState(false);
+  const fullScreenHandle = useFullScreenHandle();
 
   const { sessionId } = Route.useParams();
 
@@ -82,8 +84,17 @@ function RouteComponent() {
     }
   };
 
+  const handleFullScreenToggle = () => {
+    if (fullScreenHandle.active) {
+      fullScreenHandle.exit();
+    } else {
+      fullScreenHandle.enter();
+    }
+  };
+
   return (
-    <>
+    <FullScreen handle={fullScreenHandle}>
+      <GameToolbar onFullScreenToggle={handleFullScreenToggle} />
       <ButtonLoader
         className="absolute top-5 left-5"
         variant={"ghost"}
@@ -113,6 +124,6 @@ function RouteComponent() {
       />
 
       <WinningCard isVisible={isGameFinished} />
-    </>
+    </FullScreen>
   );
 }

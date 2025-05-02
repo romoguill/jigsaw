@@ -166,7 +166,7 @@ function Canvas({ jigsaw, onPieceMove }: CanvasProps) {
       ref={canvasRef}
       width={windowSize.width}
       height={windowSize.height}
-      className="bg-slate-950"
+      className="bg-slate-950 w-full h-full"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
