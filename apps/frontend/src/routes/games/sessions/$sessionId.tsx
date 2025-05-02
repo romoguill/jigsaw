@@ -1,4 +1,3 @@
-import { ButtonLoader } from "@/frontend/components/ui/button-loader";
 import { useUpdateGameSession } from "@/frontend/features/games/api/mutations";
 import { gameSessionQueryOptions } from "@/frontend/features/games/api/queries";
 import { useGameToPuzzleData } from "@/frontend/features/games/hooks/useGameToPuzzleData";
@@ -10,8 +9,6 @@ import { Jiggsaw } from "@/frontend/features/jigsaw/jigsaw";
 import { GameState } from "@jigsaw/shared";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { SaveIcon } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { toast } from "sonner";
@@ -94,29 +91,13 @@ function RouteComponent() {
 
   return (
     <FullScreen handle={fullScreenHandle}>
-      <GameToolbar onFullScreenToggle={handleFullScreenToggle} />
-      <ButtonLoader
-        className="absolute top-5 left-5"
-        variant={"ghost"}
-        onClick={handleUpdateState}
-        isPending={isUpdating}
-      >
-        <SaveIcon size={20} />
-        <AnimatePresence>
-          {isSaved && (
-            <motion.span
-              key="game-saved"
-              initial={false}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-              className="text-green-300 absolute left-12 top-1/2 -translate-y-1/2"
-            >
-              Game saved!
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </ButtonLoader>
+      <GameToolbar
+        onFullScreenToggle={handleFullScreenToggle}
+        isSaving={isUpdating}
+        isSaved={isSaved}
+        onSave={handleUpdateState}
+      />
+
       <Puzzle
         ref={puzzleRef}
         puzzleData={piecesData}
