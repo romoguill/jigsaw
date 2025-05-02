@@ -4,9 +4,14 @@ import { create } from "zustand";
 interface GameStore {
   isFullScreen: boolean;
   toggleFullScreen: (handle: FullScreenHandle) => void;
+  timer: number;
+  isTimerRunning: boolean;
+  setTimer: (timer: number) => void;
+  resumeTimer: () => void;
+  pauseTimer: () => void;
 }
 
-const useStore = create<GameStore>((set) => ({
+const useGameStore = create<GameStore>((set) => ({
   isFullScreen: false,
   toggleFullScreen: (handle: FullScreenHandle) => {
     if (handle.active) {
@@ -19,6 +24,21 @@ const useStore = create<GameStore>((set) => ({
       isFullScreen: !state.isFullScreen,
     }));
   },
+  timer: 0,
+  isTimerRunning: true,
+  setTimer: (timer: number) => {
+    set({ timer });
+  },
+  resumeTimer: () => {
+    set(() => ({
+      isTimerRunning: true,
+    }));
+  },
+  pauseTimer: () => {
+    set(() => ({
+      isTimerRunning: false,
+    }));
+  },
 }));
 
-export default useStore;
+export default useGameStore;
