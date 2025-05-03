@@ -33,13 +33,15 @@ export const useUpdateGameSession = () => {
     mutationFn: async ({
       sessionId,
       gameState,
+      timer,
     }: {
       sessionId: string;
       gameState: GameState;
+      timer: number;
     }) => {
       await apiClient.game.sessions[":id"].$put({
         param: { id: sessionId },
-        json: gameState,
+        json: { gameState, timer },
       });
     },
     onSuccess: () => {

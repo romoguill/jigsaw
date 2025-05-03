@@ -381,14 +381,21 @@ export const gameRoute = new Hono<ContextWithAuth>()
 
     return c.json(dataWithUrls);
   })
-  .put('/sessions/:id', zValidator('json', gameStateSchema), async (c) => {
-    const sessionId = c.req.param('id');
-    const gameState = c.req.valid('json');
+  .put(
+    '/sessions/:id',
+    zValidator(
+      'json',
+      z.object({ gameState: gameStateSchema, timer: z.number().int() })
+    ),
+    async (c) => {
+      const sessionId = c.req.param('id');
+      const { gameState, timer } = c.req.valid('json');
 
-    await db
-      .update(gameSession)
-      .set({ gameState })
-      .where(eq(gameSession.sessionId, sessionId));
+      await db
+        .update(gameSession)
+        .set({ gameState, timer })
+        .where(eq(gameSession.sessionId, sessionId));
 
-    return c.json({ succes: true });
-  });
+      return c.json({ succes: true });
+    }
+  );

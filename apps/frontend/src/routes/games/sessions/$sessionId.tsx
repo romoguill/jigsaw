@@ -6,6 +6,7 @@ import GameToolbar from "@/frontend/features/jigsaw/components/nav/game-toolbar"
 import Puzzle from "@/frontend/features/jigsaw/components/puzzle";
 import WinningCard from "@/frontend/features/jigsaw/components/winning-card";
 import { Jiggsaw } from "@/frontend/features/jigsaw/jigsaw";
+import useGameStore from "@/frontend/store/game-store";
 import { GameState } from "@jigsaw/shared";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -30,12 +31,11 @@ export const Route = createFileRoute("/games/sessions/$sessionId")({
 
 function RouteComponent() {
   const puzzleRef = useRef<Jiggsaw | null>(null);
+  const { sessionId } = Route.useParams();
+
   const [gameSavedState, setGameSavedState] = useState<GameState | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isGameFinished, setIsGameFinshed] = useState(false);
-  const fullScreenHandle = useFullScreenHandle();
-
-  const { sessionId } = Route.useParams();
 
   const { data: gameDetails } = useSuspenseQuery(
     gameSessionQueryOptions(sessionId)
@@ -43,6 +43,9 @@ function RouteComponent() {
   const piecesData = useGameToPuzzleData(gameDetails.gameId, sessionId);
   const { mutate: updateGameSession, isPending: isUpdating } =
     useUpdateGameSession();
+
+  const fullScreenHandle = useFullScreenHandle();
+  const timer = useGameStore((state) => state.timer);
 
   useEffect(() => {
     if (gameSavedState) {
@@ -60,7 +63,7 @@ function RouteComponent() {
     if (puzzleRef.current) {
       const gameState = puzzleRef.current.getGameState();
       updateGameSession(
-        { sessionId, gameState },
+        { sessionId, gameState, timer },
         {
           onSuccess: () => {
             setGameSavedState(gameState);
