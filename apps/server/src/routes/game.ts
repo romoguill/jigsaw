@@ -385,15 +385,19 @@ export const gameRoute = new Hono<ContextWithAuth>()
     '/sessions/:id',
     zValidator(
       'json',
-      z.object({ gameState: gameStateSchema, timer: z.number().int() })
+      z.object({
+        gameState: gameStateSchema,
+        timer: z.number().int(),
+        isFinished: z.boolean(),
+      })
     ),
     async (c) => {
       const sessionId = c.req.param('id');
-      const { gameState, timer } = c.req.valid('json');
+      const { gameState, timer, isFinished } = c.req.valid('json');
 
       await db
         .update(gameSession)
-        .set({ gameState, timer })
+        .set({ gameState, timer, isFinished })
         .where(eq(gameSession.sessionId, sessionId));
 
       return c.json({ succes: true });

@@ -34,14 +34,16 @@ export const useUpdateGameSession = () => {
       sessionId,
       gameState,
       timer,
+      isFinished,
     }: {
       sessionId: string;
       gameState: GameState;
       timer: number;
+      isFinished: boolean;
     }) => {
       await apiClient.game.sessions[":id"].$put({
         param: { id: sessionId },
-        json: { gameState, timer },
+        json: { gameState, timer, isFinished },
       });
     },
     onSuccess: () => {

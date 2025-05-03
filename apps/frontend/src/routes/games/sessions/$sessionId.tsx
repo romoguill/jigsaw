@@ -63,7 +63,7 @@ function RouteComponent() {
     if (puzzleRef.current) {
       const gameState = puzzleRef.current.getGameState();
       updateGameSession(
-        { sessionId, gameState, timer },
+        { sessionId, gameState, timer, isFinished: false },
         {
           onSuccess: () => {
             setGameSavedState(gameState);
@@ -79,7 +79,9 @@ function RouteComponent() {
   const checkGameFinished = () => {
     if (puzzleRef.current) {
       if (puzzleRef.current.checkGameFinished()) {
+        const gameState = puzzleRef.current.getGameState();
         setIsGameFinshed(true);
+        updateGameSession({ sessionId, gameState, timer, isFinished: true });
       }
     }
   };
