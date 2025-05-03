@@ -146,6 +146,9 @@ export const gameSession = sqliteTable('game_session', {
     .notNull()
     .default({ pieces: [], groups: [] }),
   timer: integer('timer').notNull().default(0),
+  isFinished: integer('is_finished', { mode: 'boolean' })
+    .notNull()
+    .default(false),
   ...timestamps,
 });
 
