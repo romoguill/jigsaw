@@ -47,6 +47,7 @@ function RouteComponent() {
   const fullScreenHandle = useFullScreenHandle();
   const timer = useGameStore((state) => state.timer);
 
+  // Used for the save button to show a loading state
   useEffect(() => {
     if (gameSavedState) {
       setIsSaved(true);
@@ -92,6 +93,7 @@ function RouteComponent() {
         fullScreenHandle={fullScreenHandle}
         isSaving={isUpdating}
         isSaved={isSaved}
+        isGameFinished={isGameFinished}
         onSave={handleUpdateState}
       />
 

@@ -1,12 +1,30 @@
 import { motion, AnimatePresence } from "motion/react";
 import { Trophy } from "lucide-react";
 import ShapesParticles from "./shapes-particles";
+import { useQuery } from "@tanstack/react-query";
+import { gameSessionQueryOptions } from "../../games/api/queries";
+import { Link, useParams } from "@tanstack/react-router";
+import { Button } from "@/frontend/components/ui/button";
+import { cn } from "@/frontend/lib/utils";
+import { buttonVariants } from "@/frontend/components/ui/jolly-utils";
 
 interface WinningCardProps {
   isVisible: boolean;
 }
 
 export default function WinningCard({ isVisible }: WinningCardProps) {
+  const { sessionId } = useParams({ from: "/games/sessions/$sessionId" });
+  const { data: gameSessionDetails } = useQuery(
+    gameSessionQueryOptions(sessionId)
+  );
+
+  const timeParser = (time: number) => {
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
+    const seconds = time % 60;
+    return `${hours.toString()}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -33,12 +51,48 @@ export default function WinningCard({ isVisible }: WinningCardProps) {
               <div className="bg-yellow-400 rounded-full p-4">
                 <Trophy className="w-16 h-16 text-yellow-600" />
               </div>
+
               <h2 className="text-3xl font-bold text-center text-gray-800">
                 Congratulations!
               </h2>
               <p className="text-center text-gray-600">
-                You've successfully completed the puzzle! Well done!
+                <ul className="flex flex-col gap-2 p-4 bg-gray-100 rounded-lg text-sky-800">
+                  <li className="flex items-center gap-2">
+                    Pieces:
+                    <span className="font-semibold">
+                      {gameSessionDetails?.game.pieces.length}
+                    </span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    Time:
+                    <span className="font-semibold">
+                      {timeParser(gameSessionDetails?.timer || 0)}
+                    </span>
+                  </li>
+                </ul>
               </p>
+
+              <div className="flex gap-4">
+                <a
+                  target="_blank"
+                  href={gameSessionDetails?.game.imageUrl}
+                  className={cn(
+                    buttonVariants({ variant: "ghost" }),
+                    "border-2 border-sky-800 text-sky-800 hover:bg-sky-800 hover:text-white"
+                  )}
+                >
+                  View Image
+                </a>
+                <Link
+                  to="/"
+                  className={cn(
+                    buttonVariants({ variant: "ghost" }),
+                    "border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white"
+                  )}
+                >
+                  Exit Game
+                </Link>
+              </div>
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

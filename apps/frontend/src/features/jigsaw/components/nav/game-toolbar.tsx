@@ -11,6 +11,7 @@ interface GameToolbarProps {
   isSaving: boolean;
   isSaved: boolean;
   onSave: () => void;
+  isGameFinished: boolean;
   fullScreenHandle: FullScreenHandle;
 }
 
@@ -19,10 +20,15 @@ function GameToolbar({
   isSaved,
   onSave,
   fullScreenHandle,
+  isGameFinished,
 }: GameToolbarProps) {
   const toggleFullScreen = useStore((state) => state.toggleFullScreen);
 
-  useInterval({ callback: onSave, delay: 60 * 1000 * 2 });
+  useInterval({
+    callback: onSave,
+    delay: 60 * 1000 * 2,
+    disabled: isGameFinished,
+  });
 
   return (
     <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-8 py-4 z-30">
