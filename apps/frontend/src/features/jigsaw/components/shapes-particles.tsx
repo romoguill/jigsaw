@@ -236,7 +236,6 @@ export default function ShapesParticles() {
         ? -estimatedStartOffset
         : window.innerWidth + estimatedStartOffset;
     const y = -200 + Math.random() * window.innerHeight;
-    console.log(y);
     const shapeIndex = Math.floor(Math.random() * shapes.length);
     const speed = 1 + 1.6 * Math.random(); // Random speed between 2 and 5
     const colorMap = [

@@ -106,9 +106,6 @@ export class PuzzlePiece {
 
   setActive(state: boolean) {
     this.active = state;
-    console.log(this.zIndex);
-    console.log("hola");
-    console.log("setActive", state);
     if (state) {
       // When piece becomes active, bring it to the front
       this.zIndex = 1;

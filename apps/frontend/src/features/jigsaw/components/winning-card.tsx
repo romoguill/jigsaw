@@ -1,12 +1,11 @@
-import { motion, AnimatePresence } from "motion/react";
-import { Trophy } from "lucide-react";
-import ShapesParticles from "./shapes-particles";
-import { useQuery } from "@tanstack/react-query";
-import { gameSessionQueryOptions } from "../../games/api/queries";
-import { Link, useParams } from "@tanstack/react-router";
-import { Button } from "@/frontend/components/ui/button";
-import { cn } from "@/frontend/lib/utils";
 import { buttonVariants } from "@/frontend/components/ui/jolly-utils";
+import { cn } from "@/frontend/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { Link, useParams } from "@tanstack/react-router";
+import { Trophy } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { gameSessionQueryOptions } from "../../games/api/queries";
+import ShapesParticles from "./shapes-particles";
 
 interface WinningCardProps {
   isVisible: boolean;

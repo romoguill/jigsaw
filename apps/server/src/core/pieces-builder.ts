@@ -59,7 +59,11 @@ export class PiecesBuilder {
     );
 
     // Use the first horizontal curve to infer the piece size.
-    this._pieceSize = Number(parsedHorizontalPaths[0][0][20]);
+    if (parsedHorizontalPaths.length !== 0) {
+      this._pieceSize = Number(parsedHorizontalPaths[0][0][20]);
+    } else {
+      this._pieceSize = Number(parsedVerticalPaths[0][0][20]);
+    }
 
     return { parsedHorizontalPaths, parsedVerticalPaths };
   }
@@ -228,18 +232,19 @@ export class PiecesBuilder {
     rightSegment: Curve[] | null;
   } {
     const topSegment: Curve[] | null =
-      row === 0 ? null : this.horizontalCurves[row - 1]?.[column];
+      row === 0 ? null : this._horizontalCurves[row - 1]?.[column];
     const bottomSegment: Curve[] | null =
-      this.horizontalCurves[row]?.[column] ?? null;
+      this._horizontalCurves[row]?.[column] ?? null;
     const leftSegment: Curve[] | null =
-      column === 0 ? null : this.verticalCurves[column - 1]?.[row];
+      column === 0 ? null : this._verticalCurves[column - 1]?.[row];
     const rightSegment: Curve[] | null =
-      this.verticalCurves[column]?.[row] ?? null;
+      this._verticalCurves[column]?.[row] ?? null;
 
     return { topSegment, bottomSegment, leftSegment, rightSegment };
   }
 
   applyRotationToVerticalCurves(): void {
+    console.log(JSON.stringify(this._verticalCurves, null, 2));
     // Rotate the curves 90 degrees clockwise. Use the first curve of the first segment of each vertical curve as the rotation origin.
     this._verticalCurves.forEach((segments) => {
       const rotationOrigin = segments[0][0].startPoint;
@@ -249,6 +254,9 @@ export class PiecesBuilder {
         });
       });
     });
+
+    console.log('after rotation');
+    console.log(JSON.stringify(this._verticalCurves, null, 2));
   }
 
   // Generate the piece shape by using the enclosing curves to build the shape.

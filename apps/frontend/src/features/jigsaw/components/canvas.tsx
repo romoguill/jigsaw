@@ -11,9 +11,6 @@ const drawShapes = (shapes: PuzzlePiece[], ctx: CanvasRenderingContext2D) => {
   // Sort shapes by zIndex, so that active piece is on top
   shapes.sort((a, b) => a.zIndex - b.zIndex);
   shapes.forEach((shape) => shape.draw(ctx));
-  const a = shapes.filter((shape) => shape.zIndex === 1);
-
-  if (a.length) console.log(a);
 };
 
 // Draw three circles that scale in sequence

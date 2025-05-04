@@ -45,6 +45,10 @@ export const pathGenerator = ({
     pathBuilder.generateCompletePath('complete');
 
     paths.vertical.push(pathBuilder.toString());
+
+    // Set it here to avoid recalculating it for each path
+    pieceFootprint =
+      pieceFootprint === 0 ? pathBuilder.pieceFootprint : pieceFootprint;
   }
 
   return { paths, pieceFootprint };
