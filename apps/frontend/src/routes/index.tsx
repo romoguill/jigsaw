@@ -3,13 +3,22 @@ import GoogleOAuthButton from "@/frontend/components/auth/google-oauth-button";
 import ButtonMainOption from "@/frontend/components/button-main-option";
 import ThemeToggle from "@/frontend/components/theme-toggle";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { gameSessionsQueryOptions } from "../features/games/api/queries";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
-export const Route = createFileRoute("/")({ component: RouteComponent });
+export const Route = createFileRoute("/")({
+  component: RouteComponent,
+  loader: async ({ context }) => {
+    context.queryClient.ensureQueryData(gameSessionsQueryOptions());
+  },
+});
 
 function RouteComponent() {
   const {
     auth: { user },
   } = Route.useRouteContext();
+
+  const { data: sessions } = useSuspenseQuery(gameSessionsQueryOptions());
 
   return (
     <div className="h-full">
@@ -20,11 +29,13 @@ function RouteComponent() {
       <main className="flex flex-col items-center justify-center h-3/4">
         <img width={250} src="/main-logo.png" alt="logo" />
         <ul className="flex flex-col gap-4">
-          <li>
-            <Link to="/games">
-              <ButtonMainOption>Continue</ButtonMainOption>
-            </Link>
-          </li>
+          {sessions.length > 0 && (
+            <li>
+              <Link to="/games">
+                <ButtonMainOption>Continue</ButtonMainOption>
+              </Link>
+            </li>
+          )}
           <li>
             <Link to="/games">
               <ButtonMainOption>New Game</ButtonMainOption>

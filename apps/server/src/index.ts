@@ -9,6 +9,7 @@ import { authRoute } from './routes/auth.js';
 import { healthCheckRoute } from './routes/health-check.js';
 import { uploadRoute } from './routes/upload.js';
 import { gameRoute } from './routes/game.js';
+import { gameSessionsRoute } from './routes/game-sessions.js';
 
 const app = new Hono()
   .basePath('/api')
@@ -35,6 +36,7 @@ const app = new Hono()
   .route('/', healthCheckRoute)
   .route('/auth', authRoute)
   .route('/game', gameRoute)
+  .route('/game-sessions', gameSessionsRoute)
   .route('/uploadthing', uploadRoute)
   // Static files from Vite build
   .get('*', serveStatic({ root: '../frontend/dist' }));
