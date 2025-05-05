@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameCustomizationForm } from "../../../features/customize/game-customization-form";
 import StepBadge from "@/frontend/features/customize/step-badge";
+import { useBuilderCreate } from "@/frontend/features/jigsaw-builder/api/mutations";
 
 export const Route = createFileRoute("/games/customization/")({
   component: RouteComponent,
@@ -15,6 +16,7 @@ function RouteComponent() {
     pieceCount: undefined as number | undefined,
     difficulty: undefined as "easy" | "medium" | "hard" | undefined,
   });
+  const { mutate: buildJigsaw, isPending } = useBuilderCreate();
 
   const handleNext = () => {
     setStep(step + 1);
@@ -24,9 +26,9 @@ function RouteComponent() {
     setStep(step - 1);
   };
 
-  const handleSubmit = (data: typeof formData) => {
+  const onSubmit = (data: typeof formData) => {
     // TODO: Handle form submission
-    console.log("Form submitted:", data);
+    buildJigsaw({});
   };
 
   return (
@@ -53,7 +55,7 @@ function RouteComponent() {
           setFormData={setFormData}
           onNext={handleNext}
           onBack={handleBack}
-          onSubmit={handleSubmit}
+          onSubmit={onSubmit}
         />
       </div>
     </div>

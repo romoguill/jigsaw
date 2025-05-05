@@ -1,5 +1,5 @@
-import type { UploadThingRouter } from '@jigsaw/server/uploadthing';
 import type { ApiType } from '@jigsaw/server/routes';
+import type { UploadThingRouter } from '@jigsaw/server/uploadthing';
 
 import { hc } from 'hono/client';
 

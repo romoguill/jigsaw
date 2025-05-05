@@ -10,6 +10,7 @@ import {
 } from "@/frontend/components/ui/select";
 import { pieceCount, gameDifficulty } from "@jigsaw/shared";
 import { useState } from "react";
+import UploadInput from "./upload-input";
 
 interface GameCustomizationFormProps {
   step: number;
@@ -61,17 +62,7 @@ export function GameCustomizationForm({
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Upload Image</Label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="block w-full text-sm text-gray-500
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-full file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-primary file:text-white
-                  hover:file:bg-primary/90"
-              />
+              <UploadInput onChange={() => {}} />
             </div>
             {previewUrl && (
               <div className="mt-4">
