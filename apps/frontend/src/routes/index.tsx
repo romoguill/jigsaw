@@ -22,16 +22,16 @@ function RouteComponent() {
         <ul className="flex flex-col gap-4">
           <li>
             <Link to="/games">
-              <ButtonMainOption withPiece>Continue</ButtonMainOption>
+              <ButtonMainOption>Continue</ButtonMainOption>
             </Link>
           </li>
           <li>
             <Link to="/games">
-              <ButtonMainOption withPiece>New Game</ButtonMainOption>
+              <ButtonMainOption>New Game</ButtonMainOption>
             </Link>
           </li>
           <li>
-            <ButtonMainOption withPiece>Join with ID</ButtonMainOption>
+            <ButtonMainOption>Join with ID</ButtonMainOption>
           </li>
         </ul>
       </main>
