@@ -1,7 +1,8 @@
+import { shapes } from "@/frontend/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameCustomizationForm } from "../../../features/customize/game-customization-form";
-import { shapes } from "@/frontend/lib/utils";
+import StepBadge from "@/frontend/features/customize/step-badge";
 
 export const Route = createFileRoute("/games/customization/")({
   component: RouteComponent,
@@ -29,44 +30,14 @@ function RouteComponent() {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Create Your Jigsaw Puzzle</h1>
-      <div className="max-w-2xl mx-auto">
+    <div className="container mx-auto py-8 px-6">
+      <h1 className="text-2xl font-bold font-playful">Customize your puzzle</h1>
+      <div className="max-w-2xl mx-auto mt-10">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <div
-              className={`flex items-center ${step >= 1 ? "text-primary" : "text-gray-400"}`}
-            >
-              <div className="h-20 w-20 flex items-center justify-center mr-2 fill-sky-400/80 text-white relative">
-                {shapes[5]}
-                <span className="absolute font-bold text-lg top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  1
-                </span>
-              </div>
-              <span>Upload Image</span>
-            </div>
-            <div
-              className={`flex items-center ${step >= 2 ? "text-primary" : "text-gray-400"}`}
-            >
-              <div className="h-20 w-20 flex items-center justify-center mr-2 fill-emerald-400/80 text-white relative">
-                {shapes[12]}
-                <span className="absolute font-bold text-lg top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  2
-                </span>
-              </div>
-              <span>Piece Count</span>
-            </div>
-            <div
-              className={`flex items-center ${step >= 3 ? "text-primary" : "text-gray-400"}`}
-            >
-              <div className="h-20 w-20 flex items-center justify-center mr-2 fill-lime-400/80 text-white relative">
-                {shapes[9]}
-                <span className="absolute font-bold text-lg top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  3
-                </span>
-              </div>
-              <span>Difficulty</span>
-            </div>
+            <StepBadge stepNumber={1} step={step} description="Upload Image" />
+            <StepBadge stepNumber={2} step={step} description="Piece Count" />
+            <StepBadge stepNumber={3} step={step} description="Difficulty" />
           </div>
           <div className="h-1 bg-gray-200 rounded-full">
             <div
