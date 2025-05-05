@@ -16,6 +16,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as GamesIndexImport } from './routes/games/index'
 import { Route as AdminAdminImport } from './routes/admin/_admin'
+import { Route as GamesCustomizationIndexImport } from './routes/games/customization/index'
 import { Route as GamesActiveIndexImport } from './routes/games/active/index'
 import { Route as AdminAdminIndexImport } from './routes/admin/_admin/index'
 import { Route as GamesSessionsSessionIdImport } from './routes/games/sessions/$sessionId'
@@ -49,6 +50,12 @@ const GamesIndexRoute = GamesIndexImport.update({
 const AdminAdminRoute = AdminAdminImport.update({
   id: '/_admin',
   getParentRoute: () => AdminRoute,
+} as any)
+
+const GamesCustomizationIndexRoute = GamesCustomizationIndexImport.update({
+  id: '/games/customization/',
+  path: '/games/customization/',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const GamesActiveIndexRoute = GamesActiveIndexImport.update({
@@ -148,6 +155,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesActiveIndexImport
       parentRoute: typeof rootRoute
     }
+    '/games/customization/': {
+      id: '/games/customization/'
+      path: '/games/customization'
+      fullPath: '/games/customization'
+      preLoaderRoute: typeof GamesCustomizationIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -188,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/games/sessions/$sessionId': typeof GamesSessionsSessionIdRoute
   '/admin/': typeof AdminAdminIndexRoute
   '/games/active': typeof GamesActiveIndexRoute
+  '/games/customization': typeof GamesCustomizationIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -198,6 +213,7 @@ export interface FileRoutesByTo {
   '/admin/detail-test': typeof AdminAdminDetailTestRoute
   '/games/sessions/$sessionId': typeof GamesSessionsSessionIdRoute
   '/games/active': typeof GamesActiveIndexRoute
+  '/games/customization': typeof GamesCustomizationIndexRoute
 }
 
 export interface FileRoutesById {
@@ -211,6 +227,7 @@ export interface FileRoutesById {
   '/games/sessions/$sessionId': typeof GamesSessionsSessionIdRoute
   '/admin/_admin/': typeof AdminAdminIndexRoute
   '/games/active/': typeof GamesActiveIndexRoute
+  '/games/customization/': typeof GamesCustomizationIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -224,6 +241,7 @@ export interface FileRouteTypes {
     | '/games/sessions/$sessionId'
     | '/admin/'
     | '/games/active'
+    | '/games/customization'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -233,6 +251,7 @@ export interface FileRouteTypes {
     | '/admin/detail-test'
     | '/games/sessions/$sessionId'
     | '/games/active'
+    | '/games/customization'
   id:
     | '__root__'
     | '/'
@@ -244,6 +263,7 @@ export interface FileRouteTypes {
     | '/games/sessions/$sessionId'
     | '/admin/_admin/'
     | '/games/active/'
+    | '/games/customization/'
   fileRoutesById: FileRoutesById
 }
 
@@ -253,6 +273,7 @@ export interface RootRouteChildren {
   GamesIndexRoute: typeof GamesIndexRoute
   GamesSessionsSessionIdRoute: typeof GamesSessionsSessionIdRoute
   GamesActiveIndexRoute: typeof GamesActiveIndexRoute
+  GamesCustomizationIndexRoute: typeof GamesCustomizationIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -261,6 +282,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesIndexRoute: GamesIndexRoute,
   GamesSessionsSessionIdRoute: GamesSessionsSessionIdRoute,
   GamesActiveIndexRoute: GamesActiveIndexRoute,
+  GamesCustomizationIndexRoute: GamesCustomizationIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -277,7 +299,8 @@ export const routeTree = rootRoute
         "/admin",
         "/games/",
         "/games/sessions/$sessionId",
-        "/games/active/"
+        "/games/active/",
+        "/games/customization/"
       ]
     },
     "/": {
@@ -318,6 +341,9 @@ export const routeTree = rootRoute
     },
     "/games/active/": {
       "filePath": "games/active/index.tsx"
+    },
+    "/games/customization/": {
+      "filePath": "games/customization/index.tsx"
     }
   }
 }

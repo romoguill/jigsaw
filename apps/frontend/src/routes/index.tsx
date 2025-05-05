@@ -51,7 +51,7 @@ function RouteComponent() {
       <Link to="/games">
         <ButtonMainOption>Existing Games</ButtonMainOption>
       </Link>
-      <Link to="/games">
+      <Link to="/games/customization">
         <ButtonMainOption>Custom Game</ButtonMainOption>
       </Link>
       <ButtonMainOption onClick={() => setIsSubmenuOpen(false)}>
