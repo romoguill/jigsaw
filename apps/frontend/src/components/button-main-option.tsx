@@ -26,9 +26,10 @@ const svgDataUrl = `data:image/svg+xml;base64,${btoa(svgBackground(colors))}`;
 
 interface ButtonMainOptionProps {
   children: React.ReactNode;
+  onClick?: () => void;
 }
 
-function ButtonMainOption({ children }: ButtonMainOptionProps) {
+function ButtonMainOption({ children, onClick }: ButtonMainOptionProps) {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <button
@@ -37,6 +38,7 @@ function ButtonMainOption({ children }: ButtonMainOptionProps) {
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
       style={{
         backgroundImage: isHovered ? `url("${svgDataUrl}")` : "none",
       }}

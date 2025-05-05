@@ -1,14 +1,15 @@
 import { ButtonLoader } from "@/frontend/components/ui/button-loader";
 import { useInterval } from "@/frontend/hooks/use-interval";
 import useStore from "@/frontend/store/game-store";
-import { SaveIcon } from "lucide-react";
+import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { FullScreenHandle } from "react-full-screen";
 import FullScreenToggle from "./full-screen-toggle";
 import Timer from "./timer";
 import { useQuery } from "@tanstack/react-query";
 import { gameSessionQueryOptions } from "@/frontend/features/games/api/queries";
-import { useParams } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
+import { buttonVariants } from "@/frontend/components/ui/jolly-utils";
 
 interface GameToolbarProps {
   isSaving: boolean;
@@ -39,6 +40,9 @@ function GameToolbar({
 
   return (
     <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-8 py-4 z-30">
+      <Link to="/" className={buttonVariants({ variant: "ghost" })}>
+        <ArrowLeftIcon size={20} />
+      </Link>
       <ButtonLoader
         className=""
         variant={"ghost"}
