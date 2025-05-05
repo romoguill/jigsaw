@@ -331,6 +331,59 @@ export const gameRoute = new Hono<ContextWithAuth>()
       return c.json({ success: true, sessionId });
     }
   )
+  .get('/sessions', async (c) => {
+    const user = c.get('user');
+
+    const userFilter =
+      user.role !== 'admin' ? eq(gameSession.userId, user.id) : undefined;
+
+    const sessions = await db.query.gameSession.findMany({
+      where: and(eq(gameSession.isFinished, false), userFilter),
+      with: {
+        game: {
+          with: {
+            pieces: {
+              with: {
+                uploadedImage: {
+                  columns: {
+                    imageKey: true,
+                  },
+                },
+              },
+            },
+            uploadedImage: true,
+          },
+        },
+      },
+    });
+
+    const piecesWithUrls = sessions.map((session) => {
+      return session.game.pieces.map((piece) => ({
+        ...piece,
+        uploadedImage: {
+          ...piece.uploadedImage,
+          url: getPublicUploadthingUrl(piece.uploadedImage.imageKey),
+        },
+      }));
+    });
+
+    const gameUrl = sessions.map((session) => {
+      return getPublicUploadthingUrl(session.game.uploadedImage.imageKey);
+    });
+
+    const dataWithUrls = sessions.map((session, i) => {
+      return {
+        ...session,
+        game: {
+          ...session.game,
+          imageUrl: gameUrl[i],
+          pieces: piecesWithUrls[i],
+        },
+      };
+    });
+
+    return c.json(dataWithUrls);
+  })
   .get('/sessions/:id', async (c) => {
     const sessionId = c.req.param('id');
 
