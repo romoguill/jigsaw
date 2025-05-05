@@ -6,6 +6,9 @@ import { AnimatePresence, motion } from "motion/react";
 import { FullScreenHandle } from "react-full-screen";
 import FullScreenToggle from "./full-screen-toggle";
 import Timer from "./timer";
+import { useQuery } from "@tanstack/react-query";
+import { gameSessionQueryOptions } from "@/frontend/features/games/api/queries";
+import { useParams } from "@tanstack/react-router";
 
 interface GameToolbarProps {
   isSaving: boolean;
@@ -23,12 +26,16 @@ function GameToolbar({
   isGameFinished,
 }: GameToolbarProps) {
   const toggleFullScreen = useStore((state) => state.toggleFullScreen);
+  const { sessionId } = useParams({ from: "/games/sessions/$sessionId" });
+  const { data: session } = useQuery(gameSessionQueryOptions(sessionId));
 
   useInterval({
     callback: onSave,
     delay: 60 * 1000 * 2,
     disabled: isGameFinished,
   });
+
+  if (!session) return null;
 
   return (
     <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-8 py-4 z-30">
@@ -55,10 +62,9 @@ function GameToolbar({
         </AnimatePresence>
       </ButtonLoader>
 
-      <Timer />
+      <Timer savedTimer={session.timer} />
 
       <FullScreenToggle
-        className=""
         onFullScreenToggle={() => toggleFullScreen(fullScreenHandle)}
       />
     </nav>

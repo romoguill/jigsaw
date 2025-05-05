@@ -3,11 +3,21 @@ import useGameStore from "@/frontend/store/game-store";
 import { PlayIcon, SquareIcon } from "lucide-react";
 import { useEffect } from "react";
 
-function Timer() {
+interface TimerProps {
+  savedTimer: number;
+}
+
+function Timer({ savedTimer }: TimerProps) {
   const { timer, setTimer, pauseTimer, resumeTimer, isTimerRunning } =
     useGameStore();
 
   const parsedTime = new Date(timer * 1000).toISOString().slice(11, 19);
+
+  useEffect(() => {
+    if (savedTimer) {
+      setTimer(savedTimer);
+    }
+  }, [savedTimer, setTimer]);
 
   useEffect(() => {
     const interval = setInterval(() => {
