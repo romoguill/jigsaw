@@ -14,7 +14,7 @@ export const useCreateGameSession = () => {
       gameId: number;
       gameState?: GameState;
     }) => {
-      const response = await apiClient.game.sessions.$post({
+      const response = await apiClient["game-sessions"].$post({
         json: { gameId, gameState },
       });
 
@@ -41,7 +41,7 @@ export const useUpdateGameSession = () => {
       timer: number;
       isFinished: boolean;
     }) => {
-      await apiClient.game.sessions[":id"].$put({
+      await apiClient["game-sessions"][":id"].$put({
         param: { id: sessionId },
         json: { gameState, timer, isFinished },
       });

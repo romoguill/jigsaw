@@ -31,7 +31,7 @@ function RouteComponent() {
         <ul className="flex flex-col gap-4">
           {sessions.length > 0 && (
             <li>
-              <Link to="/games">
+              <Link to="/games/active">
                 <ButtonMainOption>Continue</ButtonMainOption>
               </Link>
             </li>

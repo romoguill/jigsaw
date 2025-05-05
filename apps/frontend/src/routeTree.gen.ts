@@ -15,8 +15,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as GamesIndexImport } from './routes/games/index'
-import { Route as GamesIdImport } from './routes/games/$id'
 import { Route as AdminAdminImport } from './routes/admin/_admin'
+import { Route as GamesActiveIndexImport } from './routes/games/active/index'
 import { Route as AdminAdminIndexImport } from './routes/admin/_admin/index'
 import { Route as GamesSessionsSessionIdImport } from './routes/games/sessions/$sessionId'
 import { Route as AdminAdminDetailTestImport } from './routes/admin/_admin/detail-test'
@@ -46,15 +46,15 @@ const GamesIndexRoute = GamesIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const GamesIdRoute = GamesIdImport.update({
-  id: '/games/$id',
-  path: '/games/$id',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const AdminAdminRoute = AdminAdminImport.update({
   id: '/_admin',
   getParentRoute: () => AdminRoute,
+} as any)
+
+const GamesActiveIndexRoute = GamesActiveIndexImport.update({
+  id: '/games/active/',
+  path: '/games/active/',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const AdminAdminIndexRoute = AdminAdminIndexImport.update({
@@ -106,13 +106,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminImport
       parentRoute: typeof AdminRoute
     }
-    '/games/$id': {
-      id: '/games/$id'
-      path: '/games/$id'
-      fullPath: '/games/$id'
-      preLoaderRoute: typeof GamesIdImport
-      parentRoute: typeof rootRoute
-    }
     '/games/': {
       id: '/games/'
       path: '/games'
@@ -148,6 +141,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminIndexImport
       parentRoute: typeof AdminAdminImport
     }
+    '/games/active/': {
+      id: '/games/active/'
+      path: '/games/active'
+      fullPath: '/games/active'
+      preLoaderRoute: typeof GamesActiveIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -182,22 +182,22 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminAdminRouteWithChildren
-  '/games/$id': typeof GamesIdRoute
   '/games': typeof GamesIndexRoute
   '/admin/create-game': typeof AdminAdminCreateGameRoute
   '/admin/detail-test': typeof AdminAdminDetailTestRoute
   '/games/sessions/$sessionId': typeof GamesSessionsSessionIdRoute
   '/admin/': typeof AdminAdminIndexRoute
+  '/games/active': typeof GamesActiveIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminAdminIndexRoute
-  '/games/$id': typeof GamesIdRoute
   '/games': typeof GamesIndexRoute
   '/admin/create-game': typeof AdminAdminCreateGameRoute
   '/admin/detail-test': typeof AdminAdminDetailTestRoute
   '/games/sessions/$sessionId': typeof GamesSessionsSessionIdRoute
+  '/games/active': typeof GamesActiveIndexRoute
 }
 
 export interface FileRoutesById {
@@ -205,12 +205,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin/_admin': typeof AdminAdminRouteWithChildren
-  '/games/$id': typeof GamesIdRoute
   '/games/': typeof GamesIndexRoute
   '/admin/_admin/create-game': typeof AdminAdminCreateGameRoute
   '/admin/_admin/detail-test': typeof AdminAdminDetailTestRoute
   '/games/sessions/$sessionId': typeof GamesSessionsSessionIdRoute
   '/admin/_admin/': typeof AdminAdminIndexRoute
+  '/games/active/': typeof GamesActiveIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -218,49 +218,49 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/games/$id'
     | '/games'
     | '/admin/create-game'
     | '/admin/detail-test'
     | '/games/sessions/$sessionId'
     | '/admin/'
+    | '/games/active'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
-    | '/games/$id'
     | '/games'
     | '/admin/create-game'
     | '/admin/detail-test'
     | '/games/sessions/$sessionId'
+    | '/games/active'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/admin/_admin'
-    | '/games/$id'
     | '/games/'
     | '/admin/_admin/create-game'
     | '/admin/_admin/detail-test'
     | '/games/sessions/$sessionId'
     | '/admin/_admin/'
+    | '/games/active/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
-  GamesIdRoute: typeof GamesIdRoute
   GamesIndexRoute: typeof GamesIndexRoute
   GamesSessionsSessionIdRoute: typeof GamesSessionsSessionIdRoute
+  GamesActiveIndexRoute: typeof GamesActiveIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
-  GamesIdRoute: GamesIdRoute,
   GamesIndexRoute: GamesIndexRoute,
   GamesSessionsSessionIdRoute: GamesSessionsSessionIdRoute,
+  GamesActiveIndexRoute: GamesActiveIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -275,9 +275,9 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/admin",
-        "/games/$id",
         "/games/",
-        "/games/sessions/$sessionId"
+        "/games/sessions/$sessionId",
+        "/games/active/"
       ]
     },
     "/": {
@@ -298,9 +298,6 @@ export const routeTree = rootRoute
         "/admin/_admin/"
       ]
     },
-    "/games/$id": {
-      "filePath": "games/$id.tsx"
-    },
     "/games/": {
       "filePath": "games/index.tsx"
     },
@@ -318,6 +315,9 @@ export const routeTree = rootRoute
     "/admin/_admin/": {
       "filePath": "admin/_admin/index.tsx",
       "parent": "/admin/_admin"
+    },
+    "/games/active/": {
+      "filePath": "games/active/index.tsx"
     }
   }
 }

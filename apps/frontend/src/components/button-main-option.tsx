@@ -33,7 +33,7 @@ function ButtonMainOption({ children }: ButtonMainOptionProps) {
   return (
     <button
       className={cn(
-        "group cursor-pointer rounded-none font-playful text-2xl h-auto border-none text-white w-64 text-shadow-lg bg-contain bg-center bg-no-repeat py-4"
+        "group cursor-pointer rounded-none font-playful text-2xl h-auto border-none text-white w-64 text-shadow-lg/80 bg-contain bg-center bg-no-repeat py-4"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
