@@ -8,9 +8,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/frontend/components/ui/select";
-import { pieceCount, gameDifficulty } from "@jigsaw/shared";
+import {
+  pieceCount,
+  gameDifficulty,
+  jigsawBuilderFormSchema,
+  JigsawBuilderFormValues,
+} from "@jigsaw/shared";
 import { useState } from "react";
 import UploadInput from "./upload-input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useBuilderCreate } from "../jigsaw-builder/api/mutations";
 
 interface GameCustomizationFormProps {
   step: number;
@@ -19,59 +27,60 @@ interface GameCustomizationFormProps {
     pieceCount: number | undefined;
     difficulty: "easy" | "medium" | "hard" | undefined;
   };
-  setFormData: (data: any) => void;
+
   onNext: () => void;
   onBack: () => void;
-  onSubmit: (data: any) => void;
 }
 
 export function GameCustomizationForm({
   step,
   formData,
-  setFormData,
+
   onNext,
   onBack,
-  onSubmit,
 }: GameCustomizationFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const { mutate: buildJigsaw, isPending } = useBuilderCreate();
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData({ ...formData, image: file });
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-    }
-  };
-
-  const handlePieceCountChange = (value: string) => {
-    setFormData({ ...formData, pieceCount: Number(value) });
-  };
-
-  const handleDifficultyChange = (value: string) => {
-    setFormData({
-      ...formData,
-      difficulty: value as "easy" | "medium" | "hard",
+  const { handleSubmit, control, formState, setValue } =
+    useForm<JigsawBuilderFormValues>({
+      resolver: zodResolver(jigsawBuilderFormSchema),
+      defaultValues: {
+        difficulty: undefined,
+        pieceCount: undefined,
+        borders: true,
+      },
     });
+
+  const onSubmit = (data: typeof formData) => {
+    // TODO: Handle form submission
+    // buildJigsaw({});
+    console.log(data);
   };
+
+  const handleImageChange = (url: string) => {
+    setPreviewUrl(url);
+  };
+
+  const handlePieceCountChange = (value: string) => {};
+
+  const handleDifficultyChange = (value: string) => {};
 
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Upload Image</Label>
-              <UploadInput onChange={() => {}} />
-            </div>
-            {previewUrl && (
+          <div className="min-h-96">
+            {previewUrl ? (
               <div className="mt-4">
                 <img
                   src={previewUrl}
                   alt="Preview"
-                  className="max-h-64 w-auto mx-auto rounded-lg shadow-lg"
+                  className="max-h-96 w-auto mx-auto rounded-lg shadow-lg"
                 />
               </div>
+            ) : (
+              <UploadInput onChange={handleImageChange} />
             )}
           </div>
         );
@@ -127,35 +136,33 @@ export function GameCustomizationForm({
   };
 
   return (
-    <div className="space-y-6">
-      {renderStep()}
-      <div className="flex justify-between pt-4">
-        {step > 1 && (
-          <Button variant="outline" onClick={onBack}>
-            Back
-          </Button>
-        )}
-        {step < 3 ? (
-          <Button
-            className="ml-auto"
-            onClick={onNext}
-            disabled={
-              (step === 1 && !formData.image) ||
-              (step === 2 && !formData.pieceCount)
-            }
-          >
-            Next
-          </Button>
-        ) : (
-          <Button
-            className="ml-auto"
-            onClick={() => onSubmit(formData)}
-            disabled={!formData.difficulty}
-          >
-            Create Puzzle
-          </Button>
-        )}
-      </div>
+    <div className="w-full">
+      <form onSubmit={handleSubmit(onSubmit)}>{renderStep()}</form>
+      {step > 1 && (
+        <Button variant="outline" onClick={onBack}>
+          Back
+        </Button>
+      )}
+      {step < 3 ? (
+        <Button
+          className="ml-auto flex mt-10"
+          onClick={onNext}
+          disabled={
+            (step === 1 && !formData.image) ||
+            (step === 2 && !formData.pieceCount)
+          }
+        >
+          Next
+        </Button>
+      ) : (
+        <Button
+          className="ml-auto flex"
+          onClick={() => onSubmit(formData)}
+          disabled={!formData.difficulty}
+        >
+          Create Puzzle
+        </Button>
+      )}
     </div>
   );
 }

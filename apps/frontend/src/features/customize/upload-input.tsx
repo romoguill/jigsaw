@@ -2,14 +2,14 @@ import { cn } from "@/frontend/lib/utils";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useUploadImages } from "../uploadImages/hooks/use-upload-images";
+import { Loader2 } from "lucide-react";
 
 interface UploadInputProps {
-  onChange: (file: File) => void;
+  onChange: (url: string) => void;
 }
 
 function UploadInput({ onChange }: UploadInputProps) {
   const ref = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const { startUpload, isUploading, routeConfig } = useUploadImages(
@@ -41,7 +41,16 @@ function UploadInput({ onChange }: UploadInputProps) {
       return;
     }
 
-    await startUpload([file]);
+    const response = await startUpload([file]);
+
+    if (!response) {
+      toast.error("Failed to upload image");
+      return;
+    }
+
+    const url = response[0].ufsUrl;
+
+    onChange(url);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -62,9 +71,16 @@ function UploadInput({ onChange }: UploadInputProps) {
       return;
     }
 
-    await startUpload([droppedFile]);
+    const response = await startUpload([droppedFile]);
 
-    setIsDragging(false);
+    if (!response) {
+      toast.error("Failed to upload image");
+      return;
+    }
+
+    const url = response[0].ufsUrl;
+
+    onChange(url);
   };
 
   return (
@@ -80,26 +96,34 @@ function UploadInput({ onChange }: UploadInputProps) {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <input
-          ref={ref}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          aria-label="Choose puzzle image"
-          onChange={handleInputChange}
-        />
-        <p>
-          Drag Images or
-          <span
-            className="text-blue-600 cursor-pointer underline ml-2"
-            onClick={() => ref?.current?.click()}
-          >
-            choose from your device
-          </span>
-        </p>
-        <span className="text-sm text-muted-foreground italic mt-1">
-          Any image will do. Max 2MB.
-        </span>
+        {isUploading ? (
+          <div className="flex items-center justify-center h-full">
+            <Loader2 size={32} className="animate-spin" />
+          </div>
+        ) : (
+          <>
+            <input
+              ref={ref}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              aria-label="Choose puzzle image"
+              onChange={handleInputChange}
+            />
+            <p>
+              Drag Images or
+              <span
+                className="text-blue-600 cursor-pointer underline ml-2"
+                onClick={() => ref?.current?.click()}
+              >
+                choose from your device
+              </span>
+            </p>
+            <span className="text-sm text-muted-foreground italic mt-1">
+              Any image will do. Max 2MB.
+            </span>
+          </>
+        )}
       </div>
     </>
   );
