@@ -87,7 +87,7 @@ function UploadInput({ onChange }: UploadInputProps) {
     <>
       <div
         className={cn(
-          "w-full h-52 border-2 border-dashed border-input flex flex-col items-center justify-center",
+          "w-full h-52 border-2 border-dashed border-input flex flex-col items-center justify-center z-30",
           {
             "border-4 border-blue-500": isDragging,
           }
@@ -112,12 +112,12 @@ function UploadInput({ onChange }: UploadInputProps) {
             />
             <p>
               Drag Images or
-              <span
-                className="text-blue-600 cursor-pointer underline ml-2"
+              <button
+                className="text-blue-600 cursor-pointer underline ml-2 py-2"
                 onClick={() => ref?.current?.click()}
               >
                 choose from your device
-              </span>
+              </button>
             </p>
             <span className="text-sm text-muted-foreground italic mt-1">
               Any image will do. Max 2MB.

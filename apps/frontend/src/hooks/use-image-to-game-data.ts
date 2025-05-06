@@ -3,9 +3,14 @@ import { RefObject, useEffect, useState } from "react";
 interface UseImageToGameDataProps {
   image: RefObject<HTMLImageElement>;
   pieceQuantity: number | undefined;
+  enabled: boolean;
 }
 
-function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
+function useImageToGameData({
+  image,
+  pieceQuantity,
+  enabled,
+}: UseImageToGameDataProps) {
   const [columns, setColumns] = useState(1);
   const [rows, setRows] = useState(1);
   const [pieceSize, setPieceSize] = useState(0);
@@ -14,6 +19,7 @@ function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
     const calculateGameData = () => {
       if (!image.current) return null;
       if (pieceQuantity === undefined) return null;
+      if (!enabled) return null;
       // Get the original size of the image
       const { naturalWidth, naturalHeight } = image.current;
 
@@ -66,7 +72,7 @@ function useImageToGameData({ image, pieceQuantity }: UseImageToGameDataProps) {
     setColumns(gameData.finalColumns);
     setRows(gameData.finalRows);
     setPieceSize(gameData.finalPieceSize);
-  }, [image, pieceQuantity]);
+  }, [image, pieceQuantity, enabled]);
 
   return {
     columns,

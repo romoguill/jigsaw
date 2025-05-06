@@ -15,7 +15,7 @@ function StepBadge({ stepNumber, step, description }: StepBadgeProps) {
   ];
 
   return (
-    <div className="flex items-center text-sm md:text-base">
+    <div className="flex items-center text-sm md:text-base z-10 overflow-hidden">
       <div
         className={cn(
           "h-15 w-15 md:h-20 md:w-20 flex items-center justify-center mr-2 text-white opacity-30 relative",

@@ -14,11 +14,15 @@ import {
   jigsawBuilderFormSchema,
   JigsawBuilderFormValues,
 } from "@jigsaw/shared";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UploadInput from "./upload-input";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBuilderCreate } from "../jigsaw-builder/api/mutations";
+import useImageToGameData from "@/frontend/hooks/use-image-to-game-data";
+import { usePath } from "../jigsaw-builder/api/queries";
+import PathsMask from "../jigsaw-builder/components/paths-mask";
+import { RefreshCcwIcon } from "lucide-react";
 
 interface GameCustomizationFormProps {
   step: number;
@@ -31,11 +35,15 @@ export function GameCustomizationForm({
   onNext,
   onBack,
 }: GameCustomizationFormProps) {
+  const imgRef = useRef<HTMLImageElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [showMask, setShowMask] = useState(false);
+
   const { mutate: buildJigsaw, isPending } = useBuilderCreate();
 
-  const { handleSubmit, control, formState } = useForm<JigsawBuilderFormValues>(
-    {
+  const { handleSubmit, control, formState, watch } =
+    useForm<JigsawBuilderFormValues>({
       resolver: zodResolver(jigsawBuilderFormSchema),
       defaultValues: {
         difficulty: gameDifficulty[0],
@@ -43,7 +51,28 @@ export function GameCustomizationForm({
         borders: true,
       },
       mode: "onChange",
-    }
+    });
+
+  // Subscribe to piece count changes
+  const pieceCountWatch = watch("pieceCount");
+
+  // Get game data based on piece count and image dimensions
+  const gameData = useImageToGameData({
+    image: imgRef,
+    pieceQuantity: Number(pieceCountWatch),
+    enabled: isImageLoaded,
+  });
+
+  // Get paths svgs for preview
+  const { data: pathsData, refetch: refetchPaths } = usePath(
+    {
+      origin: { x: 0, y: 0 },
+      cols: gameData.columns,
+      rows: gameData.rows,
+      pieceSize: gameData.pieceSize,
+      imgSrc: imgRef.current?.src || "",
+    },
+    { enabled: gameData !== null && imgRef.current !== null && isImageLoaded }
   );
 
   const onSubmit: SubmitHandler<JigsawBuilderFormValues> = (data) => {
@@ -62,15 +91,26 @@ export function GameCustomizationForm({
     }
 
     if (step === 2) {
-      return !formState.isValid || !formState.dirtyFields.pieceCount;
+      return !formState.isValid;
     }
 
     if (step === 3) {
-      return !formState.isValid || !formState.dirtyFields.difficulty;
+      return !formState.isValid;
     }
 
     return false;
   };
+
+  useEffect(() => {
+    if (
+      gameData !== null &&
+      pathsData !== undefined &&
+      imgRef.current !== null &&
+      isImageLoaded
+    ) {
+      setShowMask(true);
+    }
+  }, [gameData, pathsData, isImageLoaded]);
 
   const renderStep = () => {
     switch (step) {
@@ -154,6 +194,42 @@ export function GameCustomizationForm({
             />
           </div>
         );
+      case 4:
+        return (
+          <div className="min-h-96">
+            <div className="mt-4 relative">
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="max-h-96 w-auto mx-auto rounded-lg shadow-lg"
+                ref={imgRef}
+                onLoad={() => setIsImageLoaded(true)}
+              />
+
+              {showMask && (
+                <PathsMask
+                  className="stroke-black/80"
+                  paths={pathsData?.paths || { horizontal: [], vertical: [] }}
+                  pieceSize={gameData?.pieceSize}
+                  scale={
+                    imgRef.current?.width
+                      ? imgRef.current.width / imgRef.current.naturalWidth
+                      : 1
+                  }
+                />
+              )}
+            </div>
+            <Button
+              variant={"destructive"}
+              className="flex items-center gap-2 mx-auto mt-4"
+              onClick={() => refetchPaths()}
+            >
+              <RefreshCcwIcon size={16} />
+              <span>Randomize</span>
+            </Button>
+          </div>
+        );
+
       default:
         return null;
     }
