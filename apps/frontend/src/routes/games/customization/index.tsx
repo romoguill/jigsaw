@@ -16,7 +16,6 @@ function RouteComponent() {
     pieceCount: undefined as number | undefined,
     difficulty: undefined as "easy" | "medium" | "hard" | undefined,
   });
-  const { mutate: buildJigsaw, isPending } = useBuilderCreate();
 
   const handleNext = () => {
     setStep(step + 1);
@@ -24,11 +23,6 @@ function RouteComponent() {
 
   const handleBack = () => {
     setStep(step - 1);
-  };
-
-  const onSubmit = (data: typeof formData) => {
-    // TODO: Handle form submission
-    buildJigsaw({});
   };
 
   return (
@@ -51,11 +45,8 @@ function RouteComponent() {
 
         <GameCustomizationForm
           step={step}
-          formData={formData}
-          setFormData={setFormData}
           onNext={handleNext}
           onBack={handleBack}
-          onSubmit={onSubmit}
         />
       </div>
     </div>

@@ -90,7 +90,7 @@ function BuilderForm({
         name="difficulty"
         render={({ field }) => (
           <Select
-            {...field}
+            onBlur={field.onBlur}
             selectedKey={field.value}
             onSelectionChange={(key) => field.onChange(key)}
           >
@@ -119,7 +119,6 @@ function BuilderForm({
         name="pieceCount"
         render={({ field }) => (
           <Select
-            {...field}
             selectedKey={field.value}
             onSelectionChange={(key) => {
               field.onChange(key);

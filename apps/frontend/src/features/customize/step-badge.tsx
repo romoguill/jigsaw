@@ -21,7 +21,7 @@ function StepBadge({ stepNumber, step, description }: StepBadgeProps) {
           }
         )}
       >
-        {shapes[5]}
+        {shapes[stepNumber]}
         <span className="absolute font-bold text-lg top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           {stepNumber}
         </span>

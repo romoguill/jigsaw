@@ -34,14 +34,17 @@ export function GameCustomizationForm({
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const { mutate: buildJigsaw, isPending } = useBuilderCreate();
 
-  const { handleSubmit, control } = useForm<JigsawBuilderFormValues>({
-    resolver: zodResolver(jigsawBuilderFormSchema),
-    defaultValues: {
-      difficulty: undefined,
-      pieceCount: undefined,
-      borders: true,
-    },
-  });
+  const { handleSubmit, control, formState } = useForm<JigsawBuilderFormValues>(
+    {
+      resolver: zodResolver(jigsawBuilderFormSchema),
+      defaultValues: {
+        difficulty: gameDifficulty[0],
+        pieceCount: pieceCount[0],
+        borders: true,
+      },
+      mode: "onChange",
+    }
+  );
 
   const onSubmit: SubmitHandler<JigsawBuilderFormValues> = (data) => {
     // TODO: Handle form submission
@@ -51,6 +54,22 @@ export function GameCustomizationForm({
 
   const handleImageChange = (url: string) => {
     setPreviewUrl(url);
+  };
+
+  const isNextDisabled = () => {
+    if (step === 1) {
+      return !previewUrl;
+    }
+
+    if (step === 2) {
+      return !formState.isValid || !formState.dirtyFields.pieceCount;
+    }
+
+    if (step === 3) {
+      return !formState.isValid || !formState.dirtyFields.difficulty;
+    }
+
+    return false;
   };
 
   const renderStep = () => {
@@ -79,7 +98,6 @@ export function GameCustomizationForm({
               name="pieceCount"
               render={({ field }) => (
                 <Select
-                  {...field}
                   selectedKey={field.value}
                   onSelectionChange={(key) => field.onChange(key)}
                 >
@@ -156,12 +174,12 @@ export function GameCustomizationForm({
               Back
             </Button>
           )}
-          {step < 3 ? (
+          {step <= 3 ? (
             <Button
               type="button"
               className="ml-auto flex mt-10"
               onClick={onNext}
-              isDisabled={!previewUrl}
+              isDisabled={isNextDisabled()}
             >
               Next
             </Button>
