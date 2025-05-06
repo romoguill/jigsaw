@@ -189,6 +189,10 @@ export const gameRoute = new Hono<ContextWithAuth>()
         );
       });
 
+      if (!game.id) {
+        throw new HTTPException(500);
+      }
+
       return c.json({
         success: true,
         gameId: game.id,

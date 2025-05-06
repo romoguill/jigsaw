@@ -244,7 +244,6 @@ export class PiecesBuilder {
   }
 
   applyRotationToVerticalCurves(): void {
-    console.log(JSON.stringify(this._verticalCurves, null, 2));
     // Rotate the curves 90 degrees clockwise. Use the first curve of the first segment of each vertical curve as the rotation origin.
     this._verticalCurves.forEach((segments) => {
       const rotationOrigin = segments[0][0].startPoint;
@@ -254,9 +253,6 @@ export class PiecesBuilder {
         });
       });
     });
-
-    console.log('after rotation');
-    console.log(JSON.stringify(this._verticalCurves, null, 2));
   }
 
   // Generate the piece shape by using the enclosing curves to build the shape.

@@ -5,7 +5,7 @@ import { useUploadImages } from "../uploadImages/hooks/use-upload-images";
 import { Loader2 } from "lucide-react";
 
 interface UploadInputProps {
-  onChange: (url: string) => void;
+  onChange: (url: string, key: string) => void;
 }
 
 function UploadInput({ onChange }: UploadInputProps) {
@@ -48,9 +48,9 @@ function UploadInput({ onChange }: UploadInputProps) {
       return;
     }
 
-    const url = response[0].ufsUrl;
+    const { ufsUrl, key } = response[0];
 
-    onChange(url);
+    onChange(ufsUrl, key);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -78,9 +78,9 @@ function UploadInput({ onChange }: UploadInputProps) {
       return;
     }
 
-    const url = response[0].ufsUrl;
+    const { ufsUrl, key } = response[0];
 
-    onChange(url);
+    onChange(ufsUrl, key);
   };
 
   return (
@@ -113,6 +113,7 @@ function UploadInput({ onChange }: UploadInputProps) {
             <p>
               Drag Images or
               <button
+                type="button"
                 className="text-blue-600 cursor-pointer underline ml-2 py-2"
                 onClick={() => ref?.current?.click()}
               >

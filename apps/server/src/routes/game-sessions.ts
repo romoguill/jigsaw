@@ -92,7 +92,6 @@ export const gameSessionsRoute = new Hono<ContextWithAuth>()
   })
   .get('/', async (c) => {
     const user = c.get('user');
-    console.log({ user });
 
     const userFilter =
       user.role !== 'admin' ? eq(gameSession.userId, user.id) : undefined;

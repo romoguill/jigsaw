@@ -9,11 +9,6 @@ export const Route = createFileRoute("/games/customization/")({
 
 function RouteComponent() {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    image: null as File | null,
-    pieceCount: undefined as number | undefined,
-    difficulty: undefined as "easy" | "medium" | "hard" | undefined,
-  });
 
   const handleNext = () => {
     setStep(step + 1);
@@ -36,8 +31,8 @@ function RouteComponent() {
           </div>
           <div className="h-1 bg-gray-200 rounded-full">
             <div
-              className="h-full bg-primary rounded-full transition-all duration-300"
-              style={{ width: `${(step / 3) * 100}%` }}
+              className="h-full bg-green-400 rounded-full transition-all duration-300"
+              style={{ width: `${(step / 4) * 100}%` }}
             />
           </div>
         </div>

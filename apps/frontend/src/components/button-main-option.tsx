@@ -1,5 +1,5 @@
 import { cn } from "@/frontend/lib/utils";
-import { useState } from "react";
+import { ButtonHTMLAttributes, useState } from "react";
 
 const colors = [
   "rgba(50, 168, 102, 0.5)",
@@ -24,21 +24,21 @@ const svgBackground = (colors: string[]) => `
 
 const svgDataUrl = `data:image/svg+xml;base64,${btoa(svgBackground(colors))}`;
 
-interface ButtonMainOptionProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-}
-
-function ButtonMainOption({ children, onClick }: ButtonMainOptionProps) {
+function ButtonMainOption({
+  children,
+  className,
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <button
+      {...props}
       className={cn(
-        "group cursor-pointer rounded-none font-playful text-2xl h-auto border-none text-white w-64 text-shadow-lg/80 bg-contain bg-center bg-no-repeat py-4"
+        "group cursor-pointer rounded-none font-playful text-2xl h-auto border-none text-white w-64 text-shadow-lg/80 bg-contain bg-center bg-no-repeat py-4",
+        className
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={onClick}
       style={{
         backgroundImage: isHovered ? `url("${svgDataUrl}")` : "none",
       }}

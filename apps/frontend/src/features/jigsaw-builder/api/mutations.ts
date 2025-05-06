@@ -11,9 +11,11 @@ export const useBuilderCreate = () => {
 
   return useMutation({
     mutationFn: async ({ data }: { data: ReqType["json"] }) => {
-      await apiRoute({
+      const response = await apiRoute({
         json: { ...data },
       });
+
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: jigsawBuilderKeys.all });

@@ -8,21 +8,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/frontend/components/ui/select";
+import useImageToGameData from "@/frontend/hooks/use-image-to-game-data";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  pieceCount,
   gameDifficulty,
   jigsawBuilderFormSchema,
   JigsawBuilderFormValues,
+  pieceCount,
 } from "@jigsaw/shared";
+import { useNavigate } from "@tanstack/react-router";
+import { RefreshCcwIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import UploadInput from "./upload-input";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { useCreateGameSession } from "../games/api/mutations";
 import { useBuilderCreate } from "../jigsaw-builder/api/mutations";
-import useImageToGameData from "@/frontend/hooks/use-image-to-game-data";
 import { usePath } from "../jigsaw-builder/api/queries";
 import PathsMask from "../jigsaw-builder/components/paths-mask";
-import { RefreshCcwIcon } from "lucide-react";
+import UploadInput from "./upload-input";
 
 interface GameCustomizationFormProps {
   step: number;
@@ -37,10 +40,13 @@ export function GameCustomizationForm({
 }: GameCustomizationFormProps) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [imageKey, setImageKey] = useState<string>("");
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [showMask, setShowMask] = useState(false);
+  const navigate = useNavigate({ from: "/games/customization" });
 
-  const { mutate: buildJigsaw, isPending } = useBuilderCreate();
+  const { mutateAsync: buildJigsaw } = useBuilderCreate();
+  const { mutateAsync: createGameSession } = useCreateGameSession();
 
   const { handleSubmit, control, formState, watch } =
     useForm<JigsawBuilderFormValues>({
@@ -75,14 +81,43 @@ export function GameCustomizationForm({
     { enabled: gameData !== null && imgRef.current !== null && isImageLoaded }
   );
 
-  const onSubmit: SubmitHandler<JigsawBuilderFormValues> = (data) => {
-    // TODO: Handle form submission
-    // buildJigsaw({});
-    console.log(data);
+  const onSubmit: SubmitHandler<JigsawBuilderFormValues> = async (data) => {
+    console.log("run");
+
+    try {
+      const builderResponse = await buildJigsaw({
+        data: {
+          ...data,
+          pieceSize: gameData.pieceSize,
+          columns: gameData.columns,
+          rows: gameData.rows,
+          origin: { x: 0, y: 0 },
+          imageKey: imageKey,
+          cached:
+            pathsData?.paths.horizontal && pathsData.paths.vertical
+              ? {
+                  horizontalPaths: pathsData.paths.horizontal,
+                  verticalPaths: pathsData.paths.vertical,
+                  pieceFootprint: pathsData.pieceFootprint,
+                }
+              : undefined,
+        },
+      });
+
+      const sessionResponse = await createGameSession({
+        gameId: builderResponse.gameId,
+      });
+
+      navigate({ to: `/games/sessions/${sessionResponse.sessionId}` });
+    } catch (error) {
+      toast.error("Failed to create game");
+      console.error(error);
+    }
   };
 
-  const handleImageChange = (url: string) => {
+  const handleImageChange = (url: string, key: string) => {
     setPreviewUrl(url);
+    setImageKey(key);
   };
 
   const isNextDisabled = () => {
@@ -105,10 +140,13 @@ export function GameCustomizationForm({
     if (
       gameData !== null &&
       pathsData !== undefined &&
+      imgRef !== null &&
       imgRef.current !== null &&
       isImageLoaded
     ) {
       setShowMask(true);
+    } else {
+      setShowMask(false);
     }
   }, [gameData, pathsData, isImageLoaded]);
 
@@ -172,7 +210,6 @@ export function GameCustomizationForm({
               name="difficulty"
               render={({ field }) => (
                 <Select
-                  {...field}
                   selectedKey={field.value}
                   onSelectionChange={(key) => field.onChange(key)}
                 >
@@ -180,6 +217,7 @@ export function GameCustomizationForm({
                   <SelectTrigger>
                     <SelectValue className="capitalize" />
                   </SelectTrigger>
+
                   <SelectPopover>
                     <SelectListBox>
                       {gameDifficulty.map((item) => (
@@ -196,7 +234,7 @@ export function GameCustomizationForm({
         );
       case 4:
         return (
-          <div className="min-h-96">
+          <div className="min-h-96 flex flex-col justify-between items-center">
             <div className="mt-4 relative">
               <img
                 src={previewUrl}
@@ -211,22 +249,20 @@ export function GameCustomizationForm({
                   className="stroke-black/80"
                   paths={pathsData?.paths || { horizontal: [], vertical: [] }}
                   pieceSize={gameData?.pieceSize}
-                  scale={
-                    imgRef.current?.width
-                      ? imgRef.current.width / imgRef.current.naturalWidth
-                      : 1
-                  }
+                  scale={imgRef.current!.width / imgRef.current!.naturalWidth}
                 />
               )}
             </div>
-            <Button
-              variant={"destructive"}
-              className="flex items-center gap-2 mx-auto mt-4"
-              onClick={() => refetchPaths()}
-            >
-              <RefreshCcwIcon size={16} />
-              <span>Randomize</span>
-            </Button>
+            {isImageLoaded && (
+              <Button
+                variant={"destructive"}
+                className="flex items-center gap-2 mx-auto mt-4"
+                onClick={() => refetchPaths()}
+              >
+                <RefreshCcwIcon size={16} />
+                <span>Randomize</span>
+              </Button>
+            )}
           </div>
         );
 
@@ -235,38 +271,41 @@ export function GameCustomizationForm({
     }
   };
 
+  const handleNextClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // To prevent form submission when clicking on the back or next buttons
+    onNext();
+  };
+
   return (
     <div className="w-full">
       <form onSubmit={handleSubmit(onSubmit)}>
         {renderStep()}
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center mt-10">
           {step > 1 && (
-            <Button
+            <button
               type="button"
-              variant="secondary"
-              className="flex mt-10"
+              className="flex pl-7 pr-4 py-2 w-22 text-primary-foreground rounded-md hover:bg-indigo-400 disabled:opacity-50 disabled:pointer-events-none [clip-path:polygon(25%_0%,100%_0%,100%_100%,25%_100%,0%_50%)] border-r-8 border-indigo-700 bg-indigo-200 cursor-pointer"
               onClick={onBack}
             >
               Back
-            </Button>
+            </button>
           )}
           {step <= 3 ? (
-            <Button
+            <button
               type="button"
-              className="ml-auto flex mt-10"
-              onClick={onNext}
-              isDisabled={isNextDisabled()}
+              className="ml-auto flex pl-4 pr-7 py-2 w-22 bg-amber-200 text-primary-foreground rounded-md hover:bg-amber-400 disabled:opacity-50 disabled:pointer-events-none [clip-path:polygon(0%_0%,75%_0%,100%_50%,75%_100%,0%_100%)] border-l-8 border-amber-700 cursor-pointer"
+              onClick={handleNextClick}
+              disabled={isNextDisabled()}
             >
               Next
-            </Button>
+            </button>
           ) : (
-            <Button
+            <button
               type="submit"
-              className="ml-auto flex mt-10"
-              onClick={() => {}}
+              className="ml-auto flex px-4 py-2 bg-amber-700 rounded-md disabled:opacity-50 disabled:pointer-events-none cursor-pointer text-secondary-foreground tracking-widest font-bold text-shadow-md text-shadow-back/80"
             >
               Create Puzzle
-            </Button>
+            </button>
           )}
         </div>
       </form>
