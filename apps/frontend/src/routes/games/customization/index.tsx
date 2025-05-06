@@ -1,9 +1,7 @@
-import { shapes } from "@/frontend/lib/utils";
+import StepBadge from "@/frontend/features/customize/step-badge";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameCustomizationForm } from "../../../features/customize/game-customization-form";
-import StepBadge from "@/frontend/features/customize/step-badge";
-import { useBuilderCreate } from "@/frontend/features/jigsaw-builder/api/mutations";
 
 export const Route = createFileRoute("/games/customization/")({
   component: RouteComponent,
@@ -30,10 +28,11 @@ function RouteComponent() {
       <h1 className="text-2xl font-bold font-playful">Customize your puzzle</h1>
       <div className="max-w-2xl mx-auto mt-10">
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 justify-between mb-4 gap-4 md:gap-8">
             <StepBadge stepNumber={1} step={step} description="Upload Image" />
             <StepBadge stepNumber={2} step={step} description="Piece Count" />
             <StepBadge stepNumber={3} step={step} description="Difficulty" />
+            <StepBadge stepNumber={4} step={step} description="Preview" />
           </div>
           <div className="h-1 bg-gray-200 rounded-full">
             <div

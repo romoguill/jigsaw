@@ -7,13 +7,18 @@ interface StepBadgeProps {
 }
 
 function StepBadge({ stepNumber, step, description }: StepBadgeProps) {
-  const colors = ["fill-sky-400", "fill-lime-400", "fill-emerald-400"];
+  const colors = [
+    "fill-sky-400",
+    "fill-lime-400",
+    "fill-emerald-400",
+    "fill-purple-400",
+  ];
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center text-sm md:text-base">
       <div
         className={cn(
-          "h-20 w-20 flex items-center justify-center mr-2 text-white opacity-30 relative",
+          "h-15 w-15 md:h-20 md:w-20 flex items-center justify-center mr-2 text-white opacity-30 relative",
           colors[stepNumber - 1],
           {
             "text-white": stepNumber === step,
