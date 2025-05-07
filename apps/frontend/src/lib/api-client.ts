@@ -5,8 +5,9 @@ export const apiClient = clientWithType(import.meta.env.BASE_URL, {
     const response = await fetch(input, init);
 
     if (!response.ok) {
-      const error = await response.json();
-      throw error;
+      const error = await response.text();
+      console.log(error);
+      throw new Error(error);
     }
 
     return response;

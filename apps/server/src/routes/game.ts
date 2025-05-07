@@ -4,7 +4,7 @@ import {
   gameSchema,
   jigsawBuilderFormSchema,
 } from '@jigsaw/shared';
-import { and, eq, or } from 'drizzle-orm';
+import { and, asc, desc, eq, or, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
@@ -234,49 +234,82 @@ export const gameRoute = new Hono<ContextWithAuth>()
 
     return c.json({ ...game, pieces: piecesWithUrls });
   })
-  .get('/', async (c) => {
-    const currentUser = c.get('user');
+  .get(
+    '/',
+    zValidator(
+      'query',
+      z.object({
+        orderBy: z.enum(['pieceSize', 'difficulty']).optional(),
+        orderDirection: z.enum(['asc', 'desc']).default('asc'),
+      })
+    ),
+    async (c) => {
+      const currentUser = c.get('user');
+      const { orderBy, orderDirection } = c.req.valid('query');
 
-    // Admin will have access to all games but logged in users will have access to games created by the admin and themselves
-    const userFilter =
-      currentUser.role !== 'admin'
-        ? or(
-            eq(games.ownerId, currentUser.id),
-            eq(
-              games.ownerId,
-              db
-                .select({ id: user.id })
-                .from(user)
-                .where(eq(user.role, 'admin'))
-                .limit(1)
+      // Admin will have access to all games but logged in users will have access to games created by the admin and themselves
+      const userFilter =
+        currentUser.role !== 'admin'
+          ? or(
+              eq(games.ownerId, currentUser.id),
+              eq(
+                games.ownerId,
+                db
+                  .select({ id: user.id })
+                  .from(user)
+                  .where(eq(user.role, 'admin'))
+                  .limit(1)
+              )
             )
-          )
-        : undefined;
+          : undefined;
 
-    const userGames = await db.query.games.findMany({
-      where: userFilter,
-      with: {
-        owner: true,
-        pieces: {
-          with: {
-            uploadedImage: {
-              columns: {
-                imageKey: true,
+      const orderByClause =
+        orderBy === 'pieceSize'
+          ? orderDirection === 'asc'
+            ? asc(games.pieceSize)
+            : desc(games.pieceSize)
+          : orderBy === 'difficulty'
+            ? orderDirection === 'asc'
+              ? sql`CASE
+                WHEN ${games.pieceSize} = 1 THEN 1
+                WHEN ${games.pieceSize} = 2 THEN 2
+                WHEN ${games.pieceSize} = 3 THEN 3
+                ELSE 4
+              END`
+              : sql`CASE
+                WHEN ${games.pieceSize} = 1 THEN 4
+                WHEN ${games.pieceSize} = 2 THEN 3
+                WHEN ${games.pieceSize} = 3 THEN 2
+                ELSE 1
+              END`
+            : undefined;
+
+      const userGames = await db.query.games.findMany({
+        where: userFilter,
+        with: {
+          owner: true,
+          pieces: {
+            with: {
+              uploadedImage: {
+                columns: {
+                  imageKey: true,
+                },
               },
             },
           },
+          uploadedImage: true,
         },
-        uploadedImage: true,
-      },
-    });
+        orderBy: orderByClause ? [orderByClause] : undefined,
+      });
 
-    const gameWithImageUrls = userGames.map((game) => ({
-      ...game,
-      imageUrl: getPublicUploadthingUrl(game.uploadedImage.imageKey),
-    }));
+      const gameWithImageUrls = userGames.map((game) => ({
+        ...game,
+        imageUrl: getPublicUploadthingUrl(game.uploadedImage.imageKey),
+      }));
 
-    return c.json(gameWithImageUrls);
-  })
+      return c.json(gameWithImageUrls);
+    }
+  )
   .delete('/:id', async (c) => {
     const userId = c.get('user').id;
 
