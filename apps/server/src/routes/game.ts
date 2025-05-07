@@ -273,15 +273,15 @@ export const gameRoute = new Hono<ContextWithAuth>()
           : queryParams?.orderBy === 'difficulty'
             ? queryParams.orderDirection === 'asc'
               ? sql`CASE
-                WHEN ${games.difficulty} = "EASY" THEN 1
-                WHEN ${games.difficulty} = "MEDIUM" THEN 2
-                WHEN ${games.difficulty} = "HARD" THEN 3
+                WHEN ${games.difficulty} = 'easy' THEN 1
+                WHEN ${games.difficulty} = 'medium' THEN 2
+                WHEN ${games.difficulty} = 'hard' THEN 3
                 ELSE 4
               END`
               : sql`CASE
-                WHEN ${games.difficulty} = "EASY" THEN 4
-                WHEN ${games.difficulty} = "MEDIUM" THEN 3
-                WHEN ${games.difficulty} = "HARD" THEN 2
+                WHEN ${games.difficulty} = 'easy' THEN 4
+                WHEN ${games.difficulty} = 'medium' THEN 3
+                WHEN ${games.difficulty} = 'hard' THEN 2
                 ELSE 1
               END`
             : undefined;

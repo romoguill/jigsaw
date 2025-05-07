@@ -3,16 +3,39 @@ import PuzzleCard from "@/frontend/features/games/components/puzzle-card";
 import { gamesQueryOptions } from "@/frontend/features/jigsaw/api/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { z } from "zod";
 
 export const Route = createFileRoute("/games/")({
+  validateSearch: z
+    .object({
+      orderBy: z.enum(["difficulty", "pieceSize"]).optional(),
+      orderDirection: z.enum(["asc", "desc"]).optional(),
+    })
+    .optional().parse,
   component: RouteComponent,
-  loader: async ({ context }) => {
-    context.queryClient.ensureQueryData(gamesQueryOptions());
+  loaderDeps: ({ search }) => ({
+    orderBy: search?.orderBy,
+    orderDirection: search?.orderDirection,
+  }),
+  loader: async ({ context, deps }) => {
+    context.queryClient.ensureQueryData(
+      gamesQueryOptions({
+        orderBy: deps.orderBy,
+        orderDirection: deps.orderDirection,
+      })
+    );
   },
 });
 
 function RouteComponent() {
-  const { data: games } = useSuspenseQuery(gamesQueryOptions());
+  const queryParams = Route.useLoaderDeps();
+  console.log(queryParams);
+  const { data: games } = useSuspenseQuery(
+    gamesQueryOptions({
+      orderBy: queryParams.orderBy,
+      orderDirection: queryParams.orderDirection,
+    })
+  );
   const { mutate: createGameSession } = useCreateGameSession();
   const navigate = useNavigate();
 

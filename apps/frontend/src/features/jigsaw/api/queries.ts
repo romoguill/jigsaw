@@ -37,6 +37,6 @@ export const gamesQueryOptions = (queryParams?: {
   orderDirection?: "asc" | "desc";
 }) =>
   queryOptions({
-    queryKey: gameKeys.all,
+    queryKey: gameKeys.allWithQuery(queryParams),
     queryFn: () => getGames(queryParams),
   });
