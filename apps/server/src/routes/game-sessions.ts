@@ -1,16 +1,16 @@
 import { Hono } from 'hono';
-import { db } from '../db/db';
+import { db } from '../db/db.js';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { gameStateSchema } from '@jigsaw/shared';
-import { gameSession } from '../db/schema';
+import { gameSession } from '../db/schema.js';
 import { and, eq } from 'drizzle-orm';
 import { HTTPException } from 'hono/http-exception';
-import { getPublicUploadthingUrl } from '../lib/utils';
+import { getPublicUploadthingUrl } from '../lib/utils.js';
 import {
   authMiddleware,
   type ContextWithAuth,
-} from '../middleware/auth-middleware';
+} from '../middleware/auth-middleware.js';
 
 export const gameSessionsRoute = new Hono<ContextWithAuth>()
   .use(authMiddleware)

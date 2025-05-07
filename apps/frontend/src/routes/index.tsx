@@ -61,12 +61,12 @@ function RouteComponent() {
   );
 
   return (
-    <div className="h-full">
+    <div className="h-full container mx-auto">
       <header className="flex justify-between items-center">
         {!user ? <GoogleOAuthButton /> : <AccountMenu />}
         <ThemeToggle />
       </header>
-      <main className="flex flex-col items-center justify-center h-3/4">
+      <main className="flex flex-col items-center justify-center h-3/4 container mx-auto">
         <img width={250} src="/main-logo.png" alt="logo" />
         <AnimatePresence mode="wait">
           {!isSubmenuOpen ? <MainMenu /> : <SubMenu />}

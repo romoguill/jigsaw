@@ -16,7 +16,7 @@ export const auth = betterAuth({
     },
   }),
 
-  trustedOrigins: ['http://localhost:5173'],
+  trustedOrigins: [process.env.VITE_PROXY_URL!, process.env.VITE_SERVER_URL!],
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,

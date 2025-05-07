@@ -41,7 +41,7 @@ function RouteComponent() {
   const { mutate: createGameSession } = useCreateGameSession();
 
   return (
-    <div className="w-full p-10 container">
+    <div className="w-full p-10 container mx-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold font-playful h-8">Pick one puzzle</h1>
         <div className="flex items-center gap-4">

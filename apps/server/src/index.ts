@@ -11,13 +11,13 @@ import { uploadRoute } from './routes/upload.js';
 import { gameRoute } from './routes/game.js';
 import { gameSessionsRoute } from './routes/game-sessions.js';
 
+// Create an API router for /api routes
 const app = new Hono()
-  .basePath('/api')
   .use(logger())
   .use(
-    '/auth/*',
+    '/api/auth/*',
     cors({
-      origin: 'http://localhost:5173', // Vite origin
+      origin: process.env.VITE_PROXY_URL!, // Vite origin
       allowHeaders: ['Content-Type', 'Authorization'],
       allowMethods: ['POST', 'GET', 'OPTIONS'],
       exposeHeaders: ['Content-Length'],
@@ -26,23 +26,26 @@ const app = new Hono()
     })
   )
   .use(
-    '/uploadthing/**',
+    '/api/uploadthing/**',
     cors({
-      origin: '*',
+      origin: process.env.VITE_PROXY_URL!,
       allowMethods: ['POST', 'GET'],
       allowHeaders: ['Content-Type', 'Authorization'],
     })
   )
-  .route('/', healthCheckRoute)
-  .route('/auth', authRoute)
-  .route('/game', gameRoute)
-  .route('/game-sessions', gameSessionsRoute)
-  .route('/uploadthing', uploadRoute)
-  // Static files from Vite build
-  .get('*', serveStatic({ root: '../frontend/dist' }));
+  .route('/api/health-check', healthCheckRoute)
+  .route('/api/auth', authRoute)
+  .route('/api/game', gameRoute)
+  .route('/api/game-sessions', gameSessionsRoute)
+  .route('/api/uploadthing', uploadRoute);
+
+// Add static file serving after API routes
+app
+  .use('/*', serveStatic({ root: './static' }))
+  .get('*', serveStatic({ path: './static/index.html' }));
 
 const port = 5000;
-console.log(`Server is running on http://localhost:${port}`);
+console.log(`Server is running on ${process.env.VITE_SERVER_URL}`);
 
 export type ApiType = typeof app;
 

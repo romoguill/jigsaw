@@ -10,6 +10,7 @@
     "build:server": "pnpm --filter @jigsaw/server build",
     "build:frontend": "pnpm --filter @jigsaw/frontend build",
     "install:all": "pnpm install && pnpm run build:shared",
+    "start": "pnpm --filter @jigsaw/server start",
     "lint": "pnpm run lint:shared && pnpm run lint:frontend && pnpm run lint:server",
     "lint:shared": "pnpm --filter @jigsaw/shared lint",
     "lint:frontend": "pnpm --filter @jigsaw/frontend lint",

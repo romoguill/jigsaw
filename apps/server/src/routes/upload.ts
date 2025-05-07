@@ -4,7 +4,6 @@ import { Hono } from 'hono';
 
 const handlers = createRouteHandler({
   router: uploadRouter,
-
   config: {
     isDev: process.env.NODE_ENV === 'development',
     callbackUrl:

@@ -7,8 +7,8 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node build/index.js",
+    "build": "rm -rf dist && tsc",
+    "start": "node build/src/index.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "db:push": "npx drizzle-kit push",
