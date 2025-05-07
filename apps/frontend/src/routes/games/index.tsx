@@ -1,14 +1,16 @@
+import { Button } from "@/frontend/components/ui/button";
 import { useCreateGameSession } from "@/frontend/features/games/api/mutations";
 import PuzzleCard from "@/frontend/features/games/components/puzzle-card";
 import { gamesQueryOptions } from "@/frontend/features/jigsaw/api/queries";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { ArrowUpDown } from "lucide-react";
 import { z } from "zod";
 
 export const Route = createFileRoute("/games/")({
   validateSearch: z
     .object({
-      orderBy: z.enum(["difficulty", "pieceSize"]).optional(),
+      orderBy: z.enum(["difficulty", "pieceCount"]).optional(),
       orderDirection: z.enum(["asc", "desc"]).optional(),
     })
     .optional().parse,
@@ -29,7 +31,7 @@ export const Route = createFileRoute("/games/")({
 
 function RouteComponent() {
   const queryParams = Route.useLoaderDeps();
-  console.log(queryParams);
+  const navigate = Route.useNavigate();
   const { data: games } = useSuspenseQuery(
     gamesQueryOptions({
       orderBy: queryParams.orderBy,
@@ -37,11 +39,65 @@ function RouteComponent() {
     })
   );
   const { mutate: createGameSession } = useCreateGameSession();
-  const navigate = useNavigate();
 
   return (
     <div className="w-full p-10 container">
-      <h1 className="text-2xl font-bold font-playful">Pick one puzzle</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold font-playful h-8">Pick one puzzle</h1>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            className="gap-2"
+            onClick={() => {
+              // Alternate between ascending and descending order if the same orderBy is selected
+              navigate({
+                search: (prev) => {
+                  if (prev?.orderBy === "difficulty") {
+                    return {
+                      ...prev,
+                      orderDirection:
+                        prev.orderDirection === "asc" ? "desc" : "asc",
+                    };
+                  }
+                  return {
+                    ...prev,
+                    orderBy: "difficulty",
+                    orderDirection: "asc",
+                  };
+                },
+              });
+            }}
+          >
+            <ArrowUpDown size={16} />
+            <span>Difficulty</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className="gap-2"
+            onClick={() => {
+              navigate({
+                search: (prev) => {
+                  if (prev?.orderBy === "pieceCount") {
+                    return {
+                      ...prev,
+                      orderDirection:
+                        prev.orderDirection === "asc" ? "desc" : "asc",
+                    };
+                  }
+                  return {
+                    ...prev,
+                    orderBy: "pieceCount",
+                    orderDirection: "asc",
+                  };
+                },
+              });
+            }}
+          >
+            <ArrowUpDown size={16} />
+            <span>Pieces</span>
+          </Button>
+        </div>
+      </div>
       <section className="grid gap-4 mt-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {games.map((game) => (
           <PuzzleCard

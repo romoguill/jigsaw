@@ -21,7 +21,7 @@ export const gameQueryOptions = (id: string) =>
   });
 
 export const getGames = async (queryParams?: {
-  orderBy?: "difficulty" | "pieceSize";
+  orderBy?: "difficulty" | "pieceCount";
   orderDirection?: "asc" | "desc";
 }) => {
   const response = await apiClient.game.$get({
@@ -33,7 +33,7 @@ export const getGames = async (queryParams?: {
 };
 
 export const gamesQueryOptions = (queryParams?: {
-  orderBy?: "difficulty" | "pieceSize";
+  orderBy?: "difficulty" | "pieceCount";
   orderDirection?: "asc" | "desc";
 }) =>
   queryOptions({

@@ -38,6 +38,8 @@ function PuzzleCard({
         <img
           src={imageUrl}
           alt={`${id}-puzzle`}
+          loading="lazy"
+          decoding="async"
           className="w-full h-40 object-cover will-change-transform transform-gpu transition-transform duration-300 group-hover:scale-105"
           style={{
             imageRendering: "crisp-edges",

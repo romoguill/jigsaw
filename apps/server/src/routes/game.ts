@@ -240,7 +240,7 @@ export const gameRoute = new Hono<ContextWithAuth>()
       'query',
       z
         .object({
-          orderBy: z.enum(['pieceSize', 'difficulty']).optional(),
+          orderBy: z.enum(['pieceCount', 'difficulty']).optional(),
           orderDirection: z.enum(['asc', 'desc']).default('asc'),
         })
         .optional()
@@ -266,10 +266,10 @@ export const gameRoute = new Hono<ContextWithAuth>()
           : undefined;
 
       const orderByClause =
-        queryParams?.orderBy === 'pieceSize'
+        queryParams?.orderBy === 'pieceCount'
           ? queryParams.orderDirection === 'asc'
-            ? asc(games.pieceSize)
-            : desc(games.pieceSize)
+            ? asc(games.pieceCount)
+            : desc(games.pieceCount)
           : queryParams?.orderBy === 'difficulty'
             ? queryParams.orderDirection === 'asc'
               ? sql`CASE
