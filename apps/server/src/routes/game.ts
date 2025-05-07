@@ -238,14 +238,16 @@ export const gameRoute = new Hono<ContextWithAuth>()
     '/',
     zValidator(
       'query',
-      z.object({
-        orderBy: z.enum(['pieceSize', 'difficulty']).optional(),
-        orderDirection: z.enum(['asc', 'desc']).default('asc'),
-      })
+      z
+        .object({
+          orderBy: z.enum(['pieceSize', 'difficulty']).optional(),
+          orderDirection: z.enum(['asc', 'desc']).default('asc'),
+        })
+        .optional()
     ),
     async (c) => {
       const currentUser = c.get('user');
-      const { orderBy, orderDirection } = c.req.valid('query');
+      const queryParams = c.req.valid('query');
 
       // Admin will have access to all games but logged in users will have access to games created by the admin and themselves
       const userFilter =
@@ -264,22 +266,22 @@ export const gameRoute = new Hono<ContextWithAuth>()
           : undefined;
 
       const orderByClause =
-        orderBy === 'pieceSize'
-          ? orderDirection === 'asc'
+        queryParams?.orderBy === 'pieceSize'
+          ? queryParams.orderDirection === 'asc'
             ? asc(games.pieceSize)
             : desc(games.pieceSize)
-          : orderBy === 'difficulty'
-            ? orderDirection === 'asc'
+          : queryParams?.orderBy === 'difficulty'
+            ? queryParams.orderDirection === 'asc'
               ? sql`CASE
-                WHEN ${games.pieceSize} = 1 THEN 1
-                WHEN ${games.pieceSize} = 2 THEN 2
-                WHEN ${games.pieceSize} = 3 THEN 3
+                WHEN ${games.difficulty} = "EASY" THEN 1
+                WHEN ${games.difficulty} = "MEDIUM" THEN 2
+                WHEN ${games.difficulty} = "HARD" THEN 3
                 ELSE 4
               END`
               : sql`CASE
-                WHEN ${games.pieceSize} = 1 THEN 4
-                WHEN ${games.pieceSize} = 2 THEN 3
-                WHEN ${games.pieceSize} = 3 THEN 2
+                WHEN ${games.difficulty} = "EASY" THEN 4
+                WHEN ${games.difficulty} = "MEDIUM" THEN 3
+                WHEN ${games.difficulty} = "HARD" THEN 2
                 ELSE 1
               END`
             : undefined;

@@ -20,15 +20,23 @@ export const gameQueryOptions = (id: string) =>
     queryFn: () => getGame(id),
   });
 
-export const getGames = async () => {
-  const response = await apiClient.game.$get();
+export const getGames = async (queryParams?: {
+  orderBy?: "difficulty" | "pieceSize";
+  orderDirection?: "asc" | "desc";
+}) => {
+  const response = await apiClient.game.$get({
+    query: queryParams,
+  });
   const data = await response.json();
 
   return data;
 };
 
-export const gamesQueryOptions = () =>
+export const gamesQueryOptions = (queryParams?: {
+  orderBy?: "difficulty" | "pieceSize";
+  orderDirection?: "asc" | "desc";
+}) =>
   queryOptions({
     queryKey: gameKeys.all,
-    queryFn: () => getGames(),
+    queryFn: () => getGames(queryParams),
   });
