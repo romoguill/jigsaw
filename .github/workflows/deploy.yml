@@ -54,6 +54,7 @@ jobs:
             set -e
             cd ~/apps/jigsaw
             git pull
+            export PATH="$PATH:/home/$USER/.local/share/corepack"
             corepack enable
             corepack prepare pnpm@latest --activate
             pnpm install --frozen-lockfile
