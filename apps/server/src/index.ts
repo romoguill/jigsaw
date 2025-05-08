@@ -17,7 +17,7 @@ const app = new Hono()
   .use(
     '/api/auth/*',
     cors({
-      origin: process.env.VITE_PROXY_URL!, // Vite origin
+      origin: process.env.VITE_PROXY_URL || process.env.VITE_SERVER_URL!, // Use VITE_SERVER_URL as fallback
       allowHeaders: ['Content-Type', 'Authorization'],
       allowMethods: ['POST', 'GET', 'OPTIONS'],
       exposeHeaders: ['Content-Length'],
@@ -28,7 +28,7 @@ const app = new Hono()
   .use(
     '/api/uploadthing/**',
     cors({
-      origin: process.env.VITE_PROXY_URL!,
+      origin: process.env.VITE_PROXY_URL || process.env.VITE_SERVER_URL!, // Use VITE_SERVER_URL as fallback
       allowMethods: ['POST', 'GET'],
       allowHeaders: ['Content-Type', 'Authorization'],
     })
