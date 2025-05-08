@@ -61,7 +61,6 @@ jobs:
             BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-            NODE_ENV=${{ secrets.NODE_ENV }}
             UPLOADTHING_APP_ID=${{ secrets.UPLOADTHING_APP_ID }}
             UPLOADTHING_PUBLIC_URL=${{ secrets.UPLOADTHING_PUBLIC_URL }}
             UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}
@@ -73,5 +72,4 @@ jobs:
             pnpm --filter @jigsaw/server build
             pnpm --filter @jigsaw/frontend build
             pnpm db:generate && pnpm db:migrate
-            export NODE_ENV=production
-            pm2 restart jigsaw || pm2 start "pnpm start --config.package-manager-strict=false" --name jigsaw
+            pm2 restart jigsaw || pm2 start "NODE_ENV=production pnpm start --config.package-manager-strict=false" --name jigsaw
