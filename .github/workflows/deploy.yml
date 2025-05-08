@@ -52,6 +52,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             set -e
+            # Load shell configuration to get pnpm in PATH
+            source ~/.bashrc
             cd ~/apps/jigsaw
             git pull
             pnpm install --frozen-lockfile
