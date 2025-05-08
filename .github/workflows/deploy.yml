@@ -54,7 +54,20 @@ jobs:
             set -e
             cd ~/apps/jigsaw
             git pull
+            rm -rf apps/server/.env.production.local
+            cat > apps/server/.env.production.local <<EOF
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}
+            BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            NODE_ENV=${{ secrets.NODE_ENV }}
+            UPLOADTHING_APP_ID=${{ secrets.UPLOADTHING_APP_ID }}
+            UPLOADTHING_PUBLIC_URL=${{ secrets.UPLOADTHING_PUBLIC_URL }}
+            UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}
+            EOF
             export PATH="$HOME/.nvm/versions/node/v22.11.0/bin:$HOME/.local/share/pnpm:$PATH"
             pnpm install --frozen-lockfile
             pnpm build
+            pnpm db:generate && pnpm db:migrate
             pm2 restart jigsaw || pm2 start "pnpm start" --name jigsaw

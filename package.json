@@ -20,6 +20,8 @@
     "format:frontend": "pnpm --filter @jigsaw/frontend format",
     "format:server": "pnpm --filter @jigsaw/server format",
     "db:push": "pnpm --filter @jigsaw/server db:push",
+    "db:generate": "pnpm --filter @jigsaw/server db:generate",
+    "db:migrate": "pnpm --filter @jigsaw/server db:migrate",
     "db:studio": "pnpm --filter @jigsaw/server db:studio",
     "test": "pnpm run -r test",
     "test:server": "pnpm --filter @jigsaw/server test",
