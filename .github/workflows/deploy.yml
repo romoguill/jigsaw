@@ -67,7 +67,7 @@ jobs:
             UPLOADTHING_TOKEN=${{ secrets.UPLOADTHING_TOKEN }}
             EOF
             export PATH="$HOME/.nvm/versions/node/v22.11.0/bin:$HOME/.local/share/pnpm:$PATH"
-            pnpm install --frozen-lockfile
+            pnpm install --frozen-lockfile --no-package-manager
             pnpm build
             pnpm db:generate && pnpm db:migrate
-            pm2 restart jigsaw || pm2 start "pnpm start" --name jigsaw
+            pm2 restart jigsaw || pm2 start "pnpm start --no-package-manager" --name jigsaw
