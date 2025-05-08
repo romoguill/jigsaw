@@ -52,7 +52,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             set -e
-            cd /var/www/jigsaw
+            cd ~/apps/jigsaw
             git pull
             pnpm install --frozen-lockfile
             pnpm build
