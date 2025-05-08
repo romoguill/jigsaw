@@ -67,7 +67,7 @@ function RouteComponent() {
         <ThemeToggle />
       </header>
       <main className="flex flex-col items-center justify-center h-3/4 container mx-auto">
-        <img width={250} src="/main-logo.png" alt="logo" />
+        <img width={250} src="/main-logo.webp" alt="logo" />
         <AnimatePresence mode="wait">
           {!isSubmenuOpen ? <MainMenu /> : <SubMenu />}
         </AnimatePresence>
