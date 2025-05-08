@@ -56,9 +56,13 @@ jobs:
             # Create apps directory if it doesn't exist
             mkdir -p ~/apps
 
-            # Check if the repository is already cloned
+            # Check if the directory exists and is a git repository
             if [ ! -d "~/apps/jigsaw/.git" ]; then
-              echo "Cloning repository..."
+              echo "Setting up repository..."
+              # If directory exists but is not a git repository, remove it
+              if [ -d "~/apps/jigsaw" ]; then
+                rm -rf ~/apps/jigsaw
+              fi
               git clone https://github.com/${{ github.repository }}.git ~/apps/jigsaw
             fi
 
