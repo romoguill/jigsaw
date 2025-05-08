@@ -73,4 +73,5 @@ jobs:
             pnpm --filter @jigsaw/server build
             pnpm --filter @jigsaw/frontend build
             pnpm db:generate && pnpm db:migrate
+            export NODE_ENV=production
             pm2 restart jigsaw || pm2 start "pnpm start --config.package-manager-strict=false" --name jigsaw
