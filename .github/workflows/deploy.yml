@@ -68,6 +68,14 @@ jobs:
             # Pull latest changes
             git pull
 
+            # Install pnpm if not already installed
+            if ! command -v pnpm &> /dev/null; then
+              echo "Installing pnpm..."
+              curl -fsSL https://get.pnpm.io/install.sh | sh -
+              # Source the shell configuration to update PATH
+              source ~/.bashrc
+            fi
+
             # Install dependencies and build
             pnpm install --frozen-lockfile
             pnpm build
