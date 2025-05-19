@@ -8,6 +8,7 @@ import { useState } from "react";
 import { gameSessionsQueryOptions } from "../features/games/api/queries";
 import { authClient } from "../lib/auth-client";
 import AccountMenu from "../components/account-menu";
+import { useCurrentUser } from "../features/auth/hooks/queries";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -19,8 +20,10 @@ function RouteComponent() {
   } = Route.useRouteContext();
 
   const { data: sessions } = useQuery(gameSessionsQueryOptions());
+  const { data: currentUser } = useCurrentUser();
   const [menuStep, setMenuStep] = useState<number>(0);
 
+  console.log({ currentUser });
   const UserMenu = () => (
     <motion.div
       initial={{ opacity: 0, x: 100 }}
@@ -61,7 +64,9 @@ function RouteComponent() {
       <ButtonMainOption onClick={() => setMenuStep(2)}>
         Join with ID
       </ButtonMainOption>
-      <ButtonMainOption onClick={() => setMenuStep(0)}>Back</ButtonMainOption>
+      {currentUser === null && (
+        <ButtonMainOption onClick={() => setMenuStep(0)}>Back</ButtonMainOption>
+      )}
     </motion.div>
   );
 
@@ -92,7 +97,7 @@ function RouteComponent() {
       <main className="flex flex-col items-center justify-center h-3/4 container mx-auto">
         <img width={250} src="/main-logo.webp" alt="logo" />
         <AnimatePresence mode="wait">
-          {menuStep === 0 ? (
+          {menuStep && currentUser === null ? (
             <UserMenu />
           ) : menuStep === 1 ? (
             <MainMenu />

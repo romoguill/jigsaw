@@ -34,7 +34,7 @@ function ButtonMainOption({
     <button
       {...props}
       className={cn(
-        "group cursor-pointer rounded-none font-playful text-2xl h-auto border-none text-white w-64 text-shadow-lg/80 bg-contain bg-center bg-no-repeat py-4",
+        "group cursor-pointer rounded-none font-playful text-2xl h-auto border-none dark:text-white text-shadow-sm/10 w-64 bg-contain bg-center bg-no-repeat py-4",
         className
       )}
       onMouseEnter={() => setIsHovered(true)}

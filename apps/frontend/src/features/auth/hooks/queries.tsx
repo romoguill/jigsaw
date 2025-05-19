@@ -7,19 +7,19 @@ export const currentUserKey = ["current-user"];
 export const useCurrentUser = () => {
   return useQuery({
     queryKey: currentUserKey,
-    queryFn: async (): Promise<User | undefined> => {
+    queryFn: async (): Promise<User | null> => {
       const { data, error } = await authClient.getSession();
 
       if (error) {
-        return undefined;
+        return null;
       }
 
       // THERE IS AN ERROR IN THE LIBRARY TYPES. DATA CAN BE NULL, DONT DELETE THIS.
       if (!data) {
-        return undefined;
+        return null;
       }
 
-      return data.user as unknown as User | undefined;
+      return data.user as unknown as User | null;
     },
     staleTime: Infinity,
     refetchOnWindowFocus: false,

@@ -18,6 +18,16 @@ import {
 import * as gameBuilderService from '../service/game-builder.js';
 import { utapi } from './upload.js';
 
+// Store progress updates for each game creation
+const gameCreationProgress = new Map<
+  string,
+  {
+    status: 'processing' | 'completed' | 'error';
+    progress: number;
+    message: string;
+  }
+>();
+
 const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
   gameSchema
     .pick({
@@ -28,6 +38,7 @@ const basicGameCreateSchema = jigsawBuilderFormSchema.merge(
     })
     .extend({
       origin: coordinateSchema,
+      progressId: z.string().optional(),
     })
 );
 
@@ -57,6 +68,40 @@ export const gameRoute = new Hono<ContextWithAuth>()
       return c.json({ success: true, data: pathsData });
     }
   )
+  .get('/builder/progress/:id', (c) => {
+    const progressId = c.req.param('id');
+    const progress = gameCreationProgress.get(progressId);
+
+    if (!progress) {
+      throw new HTTPException(404, { message: 'Progress not found' });
+    }
+
+    return new Response(
+      new ReadableStream({
+        start(controller) {
+          const encoder = new TextEncoder();
+
+          // Send initial progress
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify(progress)}\n\n`)
+          );
+
+          // If completed or error, close the stream
+          if (progress.status !== 'processing') {
+            controller.close();
+            gameCreationProgress.delete(progressId);
+          }
+        },
+      }),
+      {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          Connection: 'keep-alive',
+        },
+      }
+    );
+  })
   .post(
     '/builder',
     zValidator(
@@ -80,129 +125,178 @@ export const gameRoute = new Hono<ContextWithAuth>()
         }))
     ),
     async (c) => {
-      const { cached, ...gameData } = c.req.valid('json');
+      const {
+        cached,
+        progressId: clientProgressId,
+        ...gameData
+      } = c.req.valid('json');
       const userId = c.get('user').id;
+      const progressId = clientProgressId || crypto.randomUUID();
 
-      let game: typeof games.$inferInsert;
-      // Create the game entity
-      // If Cached, use that info from the client to avoid rebuilding paths
-      if (cached) {
-        [game] = await db
-          .insert(games)
-          .values({
-            ...gameData,
-            ownerId: userId,
-            horizontalPaths: cached.horizontalPaths,
-            verticalPaths: cached.verticalPaths,
-            pieceFootprint: cached.pieceFootprint,
-          })
-          .returning();
-      } else {
-        const {
-          paths: { horizontal: horizontalPaths, vertical: verticalPaths },
-          pieceFootprint,
-        } = gameBuilderService.pathGenerator({
-          origin: gameData.origin,
-          pieceSize: gameData.pieceSize,
-          cols: gameData.columns,
-          rows: gameData.rows,
-        });
+      // Initialize progress
+      gameCreationProgress.set(progressId, {
+        status: 'processing',
+        progress: 0,
+        message: 'Starting game creation...',
+      });
 
-        [game] = await db
-          .insert(games)
-          .values({
-            ...gameData,
-            ownerId: userId,
-            horizontalPaths,
-            verticalPaths,
+      try {
+        let game: typeof games.$inferInsert;
+        // Create the game entity
+        // If Cached, use that info from the client to avoid rebuilding paths
+        if (cached) {
+          [game] = await db
+            .insert(games)
+            .values({
+              ...gameData,
+              ownerId: userId,
+              horizontalPaths: cached.horizontalPaths,
+              verticalPaths: cached.verticalPaths,
+              pieceFootprint: cached.pieceFootprint,
+            })
+            .returning();
+        } else {
+          const {
+            paths: { horizontal: horizontalPaths, vertical: verticalPaths },
             pieceFootprint,
-          })
-          .returning();
-      }
+          } = gameBuilderService.pathGenerator({
+            origin: gameData.origin,
+            pieceSize: gameData.pieceSize,
+            cols: gameData.columns,
+            rows: gameData.rows,
+          });
 
-      // Get the image from uploadthing
-      const { ufsUrl } = await utapi.generateSignedURL(game.imageKey);
+          [game] = await db
+            .insert(games)
+            .values({
+              ...gameData,
+              ownerId: userId,
+              horizontalPaths,
+              verticalPaths,
+              pieceFootprint,
+            })
+            .returning();
+        }
 
-      // Fetch the image
-      const imageResponse = await fetch(ufsUrl);
+        // Get the image from uploadthing
+        const { ufsUrl } = await utapi.generateSignedURL(game.imageKey);
 
-      // If the image is not found, throw an error
-      if (!imageResponse.ok) {
-        throw new HTTPException(404, { message: 'Image not found' });
-      }
+        // Fetch the image
+        const imageResponse = await fetch(ufsUrl);
 
-      // Create the pieces
-      const piecesData = gameBuilderService.createPieces({
-        horizontalPaths: game.horizontalPaths,
-        verticalPaths: game.verticalPaths,
-        pieceSize: game.pieceSize,
-      });
+        // If the image is not found, throw an error
+        if (!imageResponse.ok) {
+          throw new HTTPException(404, { message: 'Image not found' });
+        }
 
-      // Convert the image to a buffer
-      const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+        // Convert the image to a buffer
+        const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
-      // Cut the image into pieces
-      const cutPieces = await gameBuilderService.cutImageIntoPieces({
-        pieceFootprint: game.pieceFootprint,
-        imageBuffer: Buffer.from(imageBuffer),
-        ...piecesData,
-      });
-
-      // Upload the pieces to uploadthing
-      const uploadResults = await utapi.uploadFiles(
-        cutPieces.map((piece) => piece.file)
-      );
-
-      // Check that all pieces were uploaded successfully
-      if (uploadResults.some((result) => result.error)) {
-        throw new HTTPException(500, {
-          message: 'Failed to upload pieces',
+        // Create the pieces
+        const piecesData = gameBuilderService.createPieces({
+          horizontalPaths: game.horizontalPaths,
+          verticalPaths: game.verticalPaths,
+          pieceSize: game.pieceSize,
         });
-      }
 
-      // Insert the pieces and uploaded image into the database
-      await db.transaction(async (tx) => {
-        // Insert upoaded image
-        const uploadedImages = await tx
-          .insert(uploadedImage)
-          .values(
-            // Use ! because I checked before
-            uploadResults.map((result, i) => ({
-              imageKey: result.data!.key,
-              gameId: Number(game.id),
-              userId,
-              isPiece: true,
-              width: cutPieces[i].width,
-              height: cutPieces[i].height,
-            }))
-          )
-          .returning();
+        // Update progress for piece creation
+        gameCreationProgress.set(progressId, {
+          status: 'processing',
+          progress: 30,
+          message: 'Creating puzzle pieces...',
+        });
 
-        // Insert the pieces into the database
-        await tx.insert(pieces).values(
-          cutPieces.map((piece, i) => ({
-            col: piece.col,
-            row: piece.row,
-            uploadedImageId: uploadedImages[i].id,
-            gameId: Number(game.id),
-          }))
+        // Cut the image into pieces
+        const cutPieces = await gameBuilderService.cutImageIntoPieces({
+          pieceFootprint: game.pieceFootprint,
+          imageBuffer: Buffer.from(imageBuffer),
+          ...piecesData,
+        });
+
+        // Update progress for image cutting
+        gameCreationProgress.set(progressId, {
+          status: 'processing',
+          progress: 60,
+          message: 'Cutting image into pieces...',
+        });
+
+        // Upload the pieces to uploadthing
+        const uploadResults = await utapi.uploadFiles(
+          cutPieces.map((piece) => piece.file)
         );
-      });
 
-      if (!game.id) {
-        throw new HTTPException(500);
+        // Check that all pieces were uploaded successfully
+        if (uploadResults.some((result) => result.error)) {
+          throw new HTTPException(500, {
+            message: 'Failed to upload pieces',
+          });
+        }
+
+        // Update progress for database operations
+        gameCreationProgress.set(progressId, {
+          status: 'processing',
+          progress: 90,
+          message: 'Saving to database...',
+        });
+
+        // Insert the pieces and uploaded image into the database
+        await db.transaction(async (tx) => {
+          // Insert upoaded image
+          const uploadedImages = await tx
+            .insert(uploadedImage)
+            .values(
+              uploadResults.map((result, i) => ({
+                imageKey: result.data!.key,
+                gameId: Number(game.id),
+                userId,
+                isPiece: true,
+                width: cutPieces[i].width,
+                height: cutPieces[i].height,
+              }))
+            )
+            .returning();
+
+          // Insert the pieces into the database
+          await tx.insert(pieces).values(
+            cutPieces.map((piece, i) => ({
+              col: piece.col,
+              row: piece.row,
+              uploadedImageId: uploadedImages[i].id,
+              gameId: Number(game.id),
+            }))
+          );
+        });
+
+        if (!game.id) {
+          throw new HTTPException(500);
+        }
+
+        // Update progress to completed
+        gameCreationProgress.set(progressId, {
+          status: 'completed',
+          progress: 100,
+          message: 'Game creation completed!',
+        });
+
+        return c.json({
+          success: true,
+          gameId: game.id,
+          pieces: cutPieces,
+          svg: piecesData.enclosedShapesSvg,
+          progressId,
+        });
+      } catch (error) {
+        // Update progress to error
+        gameCreationProgress.set(progressId, {
+          status: 'error',
+          progress: 0,
+          message: error instanceof Error ? error.message : 'An error occurred',
+        });
+        throw error;
       }
-
-      return c.json({
-        success: true,
-        gameId: game.id,
-        pieces: cutPieces,
-        svg: piecesData.enclosedShapesSvg,
-      });
     }
   )
   .get('/:id', async (c) => {
-    console.log('run');
     const game = await db.query.games.findFirst({
       where: eq(games.id, Number(c.req.param('id'))),
       with: {

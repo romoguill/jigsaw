@@ -44,6 +44,7 @@ export function GameCustomizationForm({
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [showMask, setShowMask] = useState(false);
   const navigate = useNavigate({ from: "/games/customization" });
+  // const [progress, setProgress] = useState<GameCreationProgress | null>(null);
 
   const { mutateAsync: buildJigsaw } = useBuilderCreate();
   const { mutateAsync: createGameSession } = useCreateGameSession();
@@ -102,6 +103,12 @@ export function GameCustomizationForm({
                 }
               : undefined,
         },
+        // onProgress: (progress: GameCreationProgress) => {
+        //   setProgress(progress);
+        //   if (progress.status === "completed") {
+        //     navigate({ to: "/admin" });
+        //   }
+        // },
       });
 
       const sessionResponse = await createGameSession({
@@ -302,12 +309,22 @@ export function GameCustomizationForm({
           ) : (
             <button
               type="submit"
+              disabled={formState.isSubmitting}
               className="ml-auto flex px-4 py-2 bg-amber-700 rounded-md disabled:opacity-50 disabled:pointer-events-none cursor-pointer text-secondary-foreground tracking-widest font-bold text-shadow-md text-shadow-back/80"
             >
               Create Puzzle
             </button>
           )}
         </div>
+        {formState.isSubmitting && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+            <ul className="text-slate-800 text-2xl font-bold p-8 bg-neutral-300 rounded-lg space-y-2">
+              <li>Generating pieces.</li>
+              <li>Cutting images.</li>
+              <li className="italic text-sm">This may take a while...</li>
+            </ul>
+          </div>
+        )}
       </form>
     </div>
   );

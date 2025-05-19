@@ -22,6 +22,15 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useBuilderCreate } from "../api/mutations";
+import { useState } from "react";
+import { Progress } from "@/frontend/components/ui/progress";
+
+type GameCreationProgress = {
+  status: "processing" | "completed" | "error";
+  progress: number;
+  message: string;
+};
+
 interface BuilderFormProps {
   imageKey: string;
   onPieceQuantityChange: (n: number | undefined) => void;
@@ -41,6 +50,7 @@ function BuilderForm({
   pathsData,
 }: BuilderFormProps) {
   const navigate = useNavigate({ from: "/admin" });
+  const [progress, setProgress] = useState<GameCreationProgress | null>(null);
   const { mutate: buildJigsaw, isPending } = useBuilderCreate();
 
   const { handleSubmit, control, formState } = useForm<JigsawBuilderFormValues>(
@@ -71,10 +81,16 @@ function BuilderForm({
                 }
               : undefined,
         },
+        onProgress: (progress: GameCreationProgress) => {
+          setProgress(progress);
+          if (progress.status === "completed") {
+            navigate({ to: "/admin" });
+          }
+        },
       },
       {
-        onSuccess: () => {
-          navigate({ to: "/admin" });
+        onError: () => {
+          setProgress(null);
         },
       }
     );
@@ -147,7 +163,14 @@ function BuilderForm({
 
       <FormSubmitError error={formState.errors.root?.message} />
 
-      <ButtonLoader isDisabled={isPending} isPending={isPending} type="submit">
+      {progress && (
+        <div className="space-y-2">
+          <Progress value={progress.progress} />
+          <p className="text-sm text-muted-foreground">{progress.message}</p>
+        </div>
+      )}
+
+      <ButtonLoader isPending={isPending} isDisabled={isPending} type="submit">
         Build Puzzle
       </ButtonLoader>
     </form>

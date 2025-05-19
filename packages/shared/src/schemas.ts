@@ -22,16 +22,14 @@ export type Theme = typeof theme;
 export const role = ['admin', 'user', 'guest'] as const;
 export type Role = typeof role;
 
-export const pieceCount = [
-  '6',
-  '12',
-  '50',
-  '100',
-  '200',
-  '500',
-  '1000',
-] as const;
+export const pieceCount = ['14', '34', '125', '240', '560', '784'] as const;
 export type PieceCount = typeof pieceCount;
+
+export type GameCreationProgress = {
+  status: 'processing' | 'completed' | 'error';
+  progress: number;
+  message: string;
+};
 
 // ----- GAME RELATED SCHEMAS -----
 type PiecesData = { id: string; image: string }[][];

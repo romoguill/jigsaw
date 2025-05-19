@@ -21,9 +21,9 @@ function RouteComponent() {
   return (
     <div className="container mx-auto py-8 px-6">
       <h1 className="text-2xl font-bold font-playful">Customize your puzzle</h1>
-      <div className="max-w-2xl mx-auto mt-10">
+      <div className="mx-auto mt-10">
         <div className="mb-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 justify-between mb-4 gap-4 md:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 justify-between mb-4 gap-2 md:gap-4">
             <StepBadge stepNumber={1} step={step} description="Upload Image" />
             <StepBadge stepNumber={2} step={step} description="Piece Count" />
             <StepBadge stepNumber={3} step={step} description="Difficulty" />

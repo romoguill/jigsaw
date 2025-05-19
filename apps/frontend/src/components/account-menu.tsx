@@ -1,6 +1,6 @@
 import { useLogout } from "@/frontend/features/auth/hooks/mutations";
 import { useCurrentUser } from "@/frontend/features/auth/hooks/queries";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/frontend/components/ui/button";
 import {
   Menu,
@@ -13,6 +13,7 @@ import { Route as adminRoute } from "@/frontend/routes/admin/_admin/index";
 function AccountMenu() {
   const { data: user } = useCurrentUser();
   const { mutate: logout } = useLogout();
+  const navigate = useNavigate();
 
   if (!user) return null;
 
@@ -41,7 +42,13 @@ function AccountMenu() {
           <MenuItem disableSelection>
             {user.role === "admin" && <Link to={adminRoute.to}>Admin</Link>}
           </MenuItem>
-          <MenuItem onAction={() => logout()}>Logout</MenuItem>
+          <MenuItem
+            onAction={() =>
+              logout(undefined, { onSuccess: () => navigate({ to: "/" }) })
+            }
+          >
+            Logout
+          </MenuItem>
         </Menu>
       </MenuPopover>
     </MenuTrigger>
