@@ -39,9 +39,11 @@ function AccountMenu() {
       </Button>
       <MenuPopover>
         <Menu>
-          <MenuItem disableSelection>
-            {user.role === "admin" && <Link to={adminRoute.to}>Admin</Link>}
-          </MenuItem>
+          {user.role === "admin" && (
+            <MenuItem disableSelection>
+              <Link to={adminRoute.to}>Admin</Link>
+            </MenuItem>
+          )}
           <MenuItem
             onAction={() =>
               logout(undefined, { onSuccess: () => navigate({ to: "/" }) })
