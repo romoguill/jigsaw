@@ -1,6 +1,6 @@
+import type { User } from '@jigsaw/shared';
 import { createMiddleware } from 'hono/factory';
 import { auth } from '../lib/auth.js';
-import type { User } from '@jigsaw/shared';
 import { HTTPException } from 'hono/http-exception';
 
 export type ContextWithAuth = {
@@ -18,8 +18,8 @@ export const authMiddleware = createMiddleware<ContextWithAuth>(
       throw new HTTPException(401);
     }
 
-    c.set('user', authData.user as unknown as User);
-    c.set('session', authData.session);
+    c.set('user', (authData?.user as unknown as User) ?? null);
+    c.set('session', authData?.session ?? null);
     return next();
   }
 );

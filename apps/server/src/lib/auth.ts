@@ -1,8 +1,8 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { admin, anonymous } from 'better-auth/plugins';
 import { db } from '../db/db.js';
 import { account, session, user, verification } from '../db/schema.js';
-import { adminClient } from 'better-auth/client/plugins';
 
 // Define the auth instance with a type assertion
 export const auth = betterAuth({
@@ -39,5 +39,5 @@ export const auth = betterAuth({
       },
     },
   },
-  plugins: [adminClient()],
+  plugins: [admin(), anonymous()],
 });

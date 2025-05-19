@@ -29,6 +29,9 @@ export const user = sqliteTable('user', {
   role: text('role', { enum: ['admin', 'user', 'guest'] })
     .notNull()
     .default('user'),
+  isAnonymous: integer('is_anonymous', { mode: 'boolean' })
+    .notNull()
+    .default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
