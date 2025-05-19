@@ -8,6 +8,13 @@
       "when": 1746741903001,
       "tag": "0000_sour_spot",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1747690257727,
+      "tag": "0001_classy_surge",
+      "breakpoints": true
     }
   ]
 }

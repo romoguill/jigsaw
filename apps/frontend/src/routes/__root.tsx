@@ -6,7 +6,7 @@ import { type QueryClient } from "@tanstack/react-query";
 
 export interface RouterAuthContext {
   auth: {
-    user: User | undefined;
+    user: User | null;
   };
 }
 

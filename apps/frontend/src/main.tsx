@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 const router = createRouter({
   routeTree,
   context: {
-    auth: { user: undefined },
+    auth: { user: null },
     queryClient,
   },
   defaultPreload: "intent",
@@ -30,7 +30,12 @@ function App() {
 
   if (isPending) return null;
 
-  return <RouterProvider router={router} context={{ auth: { user } }} />;
+  return (
+    <RouterProvider
+      router={router}
+      context={{ auth: { user: user ?? null } }}
+    />
+  );
 }
 
 createRoot(document.getElementById("root")!).render(
