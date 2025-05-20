@@ -117,7 +117,7 @@ export function BuilderCard() {
               }
             }}
             onUploadError={(error) => {
-              console.log(error);
+              console.error(error);
             }}
           />
         )}
