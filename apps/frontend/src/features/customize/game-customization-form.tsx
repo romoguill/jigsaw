@@ -44,7 +44,6 @@ export function GameCustomizationForm({
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [showMask, setShowMask] = useState(false);
   const navigate = useNavigate({ from: "/games/customization" });
-  // const [progress, setProgress] = useState<GameCreationProgress | null>(null);
 
   const { mutateAsync: buildJigsaw } = useBuilderCreate();
   const { mutateAsync: createGameSession } = useCreateGameSession();
@@ -83,8 +82,6 @@ export function GameCustomizationForm({
   );
 
   const onSubmit: SubmitHandler<JigsawBuilderFormValues> = async (data) => {
-    console.log("run");
-
     try {
       const builderResponse = await buildJigsaw({
         data: {
@@ -103,12 +100,6 @@ export function GameCustomizationForm({
                 }
               : undefined,
         },
-        // onProgress: (progress: GameCreationProgress) => {
-        //   setProgress(progress);
-        //   if (progress.status === "completed") {
-        //     navigate({ to: "/admin" });
-        //   }
-        // },
       });
 
       const sessionResponse = await createGameSession({
@@ -292,7 +283,11 @@ export function GameCustomizationForm({
             <button
               type="button"
               className="flex pl-7 pr-4 py-2 w-22 text-primary-foreground rounded-md hover:bg-indigo-400 disabled:opacity-50 disabled:pointer-events-none [clip-path:polygon(25%_0%,100%_0%,100%_100%,25%_100%,0%_50%)] border-r-8 border-indigo-700 bg-indigo-200 cursor-pointer"
-              onClick={onBack}
+              onClick={() => {
+                onBack();
+                setShowMask(false);
+                setIsImageLoaded(false);
+              }}
             >
               Back
             </button>

@@ -22,7 +22,7 @@ export type Theme = typeof theme;
 export const role = ['admin', 'user', 'guest'] as const;
 export type Role = typeof role;
 
-export const pieceCount = ['14', '34', '125', '240', '560', '784'] as const;
+export const pieceCount = ['12', '24', '36', '60', '96'] as const;
 export type PieceCount = typeof pieceCount;
 
 export type GameCreationProgress = {

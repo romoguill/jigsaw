@@ -7,9 +7,6 @@ const dbPath = isDev
   ? path.resolve(process.cwd(), process.env.DATABASE_URL!)
   : process.env.DATABASE_URL;
 
-console.log('Environment:', process.env.NODE_ENV);
-console.log('Database URL:', dbPath);
-
 export const db = drizzle({
   connection: {
     url: `file:${dbPath}`,

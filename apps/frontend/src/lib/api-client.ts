@@ -6,7 +6,7 @@ export const apiClient = clientWithType("/", {
 
     if (!response.ok) {
       const error = await response.text();
-      console.log(error);
+      console.error(error);
       throw new Error(error);
     }
 

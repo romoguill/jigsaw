@@ -18,33 +18,6 @@ export const useBuilderCreate = () => {
       data: ReqType["json"];
       onProgress?: (progress: GameCreationProgress) => void;
     }) => {
-      // Generate a progress ID on the client side
-      // const progressId = crypto.randomUUID();
-
-      // Set up SSE connection before starting the game creation
-      // if (onProgress) {
-      //   console.log(
-      //     `${import.meta.env.VITE_API_URL}/api/game/builder/progress/${progressId}`
-      //   );
-      //   const eventSource = new EventSource(
-      //     `/api/game/builder/progress/${progressId}`
-      //   );
-
-      //   eventSource.onmessage = (event) => {
-      //     const progress = JSON.parse(event.data) as GameCreationProgress;
-      //     onProgress(progress);
-
-      //     if (progress.status === "completed" || progress.status === "error") {
-      //       eventSource.close();
-      //     }
-      //   };
-
-      //   eventSource.onerror = () => {
-      //     eventSource.close();
-      //     toast.error("Lost connection to progress updates");
-      //   };
-      // }
-
       const response = await apiRoute({
         json: { ...data },
       });

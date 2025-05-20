@@ -26,7 +26,6 @@ function RouteComponent() {
   const { mutate: login } = useLogin();
   const queryClient = useQueryClient();
 
-  console.log({ currentUser });
   const UserMenu = () => (
     <motion.div
       initial={{ opacity: 0, x: 100 }}
