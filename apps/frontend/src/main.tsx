@@ -6,7 +6,13 @@ import "./index.css";
 import { routeTree } from "./routeTree.gen.ts";
 import { Toaster } from "./components/ui/sonner.tsx";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+    },
+  },
+});
 
 const router = createRouter({
   routeTree,
