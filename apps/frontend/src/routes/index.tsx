@@ -1,28 +1,35 @@
-import GoogleOAuthButton from "@/frontend/components/auth/google-oauth-button";
 import ButtonMainOption from "@/frontend/components/button-main-option";
 import ThemeToggle from "@/frontend/components/theme-toggle";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import AccountMenu from "../components/account-menu";
+import { useLogin } from "../features/auth/hooks/mutations";
+import {
+  currentUserKey,
+  currentUserQueryOptions,
+} from "../features/auth/hooks/queries";
 import { gameSessionsQueryOptions } from "../features/games/api/queries";
 import { authClient } from "../lib/auth-client";
-import AccountMenu from "../components/account-menu";
-import { currentUserKey, useCurrentUser } from "../features/auth/hooks/queries";
-import { useLogin } from "../features/auth/hooks/mutations";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
+  loader: async ({ context }) => {
+    context.queryClient.ensureQueryData({ queryKey: currentUserKey });
+  },
 });
 
 function RouteComponent() {
-  const {
-    auth: { user },
-  } = Route.useRouteContext();
+  const { data: user } = useSuspenseQuery(currentUserQueryOptions());
+  const navigate = Route.useNavigate();
 
   const { data: sessions } = useQuery(gameSessionsQueryOptions());
-  const { data: currentUser } = useCurrentUser();
-  const [menuStep, setMenuStep] = useState<number>(0);
+  const [menuStep, setMenuStep] = useState<number>(user ? 1 : 0);
   const { mutate: login } = useLogin();
   const queryClient = useQueryClient();
 
@@ -68,7 +75,7 @@ function RouteComponent() {
         New Game
       </ButtonMainOption>
 
-      {currentUser === null && (
+      {user === null && (
         <ButtonMainOption onClick={() => setMenuStep(0)}>Back</ButtonMainOption>
       )}
     </motion.div>
@@ -92,16 +99,25 @@ function RouteComponent() {
     </motion.div>
   );
 
+  console.log(menuStep);
+
   return (
     <div className="h-full container mx-auto">
       <header className="flex justify-between items-center">
-        {!user ? <GoogleOAuthButton /> : <AccountMenu />}
+        {user && (
+          <AccountMenu
+            onLogout={() => {
+              navigate({ to: "/" });
+              setMenuStep(0);
+            }}
+          />
+        )}
         <ThemeToggle />
       </header>
       <main className="flex flex-col items-center justify-center h-3/4 container mx-auto">
         <img width={250} src="/main-logo.webp" alt="logo" />
         <AnimatePresence mode="wait">
-          {menuStep === 0 && currentUser === null ? (
+          {menuStep === 0 && user === null ? (
             <UserMenu />
           ) : menuStep === 1 ? (
             <MainMenu />

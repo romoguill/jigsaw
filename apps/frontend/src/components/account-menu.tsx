@@ -1,6 +1,3 @@
-import { useLogout } from "@/frontend/features/auth/hooks/mutations";
-import { useCurrentUser } from "@/frontend/features/auth/hooks/queries";
-import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/frontend/components/ui/button";
 import {
   Menu,
@@ -8,12 +5,14 @@ import {
   MenuPopover,
   MenuTrigger,
 } from "@/frontend/components/ui/menu";
+import { useLogout } from "@/frontend/features/auth/hooks/mutations";
+import { useCurrentUser } from "@/frontend/features/auth/hooks/queries";
 import { Route as adminRoute } from "@/frontend/routes/admin/_admin/index";
+import { Link } from "@tanstack/react-router";
 
-function AccountMenu() {
+function AccountMenu({ onLogout }: { onLogout: () => void }) {
   const { data: user } = useCurrentUser();
   const { mutate: logout } = useLogout();
-  const navigate = useNavigate();
 
   if (!user) return null;
 
@@ -45,9 +44,7 @@ function AccountMenu() {
             </MenuItem>
           )}
           <MenuItem
-            onAction={() =>
-              logout(undefined, { onSuccess: () => navigate({ to: "/" }) })
-            }
+            onAction={() => logout(undefined, { onSuccess: () => onLogout() })}
           >
             Logout
           </MenuItem>
