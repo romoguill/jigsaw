@@ -58,7 +58,7 @@ function GameToolbar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1 }}
-              className="text-green-300 absolute left-20 top-1/2 -translate-y-1/2"
+              className="text-green-300 absolute left-32 top-1/2 -translate-y-1/2"
             >
               Game saved!
             </motion.span>

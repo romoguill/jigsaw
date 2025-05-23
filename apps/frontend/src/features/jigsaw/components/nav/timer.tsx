@@ -14,9 +14,7 @@ function Timer({ savedTimer }: TimerProps) {
   const parsedTime = new Date(timer * 1000).toISOString().slice(11, 19);
 
   useEffect(() => {
-    if (savedTimer) {
-      setTimer(savedTimer);
-    }
+    setTimer(savedTimer);
   }, [savedTimer, setTimer]);
 
   useEffect(() => {
