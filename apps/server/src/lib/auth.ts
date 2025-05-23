@@ -4,7 +4,8 @@ import { admin, anonymous } from 'better-auth/plugins';
 import { db } from '../db/db.js';
 import { account, session, user, verification } from '../db/schema.js';
 
-// Define the auth instance with a type assertion
+console.log(process.env);
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'sqlite',

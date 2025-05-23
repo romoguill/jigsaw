@@ -62,6 +62,7 @@ jobs:
             cat > apps/server/.env.production.local <<EOF
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}
+            VITE_PROXY_URL=${{ secrets.VITE_PROXY_URL }}
             BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
