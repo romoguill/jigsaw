@@ -54,6 +54,10 @@ jobs:
             set -e
             cd ~/apps/jigsaw
             git pull
+            rm -rf apps/frontend/.env.production.local
+            cat > apps/frontend/.env.production.local <<EOF
+            VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}
+            EOF
             rm -rf apps/server/.env.production.local
             cat > apps/server/.env.production.local <<EOF
             DATABASE_URL=${{ secrets.DATABASE_URL }}
